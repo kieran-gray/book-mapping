@@ -1,3 +1,35 @@
-.bg-primary {
-  background-color: blue;
+
+.ibm-plex-sans {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+h1 {
+  font-size: 80px;
+  font-weight: 400;
+  margin: 5;
+  border: solid 1px #000000;
+  text-align: center;
+}
+body {
+  max-width: 1200px;
+  margin: auto;
+  background-image: url("https://res.cloudinary.com/dmukukwp6/image/upload/keyboard_garden_bg_dark_9ab088797a.png");
+  background-size: 100px 100px;
+  background-repeat: repeat;
+  background-color: #eeefe994;
+  background-blend-mode: lighten;
+  font-weight: 400;
+}
+.character {
+
+  font-size: 20px;
+  font-weight: 300;
+  width: 25%;
+  border: solid 1px #000000;
+  border-style: dashed;
+  text-align: center;
 }
