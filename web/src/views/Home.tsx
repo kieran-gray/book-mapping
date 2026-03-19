@@ -1,10 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
+import CharacterAvatar from '../components/CharacterAvatar';
 import './Home.css';
 
 interface Character {
   name: string;
   location: string;
   specialSkills: string;
+  gender?: 'Male' | 'Female';
+  hairColor?: string;
+  beardColor?: string;
 }
 
 interface LocationConfig {
@@ -70,9 +74,9 @@ const Home = () => {
   ]);
 
   const [characters, setCharacters] = useState<Character[]>([
-    { name: 'Orka', location: 'OSKUTRED', specialSkills: 'Fighting' },
-    { name: 'Varg', location: 'DARL', specialSkills: 'Bloodsworn' },
-    { name: 'Elvar', location: 'THE GRIMHOLT', specialSkills: 'Mercenary' },
+    { name: 'Orka', location: 'OSKUTRED', specialSkills: 'Fighting', gender: 'Female', hairColor: '#3d2314' },
+    { name: 'Varg', location: 'DARL', specialSkills: 'Bloodsworn', gender: 'Male', hairColor: '#b58e65', beardColor: '#b58e65' },
+    { name: 'Elvar', location: 'THE GRIMHOLT', specialSkills: 'Mercenary', gender: 'Female', hairColor: '#e0c08b' },
   ]);
 
   const [editingCharacter, setEditingCharacter] = useState<Character | null>(null);
@@ -219,7 +223,7 @@ const Home = () => {
 
   const handleAddCharacter = () => {
     setIsAddingCharacter(true);
-    setFormData({ name: '', location: '', specialSkills: '' });
+    setFormData({ name: '', location: '', specialSkills: '', gender: 'Male', hairColor: '#FFA012', beardColor: '#FFA012' });
   };
 
   const handleFormChange = (field: keyof Character, value: string) => {
@@ -411,6 +415,15 @@ const Home = () => {
                 >
                   <div className="map-pin-icon" style={{ backgroundColor: loc.color }}></div>
                   <div className="map-pin-label">{loc.name}</div>
+                  {charactersByLocation[loc.name]?.length > 0 && (
+                     <div className="map-pin-characters" style={{ display: 'flex', position: 'absolute', top: '25px', left: '50%', transform: 'translateX(-50%)', gap: '2px', pointerEvents: 'none' }}>
+                       {charactersByLocation[loc.name].map(c => (
+                         <div key={c.name} title={c.name} style={{ width: '60px', height: '80px', transform: 'scale(0.4)', transformOrigin: 'top center', margin: '0 -15px' }}>
+                           <CharacterAvatar gender={c.gender || 'Male'} hairColor={c.hairColor || '#bc8e5b'} beardColor={c.beardColor || '#bc8e5b'} />
+                         </div>
+                       ))}
+                     </div>
+                  )}
                 </div>
               );
             })}
@@ -435,7 +448,7 @@ const Home = () => {
                 onClick={() => {
                   setActivePin(null);
                   setIsAddingCharacter(true);
-                  setFormData({ name: '', location: activePin.name, specialSkills: '' });
+                  setFormData({ name: '', location: activePin.name, specialSkills: '', gender: 'Male', hairColor: '#FFA012', beardColor: '#FFA012' });
                 }}
               >
                 Add Character Here
@@ -498,6 +511,60 @@ const Home = () => {
                   value={formData.specialSkills}
                   onChange={(e) => handleFormChange('specialSkills', e.target.value)}
                 />
+              </div>
+              <div className="edit-modal__field">
+                <label>Gender:</label>
+                <select
+                  value={formData.gender || 'Male'}
+                  onChange={(e) => handleFormChange('gender', e.target.value)}
+                >
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
+              </div>
+              <div className="edit-modal__field" style={{ display: 'flex', gap: '30px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                  <label style={{ fontSize: '13px', marginBottom: '8px', fontWeight: 'bold' }}>Hair Color:</label>
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', maxWidth: '160px' }}>
+                    {['#FFA012', '#FF6600', '#201108', '#1e1e20', '#BFBFBF'].map(color => (
+                      <div
+                        key={color}
+                        onClick={() => handleFormChange('hairColor', color)}
+                        style={{
+                          width: '26px',
+                          height: '26px',
+                          borderRadius: '50%',
+                          backgroundColor: color,
+                          cursor: 'pointer',
+                          border: (formData.hairColor || '').toUpperCase() === color.toUpperCase() ? '2px solid #007bff' : '2px solid transparent',
+                          boxShadow: (formData.hairColor || '').toUpperCase() === color.toUpperCase() ? '0 0 6px rgba(0,123,255,0.6)' : '0 2px 4px rgba(0,0,0,0.3)'
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+                {(formData.gender === 'Male' || !formData.gender) && (
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                    <label style={{ fontSize: '13px', marginBottom: '8px', fontWeight: 'bold' }}>Beard Color:</label>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', maxWidth: '160px' }}>
+                      {['#FFA012', '#FF6600', '#201108', '#1e1e20', '#BFBFBF'].map(color => (
+                        <div
+                          key={color}
+                          onClick={() => handleFormChange('beardColor', color)}
+                          style={{
+                            width: '26px',
+                            height: '26px',
+                            borderRadius: '50%',
+                            backgroundColor: color,
+                            cursor: 'pointer',
+                            border: (formData.beardColor || '').toUpperCase() === color.toUpperCase() ? '2px solid #007bff' : '2px solid transparent',
+                            boxShadow: (formData.beardColor || '').toUpperCase() === color.toUpperCase() ? '0 0 6px rgba(0,123,255,0.6)' : '0 2px 4px rgba(0,0,0,0.3)'
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="edit-modal__actions">
                 <button onClick={handleSave}>Save</button>
