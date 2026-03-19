@@ -1,0 +1,127 @@
+{
+  "title": "The Shadow of the Gods",
+  "slug": "shadow-of-the-gods",
+  "mapImage": null,
+  "characters": [
+    {
+      "name": "Orka",
+      "location": "DARL",
+      "specialSkills": "Fighting",
+      "gender": "Female",
+      "hairColor": "#3d2314",
+      "group": ""
+    },
+    {
+      "name": "Lif",
+      "location": "DARL",
+      "specialSkills": "Child, Brother to Mord",
+      "gender": "Male",
+      "hairColor": "#e0c08b",
+      "group": ""
+    },
+    {
+      "name": "Mord",
+      "location": "DARL",
+      "specialSkills": "Child, Brother to Lif",
+      "gender": "Male",
+      "hairColor": "#e0c08b",
+      "group": ""
+    },
+    {
+      "name": "Varg",
+      "location": "THE GRIMHOLT",
+      "specialSkills": "Bloodsworn",
+      "gender": "Male",
+      "hairColor": "#b58e65",
+      "beardColor": "#b58e65",
+      "group": ""
+    },
+    {
+      "name": "Elvar",
+      "location": "SNAKAVIK",
+      "specialSkills": "Mercenary",
+      "gender": "Female",
+      "hairColor": "#e0c08b",
+      "group": ""
+    },
+    {
+      "name": "Grend",
+      "location": "SNAKAVIK",
+      "specialSkills": "Mercenary",
+      "gender": "Male",
+      "hairColor": "#3d2314",
+      "group": ""
+    },
+    {
+      "name": "Drekr",
+      "location": "UNKNOWN",
+      "specialSkills": "UNKNOWN",
+      "gender": "Male",
+      "hairColor": "#3d2314",
+      "group": ""
+    }
+  ],
+  "locations": [
+    {
+      "name": "OSKUTRED",
+      "color": "#D9D9D9",
+      "x": 60.42,
+      "y": 23.5
+    },
+    {
+      "name": "DARL",
+      "color": "#D9D9D9",
+      "x": 59.41,
+      "y": 48.65
+    },
+    {
+      "name": "THE GRIMHOLT",
+      "color": "#D9D9D9",
+      "x": 69.33,
+      "y": 36.21
+    },
+    {
+      "name": "SVELGARTH",
+      "color": "#D9D9D9",
+      "x": 83.45,
+      "y": 45.1
+    },
+    {
+      "name": "FELLUR",
+      "color": "#D9D9D9",
+      "x": 75.88,
+      "y": 56.02
+    },
+    {
+      "name": "LIGA",
+      "color": "#D9D9D9",
+      "x": 46.47,
+      "y": 56.91
+    },
+    {
+      "name": "SNAKAVIK",
+      "color": "#D9D9D9",
+      "x": 35.04,
+      "y": 39.63
+    },
+    {
+      "name": "ELDRAFELL",
+      "color": "#D9D9D9",
+      "x": 46.47,
+      "y": 24.39
+    },
+    {
+      "name": "ULAZ",
+      "color": "#D9D9D9",
+      "x": 61.09,
+      "y": 80.29
+    },
+    {
+      "name": "UNKNOWN",
+      "color": "#D9D9D9",
+      "x": 22.61,
+      "y": 71.14
+    }
+  ],
+  "relationships": []
+}
