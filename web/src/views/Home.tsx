@@ -1,12 +1,12 @@
-import { useState, useEffect, useRef } from 'react';
-import CharacterAvatar from '../components/CharacterAvatar';
-import './Home.css';
+import { useState, useEffect, useRef } from "react";
+import CharacterAvatar from "../components/CharacterAvatar";
+import "./Home.css";
 
 interface Character {
   name: string;
   location: string;
   specialSkills: string;
-  gender?: 'Male' | 'Female';
+  gender?: "Male" | "Female";
   hairColor?: string;
   beardColor?: string;
 }
@@ -21,7 +21,7 @@ interface LocationConfig {
 interface Relationship {
   source: string;
   target: string;
-  type: 'Friendly' | 'Enemies' | 'Neutral';
+  type: "Friendly" | "Enemies" | "Neutral";
 }
 
 const Home = () => {
@@ -38,13 +38,13 @@ const Home = () => {
       const rect = mapRef.current.getBoundingClientRect();
       let x = ((e.clientX - rect.left) / rect.width) * 100;
       let y = ((e.clientY - rect.top) / rect.height) * 100;
-      
+
       x = Math.max(0, Math.min(100, x));
       y = Math.max(0, Math.min(100, y));
 
-      setLocations(prev => prev.map(loc => 
-        loc.name === draggingPin ? { ...loc, x, y } : loc
-      ));
+      setLocations((prev) =>
+        prev.map((loc) => (loc.name === draggingPin ? { ...loc, x, y } : loc)),
+      );
     };
 
     const handleMouseUp = () => {
@@ -54,55 +54,107 @@ const Home = () => {
     };
 
     if (draggingPin) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
+      window.addEventListener("mousemove", handleMouseMove);
+      window.addEventListener("mouseup", handleMouseUp);
     }
 
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
     };
   }, [draggingPin]);
 
   const [locations, setLocations] = useState<LocationConfig[]>([
-    { name: 'OSKUTRED', color: '#D9D9D9', x: 20, y: 30 },
-    { name: 'DARL', color: '#D9D9D9', x: 80, y: 25 },
-    { name: 'THE GRIMHOLT', color: '#D9D9D9', x: 50, y: 50 },
-    { name: 'SVELGARTH', color: '#D9D9D9', x: 25, y: 70 },
-    { name: 'FELLUR', color: '#D9D9D9', x: 75, y: 80 },
-    { name: 'LIGA', color: '#D9D9D9', x: 50, y: 20 },
-    { name: 'SNAKAVIK', color: '#D9D9D9', x: 10, y: 10 },
-    { name: 'ELDRAFELL', color: '#D9D9D9', x: 30, y: 10 },
-    { name: 'ULAZ', color: '#D9D9D9', x: 40, y: 10 },
-    { name: 'UNKNOWN', color: '#D9D9D9', x: 90, y: 90 },
+    { name: "OSKUTRED", color: "#D9D9D9", x: 60.42, y: 23.5 },
+    { name: "DARL", color: "#D9D9D9", x: 59.41, y: 48.65 },
+    { name: "THE GRIMHOLT", color: "#D9D9D9", x: 69.33, y: 36.21 },
+    { name: "SVELGARTH", color: "#D9D9D9", x: 83.45, y: 45.1 },
+    { name: "FELLUR", color: "#D9D9D9", x: 75.88, y: 56.02 },
+    { name: "LIGA", color: "#D9D9D9", x: 46.47, y: 56.91 },
+    { name: "SNAKAVIK", color: "#D9D9D9", x: 35.04, y: 39.63 },
+    { name: "ELDRAFELL", color: "#D9D9D9", x: 46.47, y: 24.39 },
+    { name: "ULAZ", color: "#D9D9D9", x: 61.09, y: 80.29 },
+    { name: "UNKNOWN", color: "#D9D9D9", x: 22.61, y: 71.14 },
   ]);
 
   const [characters, setCharacters] = useState<Character[]>([
-    { name: 'Orka', location: 'DARL', specialSkills: 'Fighting', gender: 'Female', hairColor: '#3d2314' },
-    { name: 'Lif', location: 'DARL', specialSkills: 'Child, Brother to Mord', gender: 'Male', hairColor: '#e0c08b' },
-    { name: 'Mord', location: 'DARL', specialSkills: 'Child, Brother to Lif', gender: 'Male', hairColor: '#e0c08b' },
-    { name: 'Varg', location: 'THE GRIMHOLT', specialSkills: 'Bloodsworn', gender: 'Male', hairColor: '#b58e65', beardColor: '#b58e65' },
-    { name: 'Elvar', location: 'SNAKAVIK', specialSkills: 'Mercenary', gender: 'Female', hairColor: '#e0c08b' },
-    { name: 'Grend', location: 'SNAKAVIK', specialSkills: 'Mercenary', gender: 'Male', hairColor: '#3d2314' },
-    { name: 'Drekr', location: 'UNKNOWN', specialSkills: 'UNKNOWN', gender: 'Male', hairColor: '#3d2314' },
- 
+    {
+      name: "Orka",
+      location: "DARL",
+      specialSkills: "Fighting",
+      gender: "Female",
+      hairColor: "#3d2314",
+    },
+    {
+      name: "Lif",
+      location: "DARL",
+      specialSkills: "Child, Brother to Mord",
+      gender: "Male",
+      hairColor: "#e0c08b",
+    },
+    {
+      name: "Mord",
+      location: "DARL",
+      specialSkills: "Child, Brother to Lif",
+      gender: "Male",
+      hairColor: "#e0c08b",
+    },
+    {
+      name: "Varg",
+      location: "THE GRIMHOLT",
+      specialSkills: "Bloodsworn",
+      gender: "Male",
+      hairColor: "#b58e65",
+      beardColor: "#b58e65",
+    },
+    {
+      name: "Elvar",
+      location: "SNAKAVIK",
+      specialSkills: "Mercenary",
+      gender: "Female",
+      hairColor: "#e0c08b",
+    },
+    {
+      name: "Grend",
+      location: "SNAKAVIK",
+      specialSkills: "Mercenary",
+      gender: "Male",
+      hairColor: "#3d2314",
+    },
+    {
+      name: "Drekr",
+      location: "UNKNOWN",
+      specialSkills: "UNKNOWN",
+      gender: "Male",
+      hairColor: "#3d2314",
+    },
   ]);
 
-  const [editingCharacter, setEditingCharacter] = useState<Character | null>(null);
+  const [editingCharacter, setEditingCharacter] = useState<Character | null>(
+    null,
+  );
   const [isAddingCharacter, setIsAddingCharacter] = useState(false);
   const [formData, setFormData] = useState<Character | null>(null);
 
-  const [editingLocation, setEditingLocation] = useState<LocationConfig | null>(null);
+  const [editingLocation, setEditingLocation] = useState<LocationConfig | null>(
+    null,
+  );
   const [isAddingLocation, setIsAddingLocation] = useState(false);
-  const [locationFormData, setLocationFormData] = useState<LocationConfig | null>(null);
+  const [locationFormData, setLocationFormData] =
+    useState<LocationConfig | null>(null);
 
   const [relationships, setRelationships] = useState<Relationship[]>([]);
   const [isAddingRelationship, setIsAddingRelationship] = useState(false);
-  const [relationshipFormData, setRelationshipFormData] = useState<Relationship | null>(null);
-  const [lines, setLines] = useState<{ pathD: string, key: string, type: 'Friendly' | 'Enemies' | 'Neutral' }[]>([]);
+  const [relationshipFormData, setRelationshipFormData] =
+    useState<Relationship | null>(null);
+  const [lines, setLines] = useState<
+    { pathD: string; key: string; type: "Friendly" | "Enemies" | "Neutral" }[]
+  >([]);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const [characterOffsets, setCharacterOffsets] = useState<Record<string, { x: number, y: number }>>({});
+  const [characterOffsets, setCharacterOffsets] = useState<
+    Record<string, { x: number; y: number }>
+  >({});
   const [currentSpread, setCurrentSpread] = useState(0);
 
   useEffect(() => {
@@ -111,22 +163,34 @@ const Home = () => {
       const containerRect = containerRef.current.getBoundingClientRect();
       const newLines: typeof lines = [];
 
-      const pinNodes: Record<string, { name: string, cx: number, cy: number, w: number, h: number }> = {};
-      locations.forEach(loc => {
-        const el = document.getElementById(`pin-${loc.name.replace(/\s+/g, '-')}`);
+      const pinNodes: Record<
+        string,
+        { name: string; cx: number; cy: number; w: number; h: number }
+      > = {};
+      locations.forEach((loc) => {
+        const el = document.getElementById(
+          `pin-${loc.name.replace(/\s+/g, "-")}`,
+        );
         if (el) {
           const rect = el.getBoundingClientRect();
-          pinNodes[loc.name] = { 
+          pinNodes[loc.name] = {
             name: loc.name,
-            cx: rect.left + rect.width / 2 - containerRect.left, 
-            cy: rect.top + rect.height / 2 - containerRect.top, 
-            w: rect.width, 
-            h: rect.height 
+            cx: rect.left + rect.width / 2 - containerRect.left,
+            cy: rect.top + rect.height / 2 - containerRect.top,
+            w: rect.width,
+            h: rect.height,
           };
         }
       });
 
-      const distPointToSegment = (px: number, py: number, ax: number, ay: number, bx: number, by: number) => {
+      const distPointToSegment = (
+        px: number,
+        py: number,
+        ax: number,
+        ay: number,
+        bx: number,
+        by: number,
+      ) => {
         const l2 = (bx - ax) * (bx - ax) + (by - ay) * (by - ay);
         if (l2 === 0) return Math.hypot(px - ax, py - ay);
         let t = ((px - ax) * (bx - ax) + (py - ay) * (by - ay)) / l2;
@@ -134,35 +198,62 @@ const Home = () => {
         return Math.hypot(px - (ax + t * (bx - ax)), py - (ay + t * (by - ay)));
       };
 
-      relationships.forEach(rel => {
-        const sChar = characters.find(c => c.name === rel.source);
-        const tChar = characters.find(c => c.name === rel.target);
+      relationships.forEach((rel) => {
+        const sChar = characters.find((c) => c.name === rel.source);
+        const tChar = characters.find((c) => c.name === rel.target);
         if (!sChar || !tChar) return;
         const sLocName = sChar.location;
         const tLocName = tChar.location;
         if (!sLocName || !tLocName || sLocName === tLocName) return;
-        
+
         const sNode = pinNodes[sLocName];
         const tNode = pinNodes[tLocName];
         if (!sNode || !tNode) return;
 
-        const getBoxIntersection = (cx: number, cy: number, w: number, h: number, tx: number, ty: number) => {
+        const getBoxIntersection = (
+          cx: number,
+          cy: number,
+          w: number,
+          h: number,
+          tx: number,
+          ty: number,
+        ) => {
           const dx = tx - cx;
           const dy = ty - cy;
           const absDx = Math.abs(dx);
           const absDy = Math.abs(dy);
           if (absDx === 0 && absDy === 0) return { x: cx, y: cy };
-          const scale = Math.min((w / 2 + 5) / (absDx || 1), (h / 2 + 5) / (absDy || 1));
-          return { x: cx + dx * Math.min(1, scale), y: cy + dy * Math.min(1, scale) };
+          const scale = Math.min(
+            (w / 2 + 5) / (absDx || 1),
+            (h / 2 + 5) / (absDy || 1),
+          );
+          return {
+            x: cx + dx * Math.min(1, scale),
+            y: cy + dy * Math.min(1, scale),
+          };
         };
 
-        const p1 = getBoxIntersection(sNode.cx, sNode.cy, sNode.w, sNode.h, tNode.cx, tNode.cy);
-        const p2 = getBoxIntersection(tNode.cx, tNode.cy, tNode.w, tNode.h, sNode.cx, sNode.cy);
+        const p1 = getBoxIntersection(
+          sNode.cx,
+          sNode.cy,
+          sNode.w,
+          sNode.h,
+          tNode.cx,
+          tNode.cy,
+        );
+        const p2 = getBoxIntersection(
+          tNode.cx,
+          tNode.cy,
+          tNode.w,
+          tNode.h,
+          sNode.cx,
+          sNode.cy,
+        );
 
-        const intersectingNodes = Object.values(pinNodes).filter(n => {
+        const intersectingNodes = Object.values(pinNodes).filter((n) => {
           if (n.name === sLocName || n.name === tLocName) return false;
           const dist = distPointToSegment(n.cx, n.cy, p1.x, p1.y, p2.x, p2.y);
-          return dist < (n.w / 2) + 20; 
+          return dist < n.w / 2 + 20;
         });
 
         let pathD = `M ${p1.x} ${p1.y} L ${p2.x} ${p2.y}`;
@@ -173,27 +264,44 @@ const Home = () => {
           const len = Math.hypot(dx, dy);
           const nx = -dy / (len || 1);
           const ny = dx / (len || 1);
-          
+
           const shifts = [120, -120, 200, -200, 300, -300];
           let bestShift = 120;
-          
+
           for (const shift of shifts) {
-             const curveMidX = p1.x + dx/2 + nx * (shift / 2);
-             const curveMidY = p1.y + dy/2 + ny * (shift / 2);
-             
-             const conflict = intersectingNodes.some(n => Math.hypot(n.cx - curveMidX, n.cy - curveMidY) < (n.w / 2) + 15);
-             if (!conflict) {
-                bestShift = shift;
-                break;
-             }
+            const curveMidX = p1.x + dx / 2 + nx * (shift / 2);
+            const curveMidY = p1.y + dy / 2 + ny * (shift / 2);
+
+            const conflict = intersectingNodes.some(
+              (n) =>
+                Math.hypot(n.cx - curveMidX, n.cy - curveMidY) < n.w / 2 + 15,
+            );
+            if (!conflict) {
+              bestShift = shift;
+              break;
+            }
           }
-          
+
           // Re-calculate p1 and p2 based on the control point so the line still originates correctly from the borders
-          const cpX = p1.x + dx/2 + nx * bestShift;
-          const cpY = p1.y + dy/2 + ny * bestShift;
-          
-          const newP1 = getBoxIntersection(sNode.cx, sNode.cy, sNode.w, sNode.h, cpX, cpY);
-          const newP2 = getBoxIntersection(tNode.cx, tNode.cy, tNode.w, tNode.h, cpX, cpY);
+          const cpX = p1.x + dx / 2 + nx * bestShift;
+          const cpY = p1.y + dy / 2 + ny * bestShift;
+
+          const newP1 = getBoxIntersection(
+            sNode.cx,
+            sNode.cy,
+            sNode.w,
+            sNode.h,
+            cpX,
+            cpY,
+          );
+          const newP2 = getBoxIntersection(
+            tNode.cx,
+            tNode.cy,
+            tNode.w,
+            tNode.h,
+            cpX,
+            cpY,
+          );
 
           pathD = `M ${newP1.x} ${newP1.y} Q ${cpX} ${cpY} ${newP2.x} ${newP2.y}`;
         }
@@ -201,13 +309,13 @@ const Home = () => {
         newLines.push({
           key: `${rel.source}-${rel.target}`,
           type: rel.type,
-          pathD
+          pathD,
         });
       });
 
       // Clear layout offsets if they existed previously
       if (Object.keys(characterOffsets).length > 0) {
-         setCharacterOffsets({});
+        setCharacterOffsets({});
       }
 
       const linesChanged = JSON.stringify(lines) !== JSON.stringify(newLines);
@@ -217,11 +325,11 @@ const Home = () => {
     };
 
     updateLines();
-    window.addEventListener('resize', updateLines);
+    window.addEventListener("resize", updateLines);
     // Observe DOM changes or layout shifts loosely
     const interval = setInterval(updateLines, 1000);
     return () => {
-      window.removeEventListener('resize', updateLines);
+      window.removeEventListener("resize", updateLines);
       clearInterval(interval);
     };
   }, [characters, locations, relationships]);
@@ -233,7 +341,14 @@ const Home = () => {
 
   const handleAddCharacter = () => {
     setIsAddingCharacter(true);
-    setFormData({ name: '', location: '', specialSkills: '', gender: 'Male', hairColor: '#FFA012', beardColor: '#FFA012' });
+    setFormData({
+      name: "",
+      location: "",
+      specialSkills: "",
+      gender: "Male",
+      hairColor: "#FFA012",
+      beardColor: "#FFA012",
+    });
   };
 
   const handleFormChange = (field: keyof Character, value: string) => {
@@ -249,8 +364,8 @@ const Home = () => {
       } else if (editingCharacter) {
         setCharacters(
           characters.map((c) =>
-            c.name === editingCharacter.name ? formData : c
-          )
+            c.name === editingCharacter.name ? formData : c,
+          ),
         );
       }
       setEditingCharacter(null);
@@ -275,14 +390,14 @@ const Home = () => {
     const rect = mapRef.current.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
-    
+
     setIsAddingLocation(true);
-    setLocationFormData({ name: '', color: '#43A047', x, y });
+    setLocationFormData({ name: "", color: "#43A047", x, y });
   };
 
   const handleAddLocation = () => {
     setIsAddingLocation(true);
-    setLocationFormData({ name: '', color: '#43A047', x: 50, y: 50 });
+    setLocationFormData({ name: "", color: "#43A047", x: 50, y: 50 });
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -294,7 +409,10 @@ const Home = () => {
     }
   };
 
-  const handleLocationFormChange = (field: keyof LocationConfig, value: string) => {
+  const handleLocationFormChange = (
+    field: keyof LocationConfig,
+    value: string,
+  ) => {
     if (locationFormData) {
       setLocationFormData({ ...locationFormData, [field]: value });
     }
@@ -308,14 +426,16 @@ const Home = () => {
         if (editingLocation.name !== locationFormData.name) {
           setCharacters(
             characters.map((c) =>
-              c.location === editingLocation.name ? { ...c, location: locationFormData.name } : c
-            )
+              c.location === editingLocation.name
+                ? { ...c, location: locationFormData.name }
+                : c,
+            ),
           );
         }
         setLocations(
           locations.map((loc) =>
-            loc.name === editingLocation.name ? locationFormData : loc
-          )
+            loc.name === editingLocation.name ? locationFormData : loc,
+          ),
         );
       }
       setEditingLocation(null);
@@ -325,11 +445,11 @@ const Home = () => {
   };
 
   const handleDeleteLocation = (locationName: string) => {
-    setLocations(locations.filter(loc => loc.name !== locationName));
+    setLocations(locations.filter((loc) => loc.name !== locationName));
     setCharacters(
       characters.map((c) =>
-        c.location === locationName ? { ...c, location: '' } : c
-      )
+        c.location === locationName ? { ...c, location: "" } : c,
+      ),
     );
   };
 
@@ -341,17 +461,25 @@ const Home = () => {
 
   const handleAddRelationship = () => {
     setIsAddingRelationship(true);
-    setRelationshipFormData({ source: '', target: '', type: 'Neutral' });
+    setRelationshipFormData({ source: "", target: "", type: "Neutral" });
   };
 
-  const handleRelationshipFormChange = (field: keyof Relationship, value: string) => {
+  const handleRelationshipFormChange = (
+    field: keyof Relationship,
+    value: string,
+  ) => {
     if (relationshipFormData) {
       setRelationshipFormData({ ...relationshipFormData, [field]: value });
     }
   };
 
   const handleSaveRelationship = () => {
-    if (relationshipFormData && relationshipFormData.source && relationshipFormData.target && relationshipFormData.source !== relationshipFormData.target) {
+    if (
+      relationshipFormData &&
+      relationshipFormData.source &&
+      relationshipFormData.target &&
+      relationshipFormData.source !== relationshipFormData.target
+    ) {
       setRelationships([...relationships, relationshipFormData]);
       setIsAddingRelationship(false);
       setRelationshipFormData(null);
@@ -391,29 +519,68 @@ const Home = () => {
                 {!mapImage ? (
                   <div className="map-uploader">
                     <p>Upload a map image to start placing locations</p>
-                    <input type="file" accept="image/*" onChange={handleImageUpload} />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                    />
                   </div>
                 ) : (
-                  <div className="map-container" ref={containerRef} onClick={handleMapClick}>
-                    <img src={mapImage} alt="World Map" className="map-image" ref={mapRef} />
-                    <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 10 }}>
-                      {lines.map(line => {
-                        const color = line.type === 'Friendly' ? '#28a745' : line.type === 'Enemies' ? '#dc3545' : '#6c757d';
-                        return <path key={line.key} d={line.pathD} fill="transparent" stroke={color} strokeWidth="3" strokeDasharray="5,5" />;
+                  <div
+                    className="map-container"
+                    ref={containerRef}
+                    onClick={handleMapClick}
+                  >
+                    <img
+                      src={mapImage}
+                      alt="World Map"
+                      className="map-image"
+                      ref={mapRef}
+                    />
+                    <svg
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                        pointerEvents: "none",
+                        zIndex: 10,
+                      }}
+                    >
+                      {lines.map((line) => {
+                        const color =
+                          line.type === "Friendly"
+                            ? "#28a745"
+                            : line.type === "Enemies"
+                              ? "#dc3545"
+                              : "#6c757d";
+                        return (
+                          <path
+                            key={line.key}
+                            d={line.pathD}
+                            fill="transparent"
+                            stroke={color}
+                            strokeWidth="3"
+                            strokeDasharray="5,5"
+                          />
+                        );
                       })}
                     </svg>
                     {locations.map((loc) => {
-                      if (loc.x === undefined || loc.y === undefined) return null;
+                      if (loc.x === undefined || loc.y === undefined)
+                        return null;
                       return (
                         <div
                           key={loc.name}
-                          id={`pin-${loc.name.replace(/\\s+/g, '-')}`}
+                          id={`pin-${loc.name.replace(/\\s+/g, "-")}`}
                           className="map-pin"
-                          style={{ 
-                            left: `${loc.x}%`, 
-                            top: `${loc.y}%`, 
-                            cursor: draggingPin === loc.name ? 'grabbing' : 'pointer',
-                            zIndex: draggingPin === loc.name ? 50 : 20 
+                          style={{
+                            left: `${loc.x}%`,
+                            top: `${loc.y}%`,
+                            cursor:
+                              draggingPin === loc.name ? "grabbing" : "pointer",
+                            zIndex: draggingPin === loc.name ? 50 : 20,
                           }}
                           onMouseDown={(e) => {
                             e.stopPropagation();
@@ -421,23 +588,51 @@ const Home = () => {
                             dragHasMoved.current = false;
                             setDraggingPin(loc.name);
                           }}
-                          onClick={(e) => { 
-                            e.stopPropagation(); 
+                          onClick={(e) => {
+                            e.stopPropagation();
                             if (!dragHasMoved.current) {
-                              setActivePin(loc); 
+                              setActivePin(loc);
                             }
                           }}
                         >
-                          <div className="map-pin-icon" style={{ backgroundColor: loc.color }}></div>
+                          <div
+                            className="map-pin-icon"
+                            style={{ backgroundColor: loc.color }}
+                          ></div>
                           <div className="map-pin-label">{loc.name}</div>
                           {charactersByLocation[loc.name]?.length > 0 && (
-                             <div className="map-pin-characters" style={{ display: 'flex', position: 'absolute', top: '25px', left: '50%', transform: 'translateX(-50%)', gap: '2px', pointerEvents: 'none' }}>
-                               {charactersByLocation[loc.name].map(c => (
-                                 <div key={c.name} title={c.name} style={{ width: '60px', height: '80px', transform: 'scale(0.4)', transformOrigin: 'top center', margin: '0 -15px' }}>
-                                   <CharacterAvatar gender={c.gender || 'Male'} hairColor={c.hairColor || '#FFA012'} beardColor={c.beardColor || '#FFA012'} />
-                                 </div>
-                               ))}
-                             </div>
+                            <div
+                              className="map-pin-characters"
+                              style={{
+                                display: "flex",
+                                position: "absolute",
+                                top: "25px",
+                                left: "50%",
+                                transform: "translateX(-50%)",
+                                gap: "2px",
+                                pointerEvents: "none",
+                              }}
+                            >
+                              {charactersByLocation[loc.name].map((c) => (
+                                <div
+                                  key={c.name}
+                                  title={c.name}
+                                  style={{
+                                    width: "60px",
+                                    height: "80px",
+                                    transform: "scale(0.4)",
+                                    transformOrigin: "top center",
+                                    margin: "0 -15px",
+                                  }}
+                                >
+                                  <CharacterAvatar
+                                    gender={c.gender || "Male"}
+                                    hairColor={c.hairColor || "#FFA012"}
+                                    beardColor={c.beardColor || "#FFA012"}
+                                  />
+                                </div>
+                              ))}
+                            </div>
                           )}
                         </div>
                       );
@@ -448,25 +643,53 @@ const Home = () => {
                   <div className="edit-modal">
                     <div className="pin-modal-content">
                       <h3>Characters at {activePin.name}</h3>
-                      <div className="character-list" style={{ marginTop: '15px' }}>
-                        {charactersByLocation[activePin.name]?.length > 0 ? charactersByLocation[activePin.name].map(c => (
-                          <div key={c.name} className="character-item">
-                            <span className="character-item__name">{c.name}</span>
-                            <button onClick={() => { setActivePin(null); handleEdit(c); }}>Edit</button>
-                          </div>
-                        )) : <p>No characters here.</p>}
+                      <div
+                        className="character-list"
+                        style={{ marginTop: "15px" }}
+                      >
+                        {charactersByLocation[activePin.name]?.length > 0 ? (
+                          charactersByLocation[activePin.name].map((c) => (
+                            <div key={c.name} className="character-item">
+                              <span className="character-item__name">
+                                {c.name}
+                              </span>
+                              <button
+                                onClick={() => {
+                                  setActivePin(null);
+                                  handleEdit(c);
+                                }}
+                              >
+                                Edit
+                              </button>
+                            </div>
+                          ))
+                        ) : (
+                          <p>No characters here.</p>
+                        )}
                       </div>
-                      <div className="edit-modal__actions" style={{ marginTop: '20px' }}>
-                        <button 
+                      <div
+                        className="edit-modal__actions"
+                        style={{ marginTop: "20px" }}
+                      >
+                        <button
                           onClick={() => {
                             setActivePin(null);
                             setIsAddingCharacter(true);
-                            setFormData({ name: '', location: activePin.name, specialSkills: '', gender: 'Male', hairColor: '#FFA012', beardColor: '#FFA012' });
+                            setFormData({
+                              name: "",
+                              location: activePin.name,
+                              specialSkills: "",
+                              gender: "Male",
+                              hairColor: "#FFA012",
+                              beardColor: "#FFA012",
+                            });
                           }}
                         >
                           Add Character Here
                         </button>
-                        <button onClick={() => setActivePin(null)}>Close</button>
+                        <button onClick={() => setActivePin(null)}>
+                          Close
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -476,16 +699,42 @@ const Home = () => {
 
             {currentSpread === 1 && (
               <div className="character-management">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "20px",
+                  }}
+                >
                   <h2 style={{ margin: 0 }}>Manage Characters</h2>
-                  <button onClick={handleAddCharacter} style={{ height: 'fit-content', padding: '8px 16px', background: '#28a745', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Add Character</button>
+                  <button
+                    onClick={handleAddCharacter}
+                    style={{
+                      height: "fit-content",
+                      padding: "8px 16px",
+                      background: "#28a745",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Add Character
+                  </button>
                 </div>
                 <div className="character-list">
                   {characters.map((character) => (
                     <div key={character.name} className="character-item">
-                      <span className="character-item__name">{character.name}</span>
-                      <span className="character-item__location">{character.location}</span>
-                      <button onClick={() => handleEdit(character)}>Edit</button>
+                      <span className="character-item__name">
+                        {character.name}
+                      </span>
+                      <span className="character-item__location">
+                        {character.location}
+                      </span>
+                      <button onClick={() => handleEdit(character)}>
+                        Edit
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -493,13 +742,19 @@ const Home = () => {
                 {(editingCharacter || isAddingCharacter) && formData && (
                   <div className="edit-modal">
                     <div className="edit-modal__content">
-                      <h3>{isAddingCharacter ? 'Add Character' : `Edit ${editingCharacter?.name}`}</h3>
+                      <h3>
+                        {isAddingCharacter
+                          ? "Add Character"
+                          : `Edit ${editingCharacter?.name}`}
+                      </h3>
                       <div className="edit-modal__field">
                         <label>Name:</label>
                         <input
                           type="text"
                           value={formData.name}
-                          onChange={(e) => handleFormChange('name', e.target.value)}
+                          onChange={(e) =>
+                            handleFormChange("name", e.target.value)
+                          }
                           disabled={!isAddingCharacter}
                         />
                       </div>
@@ -507,7 +762,9 @@ const Home = () => {
                         <label>Location:</label>
                         <select
                           value={formData.location}
-                          onChange={(e) => handleFormChange('location', e.target.value)}
+                          onChange={(e) =>
+                            handleFormChange("location", e.target.value)
+                          }
                         >
                           <option value="">Select a location...</option>
                           {locations.map((loc) => (
@@ -522,56 +779,139 @@ const Home = () => {
                         <input
                           type="text"
                           value={formData.specialSkills}
-                          onChange={(e) => handleFormChange('specialSkills', e.target.value)}
+                          onChange={(e) =>
+                            handleFormChange("specialSkills", e.target.value)
+                          }
                         />
                       </div>
                       <div className="edit-modal__field">
                         <label>Gender:</label>
                         <select
-                          value={formData.gender || 'Male'}
-                          onChange={(e) => handleFormChange('gender', e.target.value)}
+                          value={formData.gender || "Male"}
+                          onChange={(e) =>
+                            handleFormChange("gender", e.target.value)
+                          }
                         >
                           <option value="Male">Male</option>
                           <option value="Female">Female</option>
                         </select>
                       </div>
-                      <div className="edit-modal__field" style={{ display: 'flex', gap: '30px' }}>
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                          <label style={{ fontSize: '13px', marginBottom: '8px', fontWeight: 'bold' }}>Hair Color:</label>
-                          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', maxWidth: '160px' }}>
-                            {['#FFA012', '#FF6600', '#201108', '#1e1e20', '#BFBFBF'].map(color => (
+                      <div
+                        className="edit-modal__field"
+                        style={{ display: "flex", gap: "30px" }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "flex-start",
+                          }}
+                        >
+                          <label
+                            style={{
+                              fontSize: "13px",
+                              marginBottom: "8px",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            Hair Color:
+                          </label>
+                          <div
+                            style={{
+                              display: "flex",
+                              gap: "8px",
+                              flexWrap: "wrap",
+                              maxWidth: "160px",
+                            }}
+                          >
+                            {[
+                              "#FFA012",
+                              "#FF6600",
+                              "#201108",
+                              "#1e1e20",
+                              "#BFBFBF",
+                            ].map((color) => (
                               <div
                                 key={color}
-                                onClick={() => handleFormChange('hairColor', color)}
+                                onClick={() =>
+                                  handleFormChange("hairColor", color)
+                                }
                                 style={{
-                                  width: '26px',
-                                  height: '26px',
-                                  borderRadius: '50%',
+                                  width: "26px",
+                                  height: "26px",
+                                  borderRadius: "50%",
                                   backgroundColor: color,
-                                  cursor: 'pointer',
-                                  border: (formData.hairColor || '').toUpperCase() === color.toUpperCase() ? '2px solid #007bff' : '2px solid transparent',
-                                  boxShadow: (formData.hairColor || '').toUpperCase() === color.toUpperCase() ? '0 0 6px rgba(0,123,255,0.6)' : '0 2px 4px rgba(0,0,0,0.3)'
+                                  cursor: "pointer",
+                                  border:
+                                    (formData.hairColor || "").toUpperCase() ===
+                                    color.toUpperCase()
+                                      ? "2px solid #007bff"
+                                      : "2px solid transparent",
+                                  boxShadow:
+                                    (formData.hairColor || "").toUpperCase() ===
+                                    color.toUpperCase()
+                                      ? "0 0 6px rgba(0,123,255,0.6)"
+                                      : "0 2px 4px rgba(0,0,0,0.3)",
                                 }}
                               />
                             ))}
                           </div>
                         </div>
-                        {(formData.gender === 'Male' || !formData.gender) && (
-                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                            <label style={{ fontSize: '13px', marginBottom: '8px', fontWeight: 'bold' }}>Beard Color:</label>
-                            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', maxWidth: '160px' }}>
-                              {['#FFA012', '#FF6600', '#201108', '#1e1e20', '#BFBFBF'].map(color => (
+                        {(formData.gender === "Male" || !formData.gender) && (
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              alignItems: "flex-start",
+                            }}
+                          >
+                            <label
+                              style={{
+                                fontSize: "13px",
+                                marginBottom: "8px",
+                                fontWeight: "bold",
+                              }}
+                            >
+                              Beard Color:
+                            </label>
+                            <div
+                              style={{
+                                display: "flex",
+                                gap: "8px",
+                                flexWrap: "wrap",
+                                maxWidth: "160px",
+                              }}
+                            >
+                              {[
+                                "#FFA012",
+                                "#FF6600",
+                                "#201108",
+                                "#1e1e20",
+                                "#BFBFBF",
+                              ].map((color) => (
                                 <div
                                   key={color}
-                                  onClick={() => handleFormChange('beardColor', color)}
+                                  onClick={() =>
+                                    handleFormChange("beardColor", color)
+                                  }
                                   style={{
-                                    width: '26px',
-                                    height: '26px',
-                                    borderRadius: '50%',
+                                    width: "26px",
+                                    height: "26px",
+                                    borderRadius: "50%",
                                     backgroundColor: color,
-                                    cursor: 'pointer',
-                                    border: (formData.beardColor || '').toUpperCase() === color.toUpperCase() ? '2px solid #007bff' : '2px solid transparent',
-                                    boxShadow: (formData.beardColor || '').toUpperCase() === color.toUpperCase() ? '0 0 6px rgba(0,123,255,0.6)' : '0 2px 4px rgba(0,0,0,0.3)'
+                                    cursor: "pointer",
+                                    border:
+                                      (
+                                        formData.beardColor || ""
+                                      ).toUpperCase() === color.toUpperCase()
+                                        ? "2px solid #007bff"
+                                        : "2px solid transparent",
+                                    boxShadow:
+                                      (
+                                        formData.beardColor || ""
+                                      ).toUpperCase() === color.toUpperCase()
+                                        ? "0 0 6px rgba(0,123,255,0.6)"
+                                        : "0 2px 4px rgba(0,0,0,0.3)",
                                   }}
                                 />
                               ))}
@@ -588,10 +928,12 @@ const Home = () => {
                 )}
               </div>
             )}
-            
           </div>
           {currentSpread > 0 && (
-            <button className="book-nav-button prev-button" onClick={() => setCurrentSpread(s => s - 1)}>
+            <button
+              className="book-nav-button prev-button"
+              onClick={() => setCurrentSpread((s) => s - 1)}
+            >
               ← Previous Page
             </button>
           )}
@@ -605,16 +947,18 @@ const Home = () => {
         {/* Right Page */}
         <div className="book-page book-page-right">
           <div className="page-content">
-            
             {currentSpread === 0 && (
               <div className="contents-page">
                 <h2>Characters & Traits</h2>
                 <div className="contents-list">
-                  {characters.map(c => (
+                  {characters.map((c) => (
                     <div key={c.name} className="contents-item">
                       <span className="contents-name">{c.name}</span>
                       <span className="contents-dots"></span>
-                      <span className="contents-details">{c.location || 'Unknown'} - {c.gender || 'Male'} - {c.specialSkills || 'None'}</span>
+                      <span className="contents-details">
+                        {c.location || "Unknown"} - {c.gender || "Male"} -{" "}
+                        {c.specialSkills || "None"}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -624,15 +968,42 @@ const Home = () => {
             {currentSpread === 1 && (
               <>
                 <div className="character-management">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginBottom: "20px",
+                    }}
+                  >
                     <h2 style={{ margin: 0 }}>Manage Relationships</h2>
-                    <button onClick={handleAddRelationship} style={{ height: 'fit-content', padding: '8px 16px', background: '#28a745', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Add Relationship</button>
+                    <button
+                      onClick={handleAddRelationship}
+                      style={{
+                        height: "fit-content",
+                        padding: "8px 16px",
+                        background: "#28a745",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "4px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Add Relationship
+                    </button>
                   </div>
                   <div className="character-list">
                     {relationships.map((rel, index) => (
                       <div key={index} className="character-item">
-                        <span className="character-item__name">{rel.source} ↔ {rel.target} ({rel.type})</span>
-                        <button onClick={() => handleDeleteRelationship(index)} style={{ background: '#dc3545' }}>Delete</button>
+                        <span className="character-item__name">
+                          {rel.source} ↔ {rel.target} ({rel.type})
+                        </span>
+                        <button
+                          onClick={() => handleDeleteRelationship(index)}
+                          style={{ background: "#dc3545" }}
+                        >
+                          Delete
+                        </button>
                       </div>
                     ))}
                   </div>
@@ -643,21 +1014,53 @@ const Home = () => {
                         <h3>Add Relationship</h3>
                         <div className="edit-modal__field">
                           <label>Source Character:</label>
-                          <select value={relationshipFormData.source} onChange={(e) => handleRelationshipFormChange('source', e.target.value)}>
+                          <select
+                            value={relationshipFormData.source}
+                            onChange={(e) =>
+                              handleRelationshipFormChange(
+                                "source",
+                                e.target.value,
+                              )
+                            }
+                          >
                             <option value="">Select...</option>
-                            {characters.map(c => <option key={c.name} value={c.name}>{c.name}</option>)}
+                            {characters.map((c) => (
+                              <option key={c.name} value={c.name}>
+                                {c.name}
+                              </option>
+                            ))}
                           </select>
                         </div>
                         <div className="edit-modal__field">
                           <label>Target Character:</label>
-                          <select value={relationshipFormData.target} onChange={(e) => handleRelationshipFormChange('target', e.target.value)}>
+                          <select
+                            value={relationshipFormData.target}
+                            onChange={(e) =>
+                              handleRelationshipFormChange(
+                                "target",
+                                e.target.value,
+                              )
+                            }
+                          >
                             <option value="">Select...</option>
-                            {characters.map(c => <option key={c.name} value={c.name}>{c.name}</option>)}
+                            {characters.map((c) => (
+                              <option key={c.name} value={c.name}>
+                                {c.name}
+                              </option>
+                            ))}
                           </select>
                         </div>
                         <div className="edit-modal__field">
                           <label>Relationship Type:</label>
-                          <select value={relationshipFormData.type} onChange={(e) => handleRelationshipFormChange('type', e.target.value as any)}>
+                          <select
+                            value={relationshipFormData.type}
+                            onChange={(e) =>
+                              handleRelationshipFormChange(
+                                "type",
+                                e.target.value as any,
+                              )
+                            }
+                          >
                             <option value="Friendly">Friendly</option>
                             <option value="Enemies">Enemies</option>
                             <option value="Neutral">Neutral</option>
@@ -665,7 +1068,9 @@ const Home = () => {
                         </div>
                         <div className="edit-modal__actions">
                           <button onClick={handleSaveRelationship}>Save</button>
-                          <button onClick={handleCancelRelationship}>Cancel</button>
+                          <button onClick={handleCancelRelationship}>
+                            Cancel
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -673,70 +1078,151 @@ const Home = () => {
                 </div>
 
                 <div className="character-management">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginBottom: "20px",
+                    }}
+                  >
                     <h2 style={{ margin: 0 }}>Manage Locations</h2>
-                    <button onClick={handleAddLocation} style={{ height: 'fit-content', padding: '8px 16px', background: '#28a745', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Add Location</button>
+                    <button
+                      onClick={handleAddLocation}
+                      style={{
+                        height: "fit-content",
+                        padding: "8px 16px",
+                        background: "#28a745",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "4px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Add Location
+                    </button>
                   </div>
                   <div className="character-list">
                     {locations.map((location) => (
                       <div key={location.name} className="character-item">
-                        <span className="character-item__name">{location.name}</span>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: '120px' }}>
-                          <div style={{ width: '20px', height: '20px', borderRadius: '50%', backgroundColor: location.color }}></div>
-                          <span className="character-item__location" style={{ minWidth: 'auto' }}>{location.color}</span>
+                        <span className="character-item__name">
+                          {location.name}
+                        </span>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "10px",
+                            minWidth: "120px",
+                          }}
+                        >
+                          <div
+                            style={{
+                              width: "20px",
+                              height: "20px",
+                              borderRadius: "50%",
+                              backgroundColor: location.color,
+                            }}
+                          ></div>
+                          <span
+                            className="character-item__location"
+                            style={{ minWidth: "auto" }}
+                          >
+                            {location.color}
+                          </span>
                         </div>
-                        <button onClick={() => handleEditLocation(location)}>Edit</button>
-                        <button onClick={() => handleDeleteLocation(location.name)} style={{ background: '#dc3545' }}>Delete</button>
+                        <button onClick={() => handleEditLocation(location)}>
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteLocation(location.name)}
+                          style={{ background: "#dc3545" }}
+                        >
+                          Delete
+                        </button>
                       </div>
                     ))}
                   </div>
 
-                  {(editingLocation || isAddingLocation) && locationFormData && (
-                    <div className="edit-modal">
-                      <div className="edit-modal__content">
-                        <h3>{isAddingLocation ? 'Add Location' : `Edit ${editingLocation?.name}`}</h3>
-                        <div className="edit-modal__field">
-                          <label>Name:</label>
-                          <input
-                            type="text"
-                            value={locationFormData.name}
-                            onChange={(e) => handleLocationFormChange('name', e.target.value)}
-                          />
-                        </div>
-                        <div className="edit-modal__field">
-                          <label>Color:</label>
-                          <div style={{ display: 'flex', gap: '10px', marginTop: '5px' }}>
-                            {['#43A047', '#2E7D32', '#689F38', '#D9D9D9', '#292A2B'].map(color => (
-                              <div
-                                key={color}
-                                onClick={() => handleLocationFormChange('color', color)}
-                                style={{
-                                  width: '30px',
-                                  height: '30px',
-                                  borderRadius: '50%',
-                                  backgroundColor: color,
-                                  cursor: 'pointer',
-                                  border: locationFormData.color.toUpperCase() === color.toUpperCase() ? '3px solid #007bff' : '2px solid transparent',
-                                  boxShadow: locationFormData.color.toUpperCase() === color.toUpperCase() ? '0 0 5px rgba(0,123,255,0.5)' : '0 2px 4px rgba(0,0,0,0.2)'
-                                }}
-                              />
-                            ))}
+                  {(editingLocation || isAddingLocation) &&
+                    locationFormData && (
+                      <div className="edit-modal">
+                        <div className="edit-modal__content">
+                          <h3>
+                            {isAddingLocation
+                              ? "Add Location"
+                              : `Edit ${editingLocation?.name}`}
+                          </h3>
+                          <div className="edit-modal__field">
+                            <label>Name:</label>
+                            <input
+                              type="text"
+                              value={locationFormData.name}
+                              onChange={(e) =>
+                                handleLocationFormChange("name", e.target.value)
+                              }
+                            />
+                          </div>
+                          <div className="edit-modal__field">
+                            <label>Color:</label>
+                            <div
+                              style={{
+                                display: "flex",
+                                gap: "10px",
+                                marginTop: "5px",
+                              }}
+                            >
+                              {[
+                                "#43A047",
+                                "#2E7D32",
+                                "#689F38",
+                                "#D9D9D9",
+                                "#292A2B",
+                              ].map((color) => (
+                                <div
+                                  key={color}
+                                  onClick={() =>
+                                    handleLocationFormChange("color", color)
+                                  }
+                                  style={{
+                                    width: "30px",
+                                    height: "30px",
+                                    borderRadius: "50%",
+                                    backgroundColor: color,
+                                    cursor: "pointer",
+                                    border:
+                                      locationFormData.color.toUpperCase() ===
+                                      color.toUpperCase()
+                                        ? "3px solid #007bff"
+                                        : "2px solid transparent",
+                                    boxShadow:
+                                      locationFormData.color.toUpperCase() ===
+                                      color.toUpperCase()
+                                        ? "0 0 5px rgba(0,123,255,0.5)"
+                                        : "0 2px 4px rgba(0,0,0,0.2)",
+                                  }}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                          <div className="edit-modal__actions">
+                            <button onClick={handleSaveLocation}>Save</button>
+                            <button onClick={handleCancelLocation}>
+                              Cancel
+                            </button>
                           </div>
                         </div>
-                        <div className="edit-modal__actions">
-                          <button onClick={handleSaveLocation}>Save</button>
-                          <button onClick={handleCancelLocation}>Cancel</button>
-                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
                 </div>
               </>
             )}
-
           </div>
           {currentSpread === 0 && (
-            <button className="book-nav-button next-button" onClick={() => setCurrentSpread(s => s + 1)}>
+            <button
+              className="book-nav-button next-button"
+              onClick={() => setCurrentSpread((s) => s + 1)}
+            >
               Next Page →
             </button>
           )}

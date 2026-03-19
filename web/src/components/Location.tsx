@@ -1,5 +1,5 @@
-import React from 'react';
-import './Location.css';
+import React from "react";
+import "./Location.css";
 
 interface LocationCharacter {
   name: string;
@@ -13,9 +13,15 @@ interface LocationProps {
   characterOffsets?: Record<string, { x: number; y: number }>;
 }
 
-const Location: React.FC<LocationProps> = ({ name, color, characters, characterOffsets = {} }) => {
+const Location: React.FC<LocationProps> = ({
+  name,
+  color,
+  characters,
+  characterOffsets = {},
+}) => {
   // If color contains an alpha channel (e.g., #e195db), strip it before appending our custom opacity '15'
-  const backgroundColor = color.length > 7 ? `${color.substring(0, 7)}15` : `${color}15`;
+  const backgroundColor =
+    color.length > 7 ? `${color.substring(0, 7)}15` : `${color}15`;
 
   return (
     <div className="location" style={{ borderColor: color, backgroundColor }}>
@@ -30,14 +36,19 @@ const Location: React.FC<LocationProps> = ({ name, color, characters, characterO
             const offset = characterOffsets[character.name] || { x: 0, y: 0 };
             return (
               <div
-                id={`character-${character.name.replace(/\\s+/g, '-')}`}
+                id={`character-${character.name.replace(/\\s+/g, "-")}`}
                 key={character.name}
                 className="location__character"
-                style={{ transform: `translate(${offset.x}px, ${offset.y}px)`, transition: 'transform 0.3s ease-out' }}
+                style={{
+                  transform: `translate(${offset.x}px, ${offset.y}px)`,
+                  transition: "transform 0.3s ease-out",
+                }}
               >
                 <div className="location__character-name">{character.name}</div>
                 {character.specialSkills && (
-                  <div className="location__character-skills">{character.specialSkills}</div>
+                  <div className="location__character-skills">
+                    {character.specialSkills}
+                  </div>
                 )}
               </div>
             );
