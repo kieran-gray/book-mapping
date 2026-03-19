@@ -9,6 +9,7 @@ interface Character {
   gender?: "Male" | "Female";
   hairColor?: string;
   beardColor?: string;
+  group?: string;
 }
 
 interface LocationConfig {
@@ -84,6 +85,7 @@ const Home = () => {
       specialSkills: "Fighting",
       gender: "Female",
       hairColor: "#3d2314",
+      group: "",
     },
     {
       name: "Lif",
@@ -91,6 +93,7 @@ const Home = () => {
       specialSkills: "Child, Brother to Mord",
       gender: "Male",
       hairColor: "#e0c08b",
+      group: "",
     },
     {
       name: "Mord",
@@ -98,6 +101,7 @@ const Home = () => {
       specialSkills: "Child, Brother to Lif",
       gender: "Male",
       hairColor: "#e0c08b",
+      group: "",
     },
     {
       name: "Varg",
@@ -106,20 +110,23 @@ const Home = () => {
       gender: "Male",
       hairColor: "#b58e65",
       beardColor: "#b58e65",
+      group: "",
     },
     {
       name: "Elvar",
       location: "SNAKAVIK",
-      specialSkills: "Mercenary",
+      specialSkills: "Battle-Grim",
       gender: "Female",
       hairColor: "#e0c08b",
+      group: "",
     },
     {
       name: "Grend",
       location: "SNAKAVIK",
-      specialSkills: "Mercenary",
+      specialSkills: "Battle-Grim",
       gender: "Male",
       hairColor: "#3d2314",
+      group: "",
     },
     {
       name: "Drekr",
@@ -127,6 +134,7 @@ const Home = () => {
       specialSkills: "UNKNOWN",
       gender: "Male",
       hairColor: "#3d2314",
+      group: "",
     },
   ]);
 
@@ -348,6 +356,7 @@ const Home = () => {
       gender: "Male",
       hairColor: "#FFA012",
       beardColor: "#FFA012",
+      group: "",
     });
   };
 
@@ -495,6 +504,21 @@ const Home = () => {
     setRelationshipFormData(null);
   };
 
+  const handleMoveGroupToLocation = (
+    groupName: string,
+    locationName: string,
+  ) => {
+    setCharacters((prev) =>
+      prev.map((c) =>
+        c.group === groupName ? { ...c, location: locationName } : c,
+      ),
+    );
+  };
+
+  const allGroups = Array.from(
+    new Set(characters.map((c) => c.group).filter((g): g is string => !!g)),
+  );
+
   const groupCharactersByLocation = () => {
     const grouped: { [key: string]: Character[] } = {};
     locations.forEach((loc) => {
@@ -606,10 +630,11 @@ const Home = () => {
                               style={{
                                 display: "flex",
                                 position: "absolute",
-                                top: "25px",
+                                top: "100%",
                                 left: "50%",
                                 transform: "translateX(-50%)",
-                                gap: "2px",
+                                justifyContent: "center",
+                                gap: "0px",
                                 pointerEvents: "none",
                               }}
                             >
@@ -620,9 +645,9 @@ const Home = () => {
                                   style={{
                                     width: "60px",
                                     height: "80px",
-                                    transform: "scale(0.4)",
+                                    transform: "scale(0.35)",
                                     transformOrigin: "top center",
-                                    margin: "0 -15px",
+                                    margin: "0 -14px",
                                   }}
                                 >
                                   <CharacterAvatar
@@ -667,6 +692,40 @@ const Home = () => {
                           <p>No characters here.</p>
                         )}
                       </div>
+                      {allGroups.length > 0 && (
+                        <div style={{ marginTop: "15px" }}>
+                          <h4 style={{ margin: "0 0 8px 0", fontSize: "14px" }}>
+                            Move Group Here
+                          </h4>
+                          <div
+                            style={{
+                              display: "flex",
+                              flexWrap: "wrap",
+                              gap: "6px",
+                            }}
+                          >
+                            {allGroups.map((g) => (
+                              <button
+                                key={g}
+                                onClick={() => {
+                                  handleMoveGroupToLocation(g, activePin.name);
+                                }}
+                                style={{
+                                  padding: "4px 10px",
+                                  fontSize: "12px",
+                                  background: "#6c757d",
+                                  color: "white",
+                                  border: "none",
+                                  borderRadius: "4px",
+                                  cursor: "pointer",
+                                }}
+                              >
+                                {g}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                       <div
                         className="edit-modal__actions"
                         style={{ marginTop: "20px" }}
@@ -682,6 +741,7 @@ const Home = () => {
                               gender: "Male",
                               hairColor: "#FFA012",
                               beardColor: "#FFA012",
+                              group: "",
                             });
                           }}
                         >
@@ -731,6 +791,7 @@ const Home = () => {
                       </span>
                       <span className="character-item__location">
                         {character.location}
+                        {character.group ? ` · ${character.group}` : ""}
                       </span>
                       <button onClick={() => handleEdit(character)}>
                         Edit
@@ -783,6 +844,57 @@ const Home = () => {
                             handleFormChange("specialSkills", e.target.value)
                           }
                         />
+                      </div>
+                      <div className="edit-modal__field">
+                        <label>Group:</label>
+                        {formData.group === "__new__" ? (
+                          <div style={{ display: "flex", gap: "6px" }}>
+                            <input
+                              type="text"
+                              placeholder="New group name..."
+                              autoFocus
+                              onKeyDown={(e) => {
+                                if (
+                                  e.key === "Enter" &&
+                                  (e.target as HTMLInputElement).value.trim()
+                                ) {
+                                  handleFormChange(
+                                    "group",
+                                    (e.target as HTMLInputElement).value.trim(),
+                                  );
+                                }
+                                if (e.key === "Escape") {
+                                  handleFormChange("group", "");
+                                }
+                              }}
+                              onBlur={(e) => {
+                                if (e.target.value.trim()) {
+                                  handleFormChange(
+                                    "group",
+                                    e.target.value.trim(),
+                                  );
+                                } else {
+                                  handleFormChange("group", "");
+                                }
+                              }}
+                            />
+                          </div>
+                        ) : (
+                          <select
+                            value={formData.group || ""}
+                            onChange={(e) =>
+                              handleFormChange("group", e.target.value)
+                            }
+                          >
+                            <option value="">None</option>
+                            {allGroups.map((g) => (
+                              <option key={g} value={g}>
+                                {g}
+                              </option>
+                            ))}
+                            <option value="__new__">+ Add new group...</option>
+                          </select>
+                        )}
                       </div>
                       <div className="edit-modal__field">
                         <label>Gender:</label>
@@ -928,6 +1040,144 @@ const Home = () => {
                 )}
               </div>
             )}
+
+            {currentSpread === 2 && (
+              <div className="character-management">
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "20px",
+                  }}
+                >
+                  <h2 style={{ margin: 0 }}>Manage Locations</h2>
+                  <button
+                    onClick={handleAddLocation}
+                    style={{
+                      height: "fit-content",
+                      padding: "8px 16px",
+                      background: "#28a745",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Add Location
+                  </button>
+                </div>
+                <div className="character-list">
+                  {locations.map((location) => (
+                    <div key={location.name} className="character-item">
+                      <span className="character-item__name">
+                        {location.name}
+                      </span>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px",
+                          minWidth: "120px",
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: "20px",
+                            height: "20px",
+                            borderRadius: "50%",
+                            backgroundColor: location.color,
+                          }}
+                        ></div>
+                        <span
+                          className="character-item__location"
+                          style={{ minWidth: "auto" }}
+                        >
+                          {location.color}
+                        </span>
+                      </div>
+                      <button onClick={() => handleEditLocation(location)}>
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDeleteLocation(location.name)}
+                        style={{ background: "#dc3545" }}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                {(editingLocation || isAddingLocation) && locationFormData && (
+                  <div className="edit-modal">
+                    <div className="edit-modal__content">
+                      <h3>
+                        {isAddingLocation
+                          ? "Add Location"
+                          : `Edit ${editingLocation?.name}`}
+                      </h3>
+                      <div className="edit-modal__field">
+                        <label>Name:</label>
+                        <input
+                          type="text"
+                          value={locationFormData.name}
+                          onChange={(e) =>
+                            handleLocationFormChange("name", e.target.value)
+                          }
+                        />
+                      </div>
+                      <div className="edit-modal__field">
+                        <label>Color:</label>
+                        <div
+                          style={{
+                            display: "flex",
+                            gap: "10px",
+                            marginTop: "5px",
+                          }}
+                        >
+                          {[
+                            "#43A047",
+                            "#2E7D32",
+                            "#689F38",
+                            "#D9D9D9",
+                            "#292A2B",
+                          ].map((color) => (
+                            <div
+                              key={color}
+                              onClick={() =>
+                                handleLocationFormChange("color", color)
+                              }
+                              style={{
+                                width: "30px",
+                                height: "30px",
+                                borderRadius: "50%",
+                                backgroundColor: color,
+                                cursor: "pointer",
+                                border:
+                                  locationFormData.color.toUpperCase() ===
+                                  color.toUpperCase()
+                                    ? "3px solid #007bff"
+                                    : "2px solid transparent",
+                                boxShadow:
+                                  locationFormData.color.toUpperCase() ===
+                                  color.toUpperCase()
+                                    ? "0 0 5px rgba(0,123,255,0.5)"
+                                    : "0 2px 4px rgba(0,0,0,0.2)",
+                              }}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                      <div className="edit-modal__actions">
+                        <button onClick={handleSaveLocation}>Save</button>
+                        <button onClick={handleCancelLocation}>Cancel</button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
           {currentSpread > 0 && (
             <button
@@ -949,276 +1199,233 @@ const Home = () => {
           <div className="page-content">
             {currentSpread === 0 && (
               <div className="contents-page">
-                <h2>Characters & Traits</h2>
-                <div className="contents-list">
-                  {characters.map((c) => (
-                    <div key={c.name} className="contents-item">
-                      <span className="contents-name">{c.name}</span>
-                      <span className="contents-dots"></span>
-                      <span className="contents-details">
-                        {c.location || "Unknown"} - {c.gender || "Male"} -{" "}
-                        {c.specialSkills || "None"}
-                      </span>
+                <h2>Characters & Groups</h2>
+                {allGroups.length > 0 && (
+                  <>
+                    {allGroups.map((groupName) => {
+                      const members = characters.filter(
+                        (c) => c.group === groupName,
+                      );
+                      if (members.length === 0) return null;
+                      return (
+                        <div key={groupName} className="group-section">
+                          <h3 className="group-section-title">{groupName}</h3>
+                          <div
+                            className="contents-list"
+                            style={{ marginTop: "10px" }}
+                          >
+                            {members.map((c) => (
+                              <div key={c.name} className="contents-item">
+                                <span className="contents-name">{c.name}</span>
+                                <span className="contents-dots"></span>
+                                <span className="contents-details">
+                                  {c.location || "Unknown"} —{" "}
+                                  {c.specialSkills || "None"}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </>
+                )}
+                {(() => {
+                  const ungrouped = characters.filter((c) => !c.group);
+                  if (ungrouped.length === 0) return null;
+                  return (
+                    <div className="group-section">
+                      <h3 className="group-section-title">Ungrouped</h3>
+                      <div
+                        className="contents-list"
+                        style={{ marginTop: "10px" }}
+                      >
+                        {ungrouped.map((c) => (
+                          <div key={c.name} className="contents-item">
+                            <span className="contents-name">{c.name}</span>
+                            <span className="contents-dots"></span>
+                            <span className="contents-details">
+                              {c.location || "Unknown"} —{" "}
+                              {c.specialSkills || "None"}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  ))}
-                </div>
+                  );
+                })()}
               </div>
             )}
 
             {currentSpread === 1 && (
-              <>
-                <div className="character-management">
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      marginBottom: "20px",
-                    }}
-                  >
-                    <h2 style={{ margin: 0 }}>Manage Relationships</h2>
-                    <button
-                      onClick={handleAddRelationship}
-                      style={{
-                        height: "fit-content",
-                        padding: "8px 16px",
-                        background: "#28a745",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "4px",
-                        cursor: "pointer",
-                      }}
-                    >
-                      Add Relationship
-                    </button>
-                  </div>
-                  <div className="character-list">
-                    {relationships.map((rel, index) => (
-                      <div key={index} className="character-item">
-                        <span className="character-item__name">
-                          {rel.source} ↔ {rel.target} ({rel.type})
-                        </span>
-                        <button
-                          onClick={() => handleDeleteRelationship(index)}
-                          style={{ background: "#dc3545" }}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-
-                  {isAddingRelationship && relationshipFormData && (
-                    <div className="edit-modal">
-                      <div className="edit-modal__content">
-                        <h3>Add Relationship</h3>
-                        <div className="edit-modal__field">
-                          <label>Source Character:</label>
-                          <select
-                            value={relationshipFormData.source}
-                            onChange={(e) =>
-                              handleRelationshipFormChange(
-                                "source",
-                                e.target.value,
-                              )
-                            }
-                          >
-                            <option value="">Select...</option>
-                            {characters.map((c) => (
-                              <option key={c.name} value={c.name}>
-                                {c.name}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                        <div className="edit-modal__field">
-                          <label>Target Character:</label>
-                          <select
-                            value={relationshipFormData.target}
-                            onChange={(e) =>
-                              handleRelationshipFormChange(
-                                "target",
-                                e.target.value,
-                              )
-                            }
-                          >
-                            <option value="">Select...</option>
-                            {characters.map((c) => (
-                              <option key={c.name} value={c.name}>
-                                {c.name}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                        <div className="edit-modal__field">
-                          <label>Relationship Type:</label>
-                          <select
-                            value={relationshipFormData.type}
-                            onChange={(e) =>
-                              handleRelationshipFormChange(
-                                "type",
-                                e.target.value as any,
-                              )
-                            }
-                          >
-                            <option value="Friendly">Friendly</option>
-                            <option value="Enemies">Enemies</option>
-                            <option value="Neutral">Neutral</option>
-                          </select>
-                        </div>
-                        <div className="edit-modal__actions">
-                          <button onClick={handleSaveRelationship}>Save</button>
-                          <button onClick={handleCancelRelationship}>
-                            Cancel
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                <div className="character-management">
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      marginBottom: "20px",
-                    }}
-                  >
-                    <h2 style={{ margin: 0 }}>Manage Locations</h2>
-                    <button
-                      onClick={handleAddLocation}
-                      style={{
-                        height: "fit-content",
-                        padding: "8px 16px",
-                        background: "#28a745",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "4px",
-                        cursor: "pointer",
-                      }}
-                    >
-                      Add Location
-                    </button>
-                  </div>
-                  <div className="character-list">
-                    {locations.map((location) => (
-                      <div key={location.name} className="character-item">
-                        <span className="character-item__name">
-                          {location.name}
-                        </span>
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "10px",
-                            minWidth: "120px",
-                          }}
-                        >
-                          <div
-                            style={{
-                              width: "20px",
-                              height: "20px",
-                              borderRadius: "50%",
-                              backgroundColor: location.color,
-                            }}
-                          ></div>
-                          <span
-                            className="character-item__location"
-                            style={{ minWidth: "auto" }}
-                          >
-                            {location.color}
+              <div className="character-management">
+                <h2>Manage Groups</h2>
+                {allGroups.length === 0 ? (
+                  <p style={{ color: "#8a7b6b", fontStyle: "italic" }}>
+                    No groups yet. Assign characters to a group when editing
+                    them.
+                  </p>
+                ) : (
+                  allGroups.map((groupName) => {
+                    const members = characters.filter(
+                      (c) => c.group === groupName,
+                    );
+                    const groupLocation = members[0]?.location || "";
+                    return (
+                      <div key={groupName} className="group-card">
+                        <div className="group-card-header">
+                          <span className="group-card-name">{groupName}</span>
+                          <span className="group-card-count">
+                            {members.length} member
+                            {members.length !== 1 ? "s" : ""}
                           </span>
                         </div>
-                        <button onClick={() => handleEditLocation(location)}>
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDeleteLocation(location.name)}
-                          style={{ background: "#dc3545" }}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-
-                  {(editingLocation || isAddingLocation) &&
-                    locationFormData && (
-                      <div className="edit-modal">
-                        <div className="edit-modal__content">
-                          <h3>
-                            {isAddingLocation
-                              ? "Add Location"
-                              : `Edit ${editingLocation?.name}`}
-                          </h3>
-                          <div className="edit-modal__field">
-                            <label>Name:</label>
-                            <input
-                              type="text"
-                              value={locationFormData.name}
-                              onChange={(e) =>
-                                handleLocationFormChange("name", e.target.value)
-                              }
-                            />
-                          </div>
-                          <div className="edit-modal__field">
-                            <label>Color:</label>
-                            <div
-                              style={{
-                                display: "flex",
-                                gap: "10px",
-                                marginTop: "5px",
-                              }}
-                            >
-                              {[
-                                "#43A047",
-                                "#2E7D32",
-                                "#689F38",
-                                "#D9D9D9",
-                                "#292A2B",
-                              ].map((color) => (
-                                <div
-                                  key={color}
-                                  onClick={() =>
-                                    handleLocationFormChange("color", color)
-                                  }
-                                  style={{
-                                    width: "30px",
-                                    height: "30px",
-                                    borderRadius: "50%",
-                                    backgroundColor: color,
-                                    cursor: "pointer",
-                                    border:
-                                      locationFormData.color.toUpperCase() ===
-                                      color.toUpperCase()
-                                        ? "3px solid #007bff"
-                                        : "2px solid transparent",
-                                    boxShadow:
-                                      locationFormData.color.toUpperCase() ===
-                                      color.toUpperCase()
-                                        ? "0 0 5px rgba(0,123,255,0.5)"
-                                        : "0 2px 4px rgba(0,0,0,0.2)",
-                                  }}
-                                />
-                              ))}
-                            </div>
-                          </div>
-                          <div className="edit-modal__actions">
-                            <button onClick={handleSaveLocation}>Save</button>
-                            <button onClick={handleCancelLocation}>
-                              Cancel
-                            </button>
-                          </div>
+                        <div className="group-card-members">
+                          {members.map((m) => (
+                            <span key={m.name} className="group-member-tag">
+                              {m.name}
+                            </span>
+                          ))}
+                        </div>
+                        <div className="group-card-location">
+                          <span>Move to:</span>
+                          <select
+                            value={groupLocation}
+                            onChange={(e) =>
+                              handleMoveGroupToLocation(
+                                groupName,
+                                e.target.value,
+                              )
+                            }
+                          >
+                            <option value="">Select location...</option>
+                            {locations.map((loc) => (
+                              <option key={loc.name} value={loc.name}>
+                                {loc.name}
+                              </option>
+                            ))}
+                          </select>
                         </div>
                       </div>
-                    )}
+                    );
+                  })
+                )}
+              </div>
+            )}
+
+            {currentSpread === 2 && (
+              <div className="character-management">
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "20px",
+                  }}
+                >
+                  <h2 style={{ margin: 0 }}>Manage Relationships</h2>
+                  <button
+                    onClick={handleAddRelationship}
+                    style={{
+                      height: "fit-content",
+                      padding: "8px 16px",
+                      background: "#28a745",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Add Relationship
+                  </button>
                 </div>
-              </>
+                <div className="character-list">
+                  {relationships.map((rel, index) => (
+                    <div key={index} className="character-item">
+                      <span className="character-item__name">
+                        {rel.source} ↔ {rel.target} ({rel.type})
+                      </span>
+                      <button
+                        onClick={() => handleDeleteRelationship(index)}
+                        style={{ background: "#dc3545" }}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                {isAddingRelationship && relationshipFormData && (
+                  <div className="edit-modal">
+                    <div className="edit-modal__content">
+                      <h3>Add Relationship</h3>
+                      <div className="edit-modal__field">
+                        <label>Source Character:</label>
+                        <select
+                          value={relationshipFormData.source}
+                          onChange={(e) =>
+                            handleRelationshipFormChange(
+                              "source",
+                              e.target.value,
+                            )
+                          }
+                        >
+                          <option value="">Select...</option>
+                          {characters.map((c) => (
+                            <option key={c.name} value={c.name}>
+                              {c.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="edit-modal__field">
+                        <label>Target Character:</label>
+                        <select
+                          value={relationshipFormData.target}
+                          onChange={(e) =>
+                            handleRelationshipFormChange(
+                              "target",
+                              e.target.value,
+                            )
+                          }
+                        >
+                          <option value="">Select...</option>
+                          {characters.map((c) => (
+                            <option key={c.name} value={c.name}>
+                              {c.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="edit-modal__field">
+                        <label>Relationship Type:</label>
+                        <select
+                          value={relationshipFormData.type}
+                          onChange={(e) =>
+                            handleRelationshipFormChange(
+                              "type",
+                              e.target.value as any,
+                            )
+                          }
+                        >
+                          <option value="Friendly">Friendly</option>
+                          <option value="Enemies">Enemies</option>
+                          <option value="Neutral">Neutral</option>
+                        </select>
+                      </div>
+                      <div className="edit-modal__actions">
+                        <button onClick={handleSaveRelationship}>Save</button>
+                        <button onClick={handleCancelRelationship}>
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
           </div>
-          {currentSpread === 0 && (
+          {currentSpread < 2 && (
             <button
               className="book-nav-button next-button"
               onClick={() => setCurrentSpread((s) => s + 1)}
@@ -1227,6 +1434,28 @@ const Home = () => {
             </button>
           )}
         </div>
+      </div>
+
+      {/* Page Indicator Dots */}
+      <div className="page-indicator">
+        {[
+          { label: "Map", index: 0 },
+          { label: "Characters", index: 1 },
+          { label: "World", index: 2 },
+        ].map((page) => (
+          <div
+            key={page.index}
+            className="page-dot-wrapper"
+            onClick={() => setCurrentSpread(page.index)}
+          >
+            <div
+              className={`page-dot ${
+                currentSpread === page.index ? "active" : ""
+              }`}
+            />
+            <span className="page-dot-label">{page.label}</span>
+          </div>
+        ))}
       </div>
     </div>
   );
