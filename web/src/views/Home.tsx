@@ -65,18 +65,27 @@ const Home = () => {
   }, [draggingPin]);
 
   const [locations, setLocations] = useState<LocationConfig[]>([
-    { name: 'OSKUTRED', color: '#FF6B6B', x: 20, y: 30 },
-    { name: 'DARL', color: '#4ECDC4', x: 80, y: 25 },
-    { name: 'THE GRIMHOLT', color: '#FFE66D', x: 50, y: 50 },
-    { name: 'SVELGARTH', color: '#95E1D3', x: 25, y: 70 },
-    { name: 'FELLUR', color: '#d3e195', x: 75, y: 80 },
-    { name: 'LIGA', color: '#a2e195', x: 50, y: 20 },
+    { name: 'OSKUTRED', color: '#D9D9D9', x: 20, y: 30 },
+    { name: 'DARL', color: '#D9D9D9', x: 80, y: 25 },
+    { name: 'THE GRIMHOLT', color: '#D9D9D9', x: 50, y: 50 },
+    { name: 'SVELGARTH', color: '#D9D9D9', x: 25, y: 70 },
+    { name: 'FELLUR', color: '#D9D9D9', x: 75, y: 80 },
+    { name: 'LIGA', color: '#D9D9D9', x: 50, y: 20 },
+    { name: 'SNAKAVIK', color: '#D9D9D9', x: 10, y: 10 },
+    { name: 'ELDRAFELL', color: '#D9D9D9', x: 30, y: 10 },
+    { name: 'ULAZ', color: '#D9D9D9', x: 40, y: 10 },
+    { name: 'UNKNOWN', color: '#D9D9D9', x: 90, y: 90 },
   ]);
 
   const [characters, setCharacters] = useState<Character[]>([
-    { name: 'Orka', location: 'OSKUTRED', specialSkills: 'Fighting', gender: 'Female', hairColor: '#3d2314' },
-    { name: 'Varg', location: 'DARL', specialSkills: 'Bloodsworn', gender: 'Male', hairColor: '#b58e65', beardColor: '#b58e65' },
-    { name: 'Elvar', location: 'THE GRIMHOLT', specialSkills: 'Mercenary', gender: 'Female', hairColor: '#e0c08b' },
+    { name: 'Orka', location: 'DARL', specialSkills: 'Fighting', gender: 'Female', hairColor: '#3d2314' },
+    { name: 'Lif', location: 'DARL', specialSkills: 'Child, Brother to Mord', gender: 'Male', hairColor: '#e0c08b' },
+    { name: 'Mord', location: 'DARL', specialSkills: 'Child, Brother to Lif', gender: 'Male', hairColor: '#e0c08b' },
+    { name: 'Varg', location: 'THE GRIMHOLT', specialSkills: 'Bloodsworn', gender: 'Male', hairColor: '#b58e65', beardColor: '#b58e65' },
+    { name: 'Elvar', location: 'SNAKAVIK', specialSkills: 'Mercenary', gender: 'Female', hairColor: '#e0c08b' },
+    { name: 'Grend', location: 'SNAKAVIK', specialSkills: 'Mercenary', gender: 'Male', hairColor: '#3d2314' },
+    { name: 'Drekr', location: 'UNKNOWN', specialSkills: 'UNKNOWN', gender: 'Male', hairColor: '#3d2314' },
+ 
   ]);
 
   const [editingCharacter, setEditingCharacter] = useState<Character | null>(null);
@@ -94,6 +103,7 @@ const Home = () => {
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [characterOffsets, setCharacterOffsets] = useState<Record<string, { x: number, y: number }>>({});
+  const [currentSpread, setCurrentSpread] = useState(0);
 
   useEffect(() => {
     const updateLines = () => {
@@ -368,320 +378,369 @@ const Home = () => {
   const charactersByLocation = groupCharactersByLocation();
 
   return (
-    <div className="home">
-      <h1>The Shadow of the Gods</h1>
+    <div className="home book-theme">
+      <h1 className="book-title">The Shadow of the Gods</h1>
 
-      <div className="locations-container">
-        <h2>World Map</h2>
-        {!mapImage ? (
-          <div className="map-uploader">
-            <p>Upload a map image to start placing locations</p>
-            <input type="file" accept="image/*" onChange={handleImageUpload} />
-          </div>
-        ) : (
-          <div className="map-container" ref={containerRef} onClick={handleMapClick}>
-            <img src={mapImage} alt="World Map" className="map-image" ref={mapRef} />
-            <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 10 }}>
-              {lines.map(line => {
-                const color = line.type === 'Friendly' ? '#28a745' : line.type === 'Enemies' ? '#dc3545' : '#6c757d';
-                return <path key={line.key} d={line.pathD} fill="transparent" stroke={color} strokeWidth="3" strokeDasharray="5,5" />;
-              })}
-            </svg>
-            {locations.map((loc) => {
-              if (loc.x === undefined || loc.y === undefined) return null;
-              return (
-                <div
-                  key={loc.name}
-                  id={`pin-${loc.name.replace(/\\s+/g, '-')}`}
-                  className="map-pin"
-                  style={{ 
-                    left: `${loc.x}%`, 
-                    top: `${loc.y}%`, 
-                    cursor: draggingPin === loc.name ? 'grabbing' : 'pointer',
-                    zIndex: draggingPin === loc.name ? 50 : 20 
-                  }}
-                  onMouseDown={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    dragHasMoved.current = false;
-                    setDraggingPin(loc.name);
-                  }}
-                  onClick={(e) => { 
-                    e.stopPropagation(); 
-                    if (!dragHasMoved.current) {
-                      setActivePin(loc); 
-                    }
-                  }}
-                >
-                  <div className="map-pin-icon" style={{ backgroundColor: loc.color }}></div>
-                  <div className="map-pin-label">{loc.name}</div>
-                  {charactersByLocation[loc.name]?.length > 0 && (
-                     <div className="map-pin-characters" style={{ display: 'flex', position: 'absolute', top: '25px', left: '50%', transform: 'translateX(-50%)', gap: '2px', pointerEvents: 'none' }}>
-                       {charactersByLocation[loc.name].map(c => (
-                         <div key={c.name} title={c.name} style={{ width: '60px', height: '80px', transform: 'scale(0.4)', transformOrigin: 'top center', margin: '0 -15px' }}>
-                           <CharacterAvatar gender={c.gender || 'Male'} hairColor={c.hairColor || '#bc8e5b'} beardColor={c.beardColor || '#bc8e5b'} />
-                         </div>
-                       ))}
-                     </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
-      {activePin && (
-        <div className="edit-modal">
-          <div className="pin-modal-content">
-            <h3>Characters at {activePin.name}</h3>
-            <div className="character-list" style={{ marginTop: '15px' }}>
-              {charactersByLocation[activePin.name]?.length > 0 ? charactersByLocation[activePin.name].map(c => (
-                <div key={c.name} className="character-item">
-                  <span className="character-item__name">{c.name}</span>
-                  <button onClick={() => { setActivePin(null); handleEdit(c); }}>Edit</button>
-                </div>
-              )) : <p>No characters here.</p>}
-            </div>
-            <div className="edit-modal__actions" style={{ marginTop: '20px' }}>
-              <button 
-                onClick={() => {
-                  setActivePin(null);
-                  setIsAddingCharacter(true);
-                  setFormData({ name: '', location: activePin.name, specialSkills: '', gender: 'Male', hairColor: '#FFA012', beardColor: '#FFA012' });
-                }}
-              >
-                Add Character Here
-              </button>
-              <button onClick={() => setActivePin(null)}>Close</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Page break with 100px space - Edit height here to change the space */}
-      <div style={{ height: '100px', width: '100%' }}></div>
-
-      <div className="character-management">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <h2 style={{ margin: 0 }}>Manage Characters</h2>
-          <button onClick={handleAddCharacter} style={{ height: 'fit-content', padding: '8px 16px', background: '#28a745', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Add Character</button>
-        </div>
-        <div className="character-list">
-          {characters.map((character) => (
-            <div key={character.name} className="character-item">
-              <span className="character-item__name">{character.name}</span>
-              <span className="character-item__location">{character.location}</span>
-              <button onClick={() => handleEdit(character)}>Edit</button>
-            </div>
-          ))}
-        </div>
-
-        {(editingCharacter || isAddingCharacter) && formData && (
-          <div className="edit-modal">
-            <div className="edit-modal__content">
-              <h3>{isAddingCharacter ? 'Add Character' : `Edit ${editingCharacter?.name}`}</h3>
-              <div className="edit-modal__field">
-                <label>Name:</label>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => handleFormChange('name', e.target.value)}
-                  disabled={!isAddingCharacter}
-                />
-              </div>
-              <div className="edit-modal__field">
-                <label>Location:</label>
-                <select
-                  value={formData.location}
-                  onChange={(e) => handleFormChange('location', e.target.value)}
-                >
-                  <option value="">Select a location...</option>
-                  {locations.map((loc) => (
-                    <option key={loc.name} value={loc.name}>
-                      {loc.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="edit-modal__field">
-                <label>Special Skills:</label>
-                <input
-                  type="text"
-                  value={formData.specialSkills}
-                  onChange={(e) => handleFormChange('specialSkills', e.target.value)}
-                />
-              </div>
-              <div className="edit-modal__field">
-                <label>Gender:</label>
-                <select
-                  value={formData.gender || 'Male'}
-                  onChange={(e) => handleFormChange('gender', e.target.value)}
-                >
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                </select>
-              </div>
-              <div className="edit-modal__field" style={{ display: 'flex', gap: '30px' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                  <label style={{ fontSize: '13px', marginBottom: '8px', fontWeight: 'bold' }}>Hair Color:</label>
-                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', maxWidth: '160px' }}>
-                    {['#FFA012', '#FF6600', '#201108', '#1e1e20', '#BFBFBF'].map(color => (
-                      <div
-                        key={color}
-                        onClick={() => handleFormChange('hairColor', color)}
-                        style={{
-                          width: '26px',
-                          height: '26px',
-                          borderRadius: '50%',
-                          backgroundColor: color,
-                          cursor: 'pointer',
-                          border: (formData.hairColor || '').toUpperCase() === color.toUpperCase() ? '2px solid #007bff' : '2px solid transparent',
-                          boxShadow: (formData.hairColor || '').toUpperCase() === color.toUpperCase() ? '0 0 6px rgba(0,123,255,0.6)' : '0 2px 4px rgba(0,0,0,0.3)'
-                        }}
-                      />
-                    ))}
+      <div className="book-container">
+        {/* Left Page */}
+        <div className="book-page book-page-left">
+          <div className="page-content">
+            {currentSpread === 0 && (
+              <div className="locations-container">
+                <h2>World Map</h2>
+                {!mapImage ? (
+                  <div className="map-uploader">
+                    <p>Upload a map image to start placing locations</p>
+                    <input type="file" accept="image/*" onChange={handleImageUpload} />
                   </div>
-                </div>
-                {(formData.gender === 'Male' || !formData.gender) && (
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                    <label style={{ fontSize: '13px', marginBottom: '8px', fontWeight: 'bold' }}>Beard Color:</label>
-                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', maxWidth: '160px' }}>
-                      {['#FFA012', '#FF6600', '#201108', '#1e1e20', '#BFBFBF'].map(color => (
+                ) : (
+                  <div className="map-container" ref={containerRef} onClick={handleMapClick}>
+                    <img src={mapImage} alt="World Map" className="map-image" ref={mapRef} />
+                    <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 10 }}>
+                      {lines.map(line => {
+                        const color = line.type === 'Friendly' ? '#28a745' : line.type === 'Enemies' ? '#dc3545' : '#6c757d';
+                        return <path key={line.key} d={line.pathD} fill="transparent" stroke={color} strokeWidth="3" strokeDasharray="5,5" />;
+                      })}
+                    </svg>
+                    {locations.map((loc) => {
+                      if (loc.x === undefined || loc.y === undefined) return null;
+                      return (
                         <div
-                          key={color}
-                          onClick={() => handleFormChange('beardColor', color)}
-                          style={{
-                            width: '26px',
-                            height: '26px',
-                            borderRadius: '50%',
-                            backgroundColor: color,
-                            cursor: 'pointer',
-                            border: (formData.beardColor || '').toUpperCase() === color.toUpperCase() ? '2px solid #007bff' : '2px solid transparent',
-                            boxShadow: (formData.beardColor || '').toUpperCase() === color.toUpperCase() ? '0 0 6px rgba(0,123,255,0.6)' : '0 2px 4px rgba(0,0,0,0.3)'
+                          key={loc.name}
+                          id={`pin-${loc.name.replace(/\\s+/g, '-')}`}
+                          className="map-pin"
+                          style={{ 
+                            left: `${loc.x}%`, 
+                            top: `${loc.y}%`, 
+                            cursor: draggingPin === loc.name ? 'grabbing' : 'pointer',
+                            zIndex: draggingPin === loc.name ? 50 : 20 
                           }}
-                        />
-                      ))}
+                          onMouseDown={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            dragHasMoved.current = false;
+                            setDraggingPin(loc.name);
+                          }}
+                          onClick={(e) => { 
+                            e.stopPropagation(); 
+                            if (!dragHasMoved.current) {
+                              setActivePin(loc); 
+                            }
+                          }}
+                        >
+                          <div className="map-pin-icon" style={{ backgroundColor: loc.color }}></div>
+                          <div className="map-pin-label">{loc.name}</div>
+                          {charactersByLocation[loc.name]?.length > 0 && (
+                             <div className="map-pin-characters" style={{ display: 'flex', position: 'absolute', top: '25px', left: '50%', transform: 'translateX(-50%)', gap: '2px', pointerEvents: 'none' }}>
+                               {charactersByLocation[loc.name].map(c => (
+                                 <div key={c.name} title={c.name} style={{ width: '60px', height: '80px', transform: 'scale(0.4)', transformOrigin: 'top center', margin: '0 -15px' }}>
+                                   <CharacterAvatar gender={c.gender || 'Male'} hairColor={c.hairColor || '#FFA012'} beardColor={c.beardColor || '#FFA012'} />
+                                 </div>
+                               ))}
+                             </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+                {activePin && (
+                  <div className="edit-modal">
+                    <div className="pin-modal-content">
+                      <h3>Characters at {activePin.name}</h3>
+                      <div className="character-list" style={{ marginTop: '15px' }}>
+                        {charactersByLocation[activePin.name]?.length > 0 ? charactersByLocation[activePin.name].map(c => (
+                          <div key={c.name} className="character-item">
+                            <span className="character-item__name">{c.name}</span>
+                            <button onClick={() => { setActivePin(null); handleEdit(c); }}>Edit</button>
+                          </div>
+                        )) : <p>No characters here.</p>}
+                      </div>
+                      <div className="edit-modal__actions" style={{ marginTop: '20px' }}>
+                        <button 
+                          onClick={() => {
+                            setActivePin(null);
+                            setIsAddingCharacter(true);
+                            setFormData({ name: '', location: activePin.name, specialSkills: '', gender: 'Male', hairColor: '#FFA012', beardColor: '#FFA012' });
+                          }}
+                        >
+                          Add Character Here
+                        </button>
+                        <button onClick={() => setActivePin(null)}>Close</button>
+                      </div>
                     </div>
                   </div>
                 )}
               </div>
-              <div className="edit-modal__actions">
-                <button onClick={handleSave}>Save</button>
-                <button onClick={handleCancel}>Cancel</button>
+            )}
+
+            {currentSpread === 1 && (
+              <div className="character-management">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                  <h2 style={{ margin: 0 }}>Manage Characters</h2>
+                  <button onClick={handleAddCharacter} style={{ height: 'fit-content', padding: '8px 16px', background: '#28a745', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Add Character</button>
+                </div>
+                <div className="character-list">
+                  {characters.map((character) => (
+                    <div key={character.name} className="character-item">
+                      <span className="character-item__name">{character.name}</span>
+                      <span className="character-item__location">{character.location}</span>
+                      <button onClick={() => handleEdit(character)}>Edit</button>
+                    </div>
+                  ))}
+                </div>
+
+                {(editingCharacter || isAddingCharacter) && formData && (
+                  <div className="edit-modal">
+                    <div className="edit-modal__content">
+                      <h3>{isAddingCharacter ? 'Add Character' : `Edit ${editingCharacter?.name}`}</h3>
+                      <div className="edit-modal__field">
+                        <label>Name:</label>
+                        <input
+                          type="text"
+                          value={formData.name}
+                          onChange={(e) => handleFormChange('name', e.target.value)}
+                          disabled={!isAddingCharacter}
+                        />
+                      </div>
+                      <div className="edit-modal__field">
+                        <label>Location:</label>
+                        <select
+                          value={formData.location}
+                          onChange={(e) => handleFormChange('location', e.target.value)}
+                        >
+                          <option value="">Select a location...</option>
+                          {locations.map((loc) => (
+                            <option key={loc.name} value={loc.name}>
+                              {loc.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="edit-modal__field">
+                        <label>Special Skills:</label>
+                        <input
+                          type="text"
+                          value={formData.specialSkills}
+                          onChange={(e) => handleFormChange('specialSkills', e.target.value)}
+                        />
+                      </div>
+                      <div className="edit-modal__field">
+                        <label>Gender:</label>
+                        <select
+                          value={formData.gender || 'Male'}
+                          onChange={(e) => handleFormChange('gender', e.target.value)}
+                        >
+                          <option value="Male">Male</option>
+                          <option value="Female">Female</option>
+                        </select>
+                      </div>
+                      <div className="edit-modal__field" style={{ display: 'flex', gap: '30px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                          <label style={{ fontSize: '13px', marginBottom: '8px', fontWeight: 'bold' }}>Hair Color:</label>
+                          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', maxWidth: '160px' }}>
+                            {['#FFA012', '#FF6600', '#201108', '#1e1e20', '#BFBFBF'].map(color => (
+                              <div
+                                key={color}
+                                onClick={() => handleFormChange('hairColor', color)}
+                                style={{
+                                  width: '26px',
+                                  height: '26px',
+                                  borderRadius: '50%',
+                                  backgroundColor: color,
+                                  cursor: 'pointer',
+                                  border: (formData.hairColor || '').toUpperCase() === color.toUpperCase() ? '2px solid #007bff' : '2px solid transparent',
+                                  boxShadow: (formData.hairColor || '').toUpperCase() === color.toUpperCase() ? '0 0 6px rgba(0,123,255,0.6)' : '0 2px 4px rgba(0,0,0,0.3)'
+                                }}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                        {(formData.gender === 'Male' || !formData.gender) && (
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                            <label style={{ fontSize: '13px', marginBottom: '8px', fontWeight: 'bold' }}>Beard Color:</label>
+                            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', maxWidth: '160px' }}>
+                              {['#FFA012', '#FF6600', '#201108', '#1e1e20', '#BFBFBF'].map(color => (
+                                <div
+                                  key={color}
+                                  onClick={() => handleFormChange('beardColor', color)}
+                                  style={{
+                                    width: '26px',
+                                    height: '26px',
+                                    borderRadius: '50%',
+                                    backgroundColor: color,
+                                    cursor: 'pointer',
+                                    border: (formData.beardColor || '').toUpperCase() === color.toUpperCase() ? '2px solid #007bff' : '2px solid transparent',
+                                    boxShadow: (formData.beardColor || '').toUpperCase() === color.toUpperCase() ? '0 0 6px rgba(0,123,255,0.6)' : '0 2px 4px rgba(0,0,0,0.3)'
+                                  }}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      <div className="edit-modal__actions">
+                        <button onClick={handleSave}>Save</button>
+                        <button onClick={handleCancel}>Cancel</button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
+            )}
+            
           </div>
-        )}
-      </div>
-
-      <div className="character-management">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <h2 style={{ margin: 0 }}>Manage Relationships</h2>
-          <button onClick={handleAddRelationship} style={{ height: 'fit-content', padding: '8px 16px', background: '#28a745', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Add Relationship</button>
-        </div>
-        <div className="character-list">
-          {relationships.map((rel, index) => (
-            <div key={index} className="character-item">
-              <span className="character-item__name">{rel.source} ↔ {rel.target} ({rel.type})</span>
-              <button onClick={() => handleDeleteRelationship(index)} style={{ background: '#dc3545' }}>Delete</button>
-            </div>
-          ))}
+          {currentSpread > 0 && (
+            <button className="book-nav-button prev-button" onClick={() => setCurrentSpread(s => s - 1)}>
+              ← Previous Page
+            </button>
+          )}
         </div>
 
-        {isAddingRelationship && relationshipFormData && (
-          <div className="edit-modal">
-            <div className="edit-modal__content">
-              <h3>Add Relationship</h3>
-              <div className="edit-modal__field">
-                <label>Source Character:</label>
-                <select value={relationshipFormData.source} onChange={(e) => handleRelationshipFormChange('source', e.target.value)}>
-                  <option value="">Select...</option>
-                  {characters.map(c => <option key={c.name} value={c.name}>{c.name}</option>)}
-                </select>
-              </div>
-              <div className="edit-modal__field">
-                <label>Target Character:</label>
-                <select value={relationshipFormData.target} onChange={(e) => handleRelationshipFormChange('target', e.target.value)}>
-                  <option value="">Select...</option>
-                  {characters.map(c => <option key={c.name} value={c.name}>{c.name}</option>)}
-                </select>
-              </div>
-              <div className="edit-modal__field">
-                <label>Relationship Type:</label>
-                <select value={relationshipFormData.type} onChange={(e) => handleRelationshipFormChange('type', e.target.value as any)}>
-                  <option value="Friendly">Friendly</option>
-                  <option value="Enemies">Enemies</option>
-                  <option value="Neutral">Neutral</option>
-                </select>
-              </div>
-              <div className="edit-modal__actions">
-                <button onClick={handleSaveRelationship}>Save</button>
-                <button onClick={handleCancelRelationship}>Cancel</button>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      <div className="character-management">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <h2 style={{ margin: 0 }}>Manage Locations</h2>
-          <button onClick={handleAddLocation} style={{ height: 'fit-content', padding: '8px 16px', background: '#28a745', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Add Location</button>
-        </div>
-        <div className="character-list">
-          {locations.map((location) => (
-            <div key={location.name} className="character-item">
-              <span className="character-item__name">{location.name}</span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: '120px' }}>
-                <div style={{ width: '20px', height: '20px', borderRadius: '50%', backgroundColor: location.color }}></div>
-                <span className="character-item__location" style={{ minWidth: 'auto' }}>{location.color}</span>
-              </div>
-              <button onClick={() => handleEditLocation(location)}>Edit</button>
-              <button onClick={() => handleDeleteLocation(location.name)} style={{ background: '#dc3545' }}>Delete</button>
-            </div>
-          ))}
+        {/* Book Spine / Binding */}
+        <div className="book-spine">
+          <div className="book-spine-crease"></div>
         </div>
 
-        {(editingLocation || isAddingLocation) && locationFormData && (
-          <div className="edit-modal">
-            <div className="edit-modal__content">
-              <h3>{isAddingLocation ? 'Add Location' : `Edit ${editingLocation?.name}`}</h3>
-              <div className="edit-modal__field">
-                <label>Name:</label>
-                <input
-                  type="text"
-                  value={locationFormData.name}
-                  onChange={(e) => handleLocationFormChange('name', e.target.value)}
-                />
-              </div>
-              <div className="edit-modal__field">
-                <label>Color:</label>
-                <div style={{ display: 'flex', gap: '10px', marginTop: '5px' }}>
-                  {['#43A047', '#2E7D32', '#689F38', '#D9D9D9', '#292A2B'].map(color => (
-                    <div
-                      key={color}
-                      onClick={() => handleLocationFormChange('color', color)}
-                      style={{
-                        width: '30px',
-                        height: '30px',
-                        borderRadius: '50%',
-                        backgroundColor: color,
-                        cursor: 'pointer',
-                        border: locationFormData.color.toUpperCase() === color.toUpperCase() ? '3px solid #007bff' : '2px solid transparent',
-                        boxShadow: locationFormData.color.toUpperCase() === color.toUpperCase() ? '0 0 5px rgba(0,123,255,0.5)' : '0 2px 4px rgba(0,0,0,0.2)'
-                      }}
-                    />
+        {/* Right Page */}
+        <div className="book-page book-page-right">
+          <div className="page-content">
+            
+            {currentSpread === 0 && (
+              <div className="contents-page">
+                <h2>Characters & Traits</h2>
+                <div className="contents-list">
+                  {characters.map(c => (
+                    <div key={c.name} className="contents-item">
+                      <span className="contents-name">{c.name}</span>
+                      <span className="contents-dots"></span>
+                      <span className="contents-details">{c.location || 'Unknown'} - {c.gender || 'Male'} - {c.specialSkills || 'None'}</span>
+                    </div>
                   ))}
                 </div>
               </div>
-              <div className="edit-modal__actions">
-                <button onClick={handleSaveLocation}>Save</button>
-                <button onClick={handleCancelLocation}>Cancel</button>
-              </div>
-            </div>
+            )}
+
+            {currentSpread === 1 && (
+              <>
+                <div className="character-management">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                    <h2 style={{ margin: 0 }}>Manage Relationships</h2>
+                    <button onClick={handleAddRelationship} style={{ height: 'fit-content', padding: '8px 16px', background: '#28a745', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Add Relationship</button>
+                  </div>
+                  <div className="character-list">
+                    {relationships.map((rel, index) => (
+                      <div key={index} className="character-item">
+                        <span className="character-item__name">{rel.source} ↔ {rel.target} ({rel.type})</span>
+                        <button onClick={() => handleDeleteRelationship(index)} style={{ background: '#dc3545' }}>Delete</button>
+                      </div>
+                    ))}
+                  </div>
+
+                  {isAddingRelationship && relationshipFormData && (
+                    <div className="edit-modal">
+                      <div className="edit-modal__content">
+                        <h3>Add Relationship</h3>
+                        <div className="edit-modal__field">
+                          <label>Source Character:</label>
+                          <select value={relationshipFormData.source} onChange={(e) => handleRelationshipFormChange('source', e.target.value)}>
+                            <option value="">Select...</option>
+                            {characters.map(c => <option key={c.name} value={c.name}>{c.name}</option>)}
+                          </select>
+                        </div>
+                        <div className="edit-modal__field">
+                          <label>Target Character:</label>
+                          <select value={relationshipFormData.target} onChange={(e) => handleRelationshipFormChange('target', e.target.value)}>
+                            <option value="">Select...</option>
+                            {characters.map(c => <option key={c.name} value={c.name}>{c.name}</option>)}
+                          </select>
+                        </div>
+                        <div className="edit-modal__field">
+                          <label>Relationship Type:</label>
+                          <select value={relationshipFormData.type} onChange={(e) => handleRelationshipFormChange('type', e.target.value as any)}>
+                            <option value="Friendly">Friendly</option>
+                            <option value="Enemies">Enemies</option>
+                            <option value="Neutral">Neutral</option>
+                          </select>
+                        </div>
+                        <div className="edit-modal__actions">
+                          <button onClick={handleSaveRelationship}>Save</button>
+                          <button onClick={handleCancelRelationship}>Cancel</button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="character-management">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                    <h2 style={{ margin: 0 }}>Manage Locations</h2>
+                    <button onClick={handleAddLocation} style={{ height: 'fit-content', padding: '8px 16px', background: '#28a745', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Add Location</button>
+                  </div>
+                  <div className="character-list">
+                    {locations.map((location) => (
+                      <div key={location.name} className="character-item">
+                        <span className="character-item__name">{location.name}</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: '120px' }}>
+                          <div style={{ width: '20px', height: '20px', borderRadius: '50%', backgroundColor: location.color }}></div>
+                          <span className="character-item__location" style={{ minWidth: 'auto' }}>{location.color}</span>
+                        </div>
+                        <button onClick={() => handleEditLocation(location)}>Edit</button>
+                        <button onClick={() => handleDeleteLocation(location.name)} style={{ background: '#dc3545' }}>Delete</button>
+                      </div>
+                    ))}
+                  </div>
+
+                  {(editingLocation || isAddingLocation) && locationFormData && (
+                    <div className="edit-modal">
+                      <div className="edit-modal__content">
+                        <h3>{isAddingLocation ? 'Add Location' : `Edit ${editingLocation?.name}`}</h3>
+                        <div className="edit-modal__field">
+                          <label>Name:</label>
+                          <input
+                            type="text"
+                            value={locationFormData.name}
+                            onChange={(e) => handleLocationFormChange('name', e.target.value)}
+                          />
+                        </div>
+                        <div className="edit-modal__field">
+                          <label>Color:</label>
+                          <div style={{ display: 'flex', gap: '10px', marginTop: '5px' }}>
+                            {['#43A047', '#2E7D32', '#689F38', '#D9D9D9', '#292A2B'].map(color => (
+                              <div
+                                key={color}
+                                onClick={() => handleLocationFormChange('color', color)}
+                                style={{
+                                  width: '30px',
+                                  height: '30px',
+                                  borderRadius: '50%',
+                                  backgroundColor: color,
+                                  cursor: 'pointer',
+                                  border: locationFormData.color.toUpperCase() === color.toUpperCase() ? '3px solid #007bff' : '2px solid transparent',
+                                  boxShadow: locationFormData.color.toUpperCase() === color.toUpperCase() ? '0 0 5px rgba(0,123,255,0.5)' : '0 2px 4px rgba(0,0,0,0.2)'
+                                }}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                        <div className="edit-modal__actions">
+                          <button onClick={handleSaveLocation}>Save</button>
+                          <button onClick={handleCancelLocation}>Cancel</button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+
           </div>
-        )}
+          {currentSpread === 0 && (
+            <button className="book-nav-button next-button" onClick={() => setCurrentSpread(s => s + 1)}>
+              Next Page →
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
