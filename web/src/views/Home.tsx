@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import Location from '../components/Location';
 import './Home.css';
 
 interface Character {
@@ -11,6 +10,8 @@ interface Character {
 interface LocationConfig {
   name: string;
   color: string;
+  x?: number;
+  y?: number;
 }
 
 interface Relationship {
@@ -20,13 +21,52 @@ interface Relationship {
 }
 
 const Home = () => {
+  const [mapImage, setMapImage] = useState<string | null>(null);
+  const [activePin, setActivePin] = useState<LocationConfig | null>(null);
+  const mapRef = useRef<HTMLImageElement>(null);
+  const [draggingPin, setDraggingPin] = useState<string | null>(null);
+  const dragHasMoved = useRef(false);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!draggingPin || !mapRef.current) return;
+      dragHasMoved.current = true;
+      const rect = mapRef.current.getBoundingClientRect();
+      let x = ((e.clientX - rect.left) / rect.width) * 100;
+      let y = ((e.clientY - rect.top) / rect.height) * 100;
+      
+      x = Math.max(0, Math.min(100, x));
+      y = Math.max(0, Math.min(100, y));
+
+      setLocations(prev => prev.map(loc => 
+        loc.name === draggingPin ? { ...loc, x, y } : loc
+      ));
+    };
+
+    const handleMouseUp = () => {
+      if (draggingPin) {
+        setDraggingPin(null);
+      }
+    };
+
+    if (draggingPin) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [draggingPin]);
+
   const [locations, setLocations] = useState<LocationConfig[]>([
-    { name: 'OSKUTRED', color: '#FF6B6B' },
-    { name: 'DARL', color: '#4ECDC4' },
-    { name: 'THE GRIMHOLT', color: '#FFE66D' },
-    { name: 'SVELGARTH', color: '#95E1D3' },
-    { name: 'FELLUR', color: '#d3e195' },
-    { name: 'LIGA', color: '#a2e195' },
+    { name: 'OSKUTRED', color: '#FF6B6B', x: 20, y: 30 },
+    { name: 'DARL', color: '#4ECDC4', x: 80, y: 25 },
+    { name: 'THE GRIMHOLT', color: '#FFE66D', x: 50, y: 50 },
+    { name: 'SVELGARTH', color: '#95E1D3', x: 25, y: 70 },
+    { name: 'FELLUR', color: '#d3e195', x: 75, y: 80 },
+    { name: 'LIGA', color: '#a2e195', x: 50, y: 20 },
   ]);
 
   const [characters, setCharacters] = useState<Character[]>([
@@ -57,13 +97,13 @@ const Home = () => {
       const containerRect = containerRef.current.getBoundingClientRect();
       const newLines: typeof lines = [];
 
-      const charNodes: Record<string, { name: string, cx: number, cy: number, w: number, h: number }> = {};
-      characters.forEach(c => {
-        const el = document.getElementById(`character-${c.name.replace(/\\s+/g, '-')}`);
+      const pinNodes: Record<string, { name: string, cx: number, cy: number, w: number, h: number }> = {};
+      locations.forEach(loc => {
+        const el = document.getElementById(`pin-${loc.name.replace(/\s+/g, '-')}`);
         if (el) {
           const rect = el.getBoundingClientRect();
-          charNodes[c.name] = { 
-            name: c.name,
+          pinNodes[loc.name] = { 
+            name: loc.name,
             cx: rect.left + rect.width / 2 - containerRect.left, 
             cy: rect.top + rect.height / 2 - containerRect.top, 
             w: rect.width, 
@@ -81,8 +121,15 @@ const Home = () => {
       };
 
       relationships.forEach(rel => {
-        const sNode = charNodes[rel.source];
-        const tNode = charNodes[rel.target];
+        const sChar = characters.find(c => c.name === rel.source);
+        const tChar = characters.find(c => c.name === rel.target);
+        if (!sChar || !tChar) return;
+        const sLocName = sChar.location;
+        const tLocName = tChar.location;
+        if (!sLocName || !tLocName || sLocName === tLocName) return;
+        
+        const sNode = pinNodes[sLocName];
+        const tNode = pinNodes[tLocName];
         if (!sNode || !tNode) return;
 
         const getBoxIntersection = (cx: number, cy: number, w: number, h: number, tx: number, ty: number) => {
@@ -98,8 +145,8 @@ const Home = () => {
         const p1 = getBoxIntersection(sNode.cx, sNode.cy, sNode.w, sNode.h, tNode.cx, tNode.cy);
         const p2 = getBoxIntersection(tNode.cx, tNode.cy, tNode.w, tNode.h, sNode.cx, sNode.cy);
 
-        const intersectingNodes = Object.values(charNodes).filter(n => {
-          if (n.name === rel.source || n.name === rel.target) return false;
+        const intersectingNodes = Object.values(pinNodes).filter(n => {
+          if (n.name === sLocName || n.name === tLocName) return false;
           const dist = distPointToSegment(n.cx, n.cy, p1.x, p1.y, p2.x, p2.y);
           return dist < (n.w / 2) + 20; 
         });
@@ -209,9 +256,28 @@ const Home = () => {
     setLocationFormData({ ...location });
   };
 
+  const handleMapClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!mapRef.current) return;
+    const rect = mapRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    
+    setIsAddingLocation(true);
+    setLocationFormData({ name: '', color: '#43A047', x, y });
+  };
+
   const handleAddLocation = () => {
     setIsAddingLocation(true);
-    setLocationFormData({ name: '', color: '#000000' });
+    setLocationFormData({ name: '', color: '#43A047', x: 50, y: 50 });
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => setMapImage(event.target?.result as string);
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleLocationFormChange = (field: keyof LocationConfig, value: string) => {
@@ -301,26 +367,84 @@ const Home = () => {
     <div className="home">
       <h1>The Shadow of the Gods</h1>
 
-      <div className="locations-container" ref={containerRef} style={{ position: 'relative' }}>
-        <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 10 }}>
-          {lines.map(line => {
-            const color = line.type === 'Friendly' ? '#28a745' : line.type === 'Enemies' ? '#dc3545' : '#6c757d';
-            return <path key={line.key} d={line.pathD} fill="transparent" stroke={color} strokeWidth="2" strokeDasharray="5,5" />;
-          })}
-        </svg>
-        <h2>Character Locations</h2>
-        <div className="locations-grid">
-          {locations.map((location) => (
-            <Location
-              key={location.name}
-              name={location.name}
-              color={location.color}
-              characters={charactersByLocation[location.name]}
-              characterOffsets={characterOffsets}
-            />
-          ))}
-        </div>
+      <div className="locations-container">
+        <h2>World Map</h2>
+        {!mapImage ? (
+          <div className="map-uploader">
+            <p>Upload a map image to start placing locations</p>
+            <input type="file" accept="image/*" onChange={handleImageUpload} />
+          </div>
+        ) : (
+          <div className="map-container" ref={containerRef} onClick={handleMapClick}>
+            <img src={mapImage} alt="World Map" className="map-image" ref={mapRef} />
+            <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 10 }}>
+              {lines.map(line => {
+                const color = line.type === 'Friendly' ? '#28a745' : line.type === 'Enemies' ? '#dc3545' : '#6c757d';
+                return <path key={line.key} d={line.pathD} fill="transparent" stroke={color} strokeWidth="3" strokeDasharray="5,5" />;
+              })}
+            </svg>
+            {locations.map((loc) => {
+              if (loc.x === undefined || loc.y === undefined) return null;
+              return (
+                <div
+                  key={loc.name}
+                  id={`pin-${loc.name.replace(/\\s+/g, '-')}`}
+                  className="map-pin"
+                  style={{ 
+                    left: `${loc.x}%`, 
+                    top: `${loc.y}%`, 
+                    cursor: draggingPin === loc.name ? 'grabbing' : 'pointer',
+                    zIndex: draggingPin === loc.name ? 50 : 20 
+                  }}
+                  onMouseDown={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    dragHasMoved.current = false;
+                    setDraggingPin(loc.name);
+                  }}
+                  onClick={(e) => { 
+                    e.stopPropagation(); 
+                    if (!dragHasMoved.current) {
+                      setActivePin(loc); 
+                    }
+                  }}
+                >
+                  <div className="map-pin-icon" style={{ backgroundColor: loc.color }}></div>
+                  <div className="map-pin-label">{loc.name}</div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
+
+      {activePin && (
+        <div className="edit-modal">
+          <div className="pin-modal-content">
+            <h3>Characters at {activePin.name}</h3>
+            <div className="character-list" style={{ marginTop: '15px' }}>
+              {charactersByLocation[activePin.name]?.length > 0 ? charactersByLocation[activePin.name].map(c => (
+                <div key={c.name} className="character-item">
+                  <span className="character-item__name">{c.name}</span>
+                  <button onClick={() => { setActivePin(null); handleEdit(c); }}>Edit</button>
+                </div>
+              )) : <p>No characters here.</p>}
+            </div>
+            <div className="edit-modal__actions" style={{ marginTop: '20px' }}>
+              <button 
+                onClick={() => {
+                  setActivePin(null);
+                  setIsAddingCharacter(true);
+                  setFormData({ name: '', location: activePin.name, specialSkills: '' });
+                }}
+              >
+                Add Character Here
+              </button>
+              <button onClick={() => setActivePin(null)}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Page break with 100px space - Edit height here to change the space */}
       <div style={{ height: '100px', width: '100%' }}></div>
@@ -466,12 +590,23 @@ const Home = () => {
               </div>
               <div className="edit-modal__field">
                 <label>Color:</label>
-                <input
-                  type="color"
-                  value={locationFormData.color}
-                  onChange={(e) => handleLocationFormChange('color', e.target.value)}
-                  style={{ height: '40px', padding: '2px', cursor: 'pointer', width: '100%' }}
-                />
+                <div style={{ display: 'flex', gap: '10px', marginTop: '5px' }}>
+                  {['#43A047', '#2E7D32', '#689F38', '#D9D9D9', '#292A2B'].map(color => (
+                    <div
+                      key={color}
+                      onClick={() => handleLocationFormChange('color', color)}
+                      style={{
+                        width: '30px',
+                        height: '30px',
+                        borderRadius: '50%',
+                        backgroundColor: color,
+                        cursor: 'pointer',
+                        border: locationFormData.color.toUpperCase() === color.toUpperCase() ? '3px solid #007bff' : '2px solid transparent',
+                        boxShadow: locationFormData.color.toUpperCase() === color.toUpperCase() ? '0 0 5px rgba(0,123,255,0.5)' : '0 2px 4px rgba(0,0,0,0.2)'
+                      }}
+                    />
+                  ))}
+                </div>
               </div>
               <div className="edit-modal__actions">
                 <button onClick={handleSaveLocation}>Save</button>
