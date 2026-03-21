@@ -84,6 +84,7 @@ export default function MapPin({
                 hairColor={c.hairColor || "#FFA012"}
                 beardColor={c.beardColor || "#FFA012"}
               />
+              <span className="map-pin-character-name">{c.name}</span>
             </div>
           ))}
         </div>
