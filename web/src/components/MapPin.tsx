@@ -1,3 +1,4 @@
+import { useState, useRef } from "react";
 import CharacterAvatar from "./CharacterAvatar";
 import type { Character, LocationConfig } from "../types";
 
@@ -16,6 +17,12 @@ export default function MapPin({
   onMouseDown,
   onClick,
 }: MapPinProps) {
+  const [hovered, setHovered] = useState(false);
+  const [clicked, setClicked] = useState(false);
+  const dragMoved = useRef(false);
+
+  const showTooltip = hovered || clicked;
+
   if (location.x === undefined || location.y === undefined) return null;
 
   return (
@@ -26,41 +33,51 @@ export default function MapPin({
         left: `${location.x}%`,
         top: `${location.y}%`,
         cursor: isDragging ? "grabbing" : "pointer",
-        zIndex: isDragging ? 50 : 20,
+        zIndex: isDragging ? 50 : (showTooltip ? 40 : 20),
       }}
-      onMouseDown={onMouseDown}
-      onClick={onClick}
+      onMouseDown={(e) => {
+        dragMoved.current = false;
+        onMouseDown(e);
+      }}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (!dragMoved.current) {
+          setClicked((prev) => !prev);
+        }
+        onClick(e);
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
       <div
         className="map-pin-icon"
         style={{ backgroundColor: location.color }}
       />
-      <div className="map-pin-label">{location.name}</div>
+      {/* Tooltip on hover and click */}
+      {showTooltip && (
+        <div className="map-pin-tooltip">
+          <strong>{location.name}</strong>
+          {location.description && (
+            <p className="map-pin-tooltip-desc">{location.description}</p>
+          )}
+          {characters.length > 0 && (
+            <div className="map-pin-tooltip-chars">
+              {characters.map((c) => (
+                <span key={c.name} className="map-pin-tooltip-char">
+                  {c.name}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
       {characters.length > 0 && (
-        <div
-          className="map-pin-characters"
-          style={{
-            display: "flex",
-            position: "absolute",
-            top: "100%",
-            left: "50%",
-            transform: "translateX(-50%)",
-            justifyContent: "center",
-            gap: "0px",
-            pointerEvents: "none",
-          }}
-        >
+        <div className="map-pin-characters">
           {characters.map((c) => (
             <div
               key={c.name}
               title={c.name}
-              style={{
-                width: "60px",
-                height: "80px",
-                transform: "scale(0.35)",
-                transformOrigin: "top center",
-                margin: "0 -14px",
-              }}
+              className="map-pin-character"
             >
               <CharacterAvatar
                 gender={c.gender || "Male"}

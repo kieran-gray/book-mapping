@@ -11,6 +11,7 @@ export interface Character {
 export interface LocationConfig {
   name: string;
   color: string;
+  description?: string;
   x?: number;
   y?: number;
 }

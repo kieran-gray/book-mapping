@@ -56,6 +56,17 @@ export default function LocationForm({
         </div>
 
         <div className="edit-modal__field">
+          <label>Description:</label>
+          <textarea
+            value={formData.description || ""}
+            onChange={(e) => handleChange("description", e.target.value)}
+            placeholder="Add location details..."
+            rows={3}
+            style={{ width: "100%", padding: "10px", borderRadius: "4px", border: "1px solid #ddd", fontFamily: "inherit", resize: "vertical" }}
+          />
+        </div>
+
+        <div className="edit-modal__field">
           <label>Color:</label>
           <div style={{ display: "flex", gap: "10px", marginTop: "5px" }}>
             {LOCATION_COLORS.map((color) => (

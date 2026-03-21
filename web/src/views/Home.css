@@ -270,6 +270,13 @@
   flex-direction: column;
   align-items: center;
   transition: transform 0.2s;
+
+  /* --- EDITABLE CHARACTER VARIABLES --- */
+  /* You can change these sizes and spacing to adjust character placement on the map */
+  --character-width: 18px;
+  --character-height: 24px;
+  --character-overlap: -4px; /* Use a negative px amount to make characters overlap */
+  --character-top-offset: 20px; /* Distance below the location name (e.g. 100% or 20px) */
 }
 
 .map-pin:hover {
@@ -287,14 +294,88 @@
   border: 2px solid white;
 }
 
-.map-pin-label {
-  background: rgba(255, 255, 255, 0.9);
-  padding: 2px 5px;
-  border-radius: 4px;
-  font-size: 10px;
-  font-weight: bold;
+.map-pin-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(30, 30, 30, 0.92);
+  color: #f0f0f0;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
   white-space: nowrap;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  z-index: 100;
+  pointer-events: none;
+  min-width: 80px;
+  text-align: center;
+}
+
+.map-pin-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: rgba(30, 30, 30, 0.92);
+}
+
+.map-pin-tooltip strong {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+
+.map-pin-tooltip-desc {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: #ccc;
+  white-space: pre-wrap;
+  max-width: 200px;
+  text-align: left;
+}
+
+.map-pin-tooltip-chars {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+  justify-content: center;
+}
+
+.map-pin-tooltip-char {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  color: #e0e0e0;
+  white-space: nowrap;
+}
+
+.map-pin-characters {
+  display: flex;
+  position: absolute;
+  top: var(--character-top-offset);
+  left: 50%;
+  transform: translateX(-50%);
+  justify-content: center;
+  pointer-events: none;
+  margin-top: 4px; /* Slight spacing from the label */
+}
+
+.map-pin-character {
+  width: var(--character-width);
+  height: var(--character-height);
+  margin: 0 var(--character-overlap);
+  transition: width 0.2s, height 0.2s;
+}
+
+.map-pin-character svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 .map-uploader {
@@ -748,10 +829,6 @@
     height: 24px;
   }
 
-  .map-pin-label {
-    font-size: 11px;
-    padding: 2px 6px;
-  }
 
   .contents-item {
     font-size: 15px;
