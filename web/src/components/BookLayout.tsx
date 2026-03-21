@@ -27,9 +27,11 @@ export default function BookLayout({
         <div className="book-page book-page-left">
           <div className="page-content">{leftPage}</div>
           {currentSpread > 0 && (
-            <button className="book-nav-button prev-button" onClick={onPrev}>
-              ← Previous Page
-            </button>
+            <div className="book-nav-container">
+              <button className="book-nav-button prev-button" onClick={onPrev}>
+                ← Previous Page
+              </button>
+            </div>
           )}
         </div>
 
@@ -42,9 +44,11 @@ export default function BookLayout({
         <div className="book-page book-page-right">
           <div className="page-content">{rightPage}</div>
           {currentSpread < maxSpread && (
-            <button className="book-nav-button next-button" onClick={onNext}>
-              Next Page →
-            </button>
+            <div className="book-nav-container">
+              <button className="book-nav-button next-button" onClick={onNext}>
+                Next Page →
+              </button>
+            </div>
           )}
         </div>
       </div>

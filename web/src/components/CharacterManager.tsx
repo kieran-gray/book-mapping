@@ -25,26 +25,11 @@ export default function CharacterManager({
 
   return (
     <div className="character-management">
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "20px",
-        }}
-      >
-        <h2 style={{ margin: 0 }}>Manage Characters</h2>
+      <div className="section-header">
+        <h2>Manage Characters</h2>
         <button
+          className="section-header__action"
           onClick={() => setIsAdding(true)}
-          style={{
-            height: "fit-content",
-            padding: "8px 16px",
-            background: "#28a745",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
         >
           Add Character
         </button>

@@ -16,26 +16,11 @@ export default function LocationManager() {
 
   return (
     <div className="character-management">
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "20px",
-        }}
-      >
-        <h2 style={{ margin: 0 }}>Manage Locations</h2>
+      <div className="section-header">
+        <h2>Manage Locations</h2>
         <button
+          className="section-header__action"
           onClick={() => setIsAdding(true)}
-          style={{
-            height: "fit-content",
-            padding: "8px 16px",
-            background: "#28a745",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
         >
           Add Location
         </button>
@@ -45,36 +30,25 @@ export default function LocationManager() {
         {locations.map((location) => (
           <div key={location.name} className="character-item">
             <span className="character-item__name">{location.name}</span>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                minWidth: "120px",
-              }}
-            >
+            <div className="location-color-swatch">
               <div
-                style={{
-                  width: "20px",
-                  height: "20px",
-                  borderRadius: "50%",
-                  backgroundColor: location.color,
-                }}
+                className="location-color-swatch__dot"
+                style={{ backgroundColor: location.color }}
               />
-              <span
-                className="character-item__location"
-                style={{ minWidth: "auto" }}
-              >
+              <span className="character-item__location">
                 {location.color}
               </span>
             </div>
-            <button onClick={() => setEditingLocation(location)}>Edit</button>
-            <button
-              onClick={() => deleteLocation(location.name)}
-              style={{ background: "#dc3545" }}
-            >
-              Delete
-            </button>
+            <div className="character-item__actions">
+              <button onClick={() => setEditingLocation(location)}>Edit</button>
+              <button
+                className="section-header__action--danger"
+                onClick={() => deleteLocation(location.name)}
+                style={{ background: "#dc3545" }}
+              >
+                Delete
+              </button>
+            </div>
           </div>
         ))}
       </div>

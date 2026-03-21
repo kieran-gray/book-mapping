@@ -1,34 +1,35 @@
+/* --- Global Reset & Base --- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
 .ibm-plex-sans {
   font-family: "IBM Plex Sans", sans-serif;
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;
-  font-variation-settings:
-    "wdth" 100;
+  font-variation-settings: "wdth" 100;
 }
+
 h1 {
-  font-size: 80px;
+  font-size: clamp(1.5rem, 5vw, 4rem);
   font-weight: 400;
   margin: 5px;
-  border-bottom: solid 10px #eeefe9;
+  border-bottom: solid 6px #eeefe9;
   text-align: center;
 }
+
 body {
-  margin: auto;
+  margin: 0;
   background-image: url("https://res.cloudinary.com/dmukukwp6/image/upload/keyboard_garden_bg_dark_9ab088797a.png");
   background-size: 100px 100px;
   background-repeat: repeat;
   background-color: #eeefe994;
   background-blend-mode: lighten;
   font-weight: 400;
-}
-.character {
-
-  font-size: 20px;
-  font-weight: 300;
-  width: 25%;
-  border: solid 1px #000000;
-  border-style: dashed;
-  text-align: center;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }

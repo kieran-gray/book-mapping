@@ -19,7 +19,7 @@ export default function PinPopup({
     <div className="edit-modal">
       <div className="pin-modal-content">
         <h3>Characters at {pin.name}</h3>
-        <div className="character-list" style={{ marginTop: "15px" }}>
+        <div className="character-list" style={{ marginTop: "12px" }}>
           {chars.length > 0 ? (
             chars.map((c: Character) => (
               <div key={c.name} className="character-item">
@@ -31,30 +31,15 @@ export default function PinPopup({
           )}
         </div>
         {allGroups.length > 0 && (
-          <div style={{ marginTop: "15px" }}>
+          <div style={{ marginTop: "12px" }}>
             <h4 style={{ margin: "0 0 8px 0", fontSize: "14px" }}>
               Move Group Here
             </h4>
-            <div
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: "6px",
-              }}
-            >
+            <div className="pin-popup-groups">
               {allGroups.map((g) => (
                 <button
                   key={g}
                   onClick={() => moveGroupToLocation(g, pin.name)}
-                  style={{
-                    padding: "4px 10px",
-                    fontSize: "12px",
-                    background: "#6c757d",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                  }}
                 >
                   {g}
                 </button>
@@ -62,7 +47,7 @@ export default function PinPopup({
             </div>
           </div>
         )}
-        <div className="edit-modal__actions" style={{ marginTop: "20px" }}>
+        <div className="edit-modal__actions" style={{ marginTop: "16px" }}>
           <button onClick={onAddCharacterHere}>Add Character Here</button>
           <button onClick={onClose}>Close</button>
         </div>

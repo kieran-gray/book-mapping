@@ -143,10 +143,7 @@ export default function CharacterForm({
           </select>
         </div>
 
-        <div
-          className="edit-modal__field"
-          style={{ display: "flex", gap: "30px" }}
-        >
+        <div className="edit-modal__field color-picker-row">
           <ColorPicker
             label="Hair Color:"
             colors={HAIR_COLORS}
