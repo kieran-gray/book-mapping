@@ -22,7 +22,9 @@ export default function CharacterSummary() {
                   <span className="contents-name">{c.name}</span>
                   <span className="contents-dots" />
                   <span className="contents-details">
-                    {c.location || "Unknown"} — {c.specialSkills || "None"}
+                    {c.travelTo
+                      ? `${c.location} → ${c.travelTo}`
+                      : c.location || "Unknown"} — {c.specialSkills || "None"}
                   </span>
                 </div>
               ))}
@@ -40,7 +42,9 @@ export default function CharacterSummary() {
                 <span className="contents-name">{c.name}</span>
                 <span className="contents-dots" />
                 <span className="contents-details">
-                  {c.location || "Unknown"} — {c.specialSkills || "None"}
+                  {c.travelTo
+                      ? `${c.location} → ${c.travelTo}`
+                      : c.location || "Unknown"} — {c.specialSkills || "None"}
                 </span>
               </div>
             ))}

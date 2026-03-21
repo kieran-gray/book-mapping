@@ -1,7 +1,7 @@
 import { useBook } from "../context/BookContext";
 
 export default function GroupManager() {
-  const { book, allGroups, moveGroupToLocation } = useBook();
+  const { book, allGroups, setGroupTravel } = useBook();
   const { characters, locations } = book;
 
   return (
@@ -15,6 +15,9 @@ export default function GroupManager() {
         allGroups.map((groupName) => {
           const members = characters.filter((c) => c.group === groupName);
           const groupLocation = members[0]?.location || "";
+          const groupTravelTo = members[0]?.travelTo || "";
+          const groupProgress = members[0]?.travelProgress ?? 0;
+
           return (
             <div key={groupName} className="group-card">
               <div className="group-card-header">
@@ -32,11 +35,11 @@ export default function GroupManager() {
                 ))}
               </div>
               <div className="group-card-location">
-                <span>Move to:</span>
+                <span>Current Location (From):</span>
                 <select
                   value={groupLocation}
                   onChange={(e) =>
-                    moveGroupToLocation(groupName, e.target.value)
+                    setGroupTravel(groupName, e.target.value, groupTravelTo || undefined, groupProgress)
                   }
                 >
                   <option value="">Select location...</option>
@@ -47,6 +50,49 @@ export default function GroupManager() {
                   ))}
                 </select>
               </div>
+              <div className="group-card-location" style={{ marginTop: "8px" }}>
+                <span>Traveling To:</span>
+                <select
+                  value={groupTravelTo}
+                  onChange={(e) =>
+                    setGroupTravel(
+                      groupName,
+                      groupLocation,
+                      e.target.value || undefined,
+                      e.target.value ? groupProgress : 0,
+                    )
+                  }
+                >
+                  <option value="">Not traveling</option>
+                  {locations
+                    .filter((loc) => loc.name !== groupLocation)
+                    .map((loc) => (
+                      <option key={loc.name} value={loc.name}>
+                        {loc.name}
+                      </option>
+                    ))}
+                </select>
+              </div>
+              {groupTravelTo && (
+                <div className="group-card-location" style={{ marginTop: "8px" }}>
+                  <span>Progress: {Math.round(groupProgress * 100)}%</span>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={Math.round(groupProgress * 100)}
+                    onChange={(e) =>
+                      setGroupTravel(
+                        groupName,
+                        groupLocation,
+                        groupTravelTo,
+                        Number(e.target.value) / 100,
+                      )
+                    }
+                    style={{ flex: 1 }}
+                  />
+                </div>
+              )}
             </div>
           );
         })

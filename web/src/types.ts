@@ -6,6 +6,8 @@ export interface Character {
   hairColor?: string;
   beardColor?: string;
   group?: string;
+  travelTo?: string;
+  travelProgress?: number;
 }
 
 export interface LocationConfig {

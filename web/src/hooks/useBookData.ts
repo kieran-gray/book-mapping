@@ -70,11 +70,12 @@ export function useBookData(seedData: BookData) {
         // Also update characters referencing the old name
         characters:
           originalName !== updated.name
-            ? prev.characters.map((c) =>
-                c.location === originalName
-                  ? { ...c, location: updated.name }
-                  : c,
-              )
+            ? prev.characters.map((c) => {
+                let patched = c;
+                if (patched.location === originalName) patched = { ...patched, location: updated.name };
+                if (patched.travelTo === originalName) patched = { ...patched, travelTo: updated.name };
+                return patched;
+              })
             : prev.characters,
       }));
     },
@@ -85,9 +86,12 @@ export function useBookData(seedData: BookData) {
     setBook((prev) => ({
       ...prev,
       locations: prev.locations.filter((loc) => loc.name !== name),
-      characters: prev.characters.map((c) =>
-        c.location === name ? { ...c, location: "" } : c,
-      ),
+      characters: prev.characters.map((c) => {
+        let patched = c;
+        if (patched.location === name) patched = { ...patched, location: "" };
+        if (patched.travelTo === name) patched = { ...patched, travelTo: undefined, travelProgress: undefined };
+        return patched;
+      }),
     }));
   }, []);
 
@@ -124,7 +128,55 @@ export function useBookData(seedData: BookData) {
       setBook((prev) => ({
         ...prev,
         characters: prev.characters.map((c) =>
-          c.group === groupName ? { ...c, location: locationName } : c,
+          c.group === groupName
+            ? { ...c, location: locationName, travelTo: undefined, travelProgress: undefined }
+            : c,
+        ),
+      }));
+    },
+    [],
+  );
+
+  const setGroupTravel = useCallback(
+    (groupName: string, fromLocation: string, toLocation: string | undefined, progress: number) => {
+      setBook((prev) => ({
+        ...prev,
+        characters: prev.characters.map((c) =>
+          c.group === groupName
+            ? {
+                ...c,
+                location: fromLocation,
+                travelTo: toLocation || undefined,
+                travelProgress: toLocation ? Math.max(0, Math.min(1, progress)) : undefined,
+              }
+            : c,
+        ),
+      }));
+    },
+    [],
+  );
+
+  const updateGroupTravelProgress = useCallback(
+    (groupName: string, progress: number) => {
+      setBook((prev) => ({
+        ...prev,
+        characters: prev.characters.map((c) =>
+          c.group === groupName
+            ? { ...c, travelProgress: Math.max(0, Math.min(1, progress)) }
+            : c,
+        ),
+      }));
+    },
+    [],
+  );
+
+  // --- Character Travel ---
+  const updateCharacterTravel = useCallback(
+    (name: string, progress: number) => {
+      setBook((prev) => ({
+        ...prev,
+        characters: prev.characters.map((c) =>
+          c.name === name ? { ...c, travelProgress: Math.max(0, Math.min(1, progress)) } : c,
         ),
       }));
     },
@@ -143,19 +195,42 @@ export function useBookData(seedData: BookData) {
     ),
   );
 
+  // Only stationary characters appear at pins
   const charactersByLocation: Record<string, Character[]> = {};
   book.locations.forEach((loc) => {
     charactersByLocation[loc.name] = book.characters.filter(
-      (c) => c.location === loc.name,
+      (c) => c.location === loc.name && !c.travelTo,
     );
   });
+
+  // Ungrouped characters currently traveling
+  const travelingCharacters = book.characters.filter((c) => c.travelTo && !c.group);
+
+  // Groups currently traveling
+  const travelingGroups = allGroups
+    .map((name) => {
+      const members = book.characters.filter((c) => c.group === name);
+      const first = members[0];
+      if (!first?.travelTo) return null;
+      return {
+        name,
+        members,
+        location: first.location,
+        travelTo: first.travelTo,
+        travelProgress: first.travelProgress ?? 0,
+      };
+    })
+    .filter((g): g is NonNullable<typeof g> => g !== null);
 
   return {
     book,
     allGroups,
     charactersByLocation,
+    travelingCharacters,
+    travelingGroups,
     addCharacter,
     updateCharacter,
+    updateCharacterTravel,
     addLocation,
     updateLocation,
     deleteLocation,
@@ -163,6 +238,8 @@ export function useBookData(seedData: BookData) {
     addRelationship,
     deleteRelationship,
     moveGroupToLocation,
+    setGroupTravel,
+    updateGroupTravelProgress,
     setMapImage,
   };
 }

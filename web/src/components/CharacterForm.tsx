@@ -62,7 +62,7 @@ export default function CharacterForm({
         </div>
 
         <div className="edit-modal__field">
-          <label>Location:</label>
+          <label>Current Location (From):</label>
           <select
             value={formData.location}
             onChange={(e) => handleChange("location", e.target.value)}
@@ -75,6 +75,50 @@ export default function CharacterForm({
             ))}
           </select>
         </div>
+
+        <div className="edit-modal__field">
+          <label>Traveling To:</label>
+          <select
+            value={formData.travelTo || ""}
+            onChange={(e) => {
+              const val = e.target.value;
+              setFormData((prev) => ({
+                ...prev,
+                travelTo: val || undefined,
+                travelProgress: val ? (prev.travelProgress ?? 0) : undefined,
+              }));
+            }}
+          >
+            <option value="">Not traveling</option>
+            {locations
+              .filter((loc) => loc.name !== formData.location)
+              .map((loc) => (
+                <option key={loc.name} value={loc.name}>
+                  {loc.name}
+                </option>
+              ))}
+          </select>
+        </div>
+
+        {formData.travelTo && (
+          <div className="edit-modal__field">
+            <label>
+              Travel Progress: {Math.round((formData.travelProgress ?? 0) * 100)}%
+            </label>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={Math.round((formData.travelProgress ?? 0) * 100)}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  travelProgress: Number(e.target.value) / 100,
+                }))
+              }
+            />
+          </div>
+        )}
 
         <div className="edit-modal__field">
           <label>Special Skills:</label>

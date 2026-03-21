@@ -3,10 +3,16 @@ import { useBook } from "../context/BookContext";
 import type { LocationConfig } from "../types";
 import MapPin from "./MapPin";
 import PinPopup from "./PinPopup";
+import CharacterAvatar from "./CharacterAvatar";
 
 interface WorldMapProps {
   onAddCharacterAtLocation: (locationName: string) => void;
 }
+
+/* --- EDITABLE TRAVEL LINE SETTINGS --- */
+/* Change these values to customise the travel route lines on the map */
+const TRAVEL_LINE_COLOR = "#0000006c";   // Line colour (any CSS colour, e.g. "#ff0000", "red")
+const TRAVEL_LINE_WIDTH = 1;           // Line width in px (1–5 recommended)
 
 interface LineData {
   key: string;
@@ -15,13 +21,23 @@ interface LineData {
 }
 
 export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
-  const { book, charactersByLocation, updateLocationPosition, setMapImage } =
-    useBook();
+  const {
+    book,
+    charactersByLocation,
+    travelingCharacters,
+    travelingGroups,
+    updateLocationPosition,
+    updateCharacterTravel,
+    updateGroupTravelProgress,
+    setMapImage,
+  } = useBook();
 
   const { mapImage, locations, characters, relationships } = book;
 
   const [activePin, setActivePin] = useState<LocationConfig | null>(null);
   const [draggingPin, setDraggingPin] = useState<string | null>(null);
+  const [draggingTraveler, setDraggingTraveler] = useState<string | null>(null);
+  const [draggingGroup, setDraggingGroup] = useState<string | null>(null);
   const [lines, setLines] = useState<LineData[]>([]);
   const [characterOffsets, setCharacterOffsets] = useState<
     Record<string, { dx: number; dy: number }>
@@ -31,7 +47,7 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
   const mapRef = useRef<HTMLImageElement>(null);
   const dragHasMoved = useRef(false);
 
-  // --- Drag handling ---
+  // --- Pin Drag handling ---
   useEffect(() => {
     if (!draggingPin) return;
 
@@ -57,6 +73,87 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
       window.removeEventListener("mouseup", handleMouseUp);
     };
   }, [draggingPin, updateLocationPosition]);
+
+  // --- Traveler Drag handling (constrain to line) ---
+  useEffect(() => {
+    if (!draggingTraveler) return;
+
+    const char = characters.find((c) => c.name === draggingTraveler);
+    if (!char || !char.travelTo) return;
+
+    const fromLoc = locations.find((l) => l.name === char.location);
+    const toLoc = locations.find((l) => l.name === char.travelTo);
+    if (!fromLoc || !toLoc || fromLoc.x == null || fromLoc.y == null || toLoc.x == null || toLoc.y == null) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!mapRef.current) return;
+      const rect = mapRef.current.getBoundingClientRect();
+      const mx = ((e.clientX - rect.left) / rect.width) * 100;
+      const my = ((e.clientY - rect.top) / rect.height) * 100;
+
+      // Project mouse onto the line segment fromLoc -> toLoc
+      const ax = fromLoc.x!;
+      const ay = fromLoc.y!;
+      const bx = toLoc.x!;
+      const by = toLoc.y!;
+      const dx = bx - ax;
+      const dy = by - ay;
+      const l2 = dx * dx + dy * dy;
+      if (l2 === 0) return;
+      let t = ((mx - ax) * dx + (my - ay) * dy) / l2;
+      t = Math.max(0, Math.min(1, t));
+      updateCharacterTravel(draggingTraveler, t);
+    };
+
+    const handleMouseUp = () => setDraggingTraveler(null);
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [draggingTraveler, characters, locations, updateCharacterTravel]);
+
+  // --- Group Drag handling (constrain to line) ---
+  useEffect(() => {
+    if (!draggingGroup) return;
+
+    const group = travelingGroups.find((g) => g.name === draggingGroup);
+    if (!group) return;
+
+    const fromLoc = locations.find((l) => l.name === group.location);
+    const toLoc = locations.find((l) => l.name === group.travelTo);
+    if (!fromLoc || !toLoc || fromLoc.x == null || fromLoc.y == null || toLoc.x == null || toLoc.y == null) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!mapRef.current) return;
+      const rect = mapRef.current.getBoundingClientRect();
+      const mx = ((e.clientX - rect.left) / rect.width) * 100;
+      const my = ((e.clientY - rect.top) / rect.height) * 100;
+
+      const ax = fromLoc.x!;
+      const ay = fromLoc.y!;
+      const bx = toLoc.x!;
+      const by = toLoc.y!;
+      const dx = bx - ax;
+      const dy = by - ay;
+      const l2 = dx * dx + dy * dy;
+      if (l2 === 0) return;
+      let t = ((mx - ax) * dx + (my - ay) * dy) / l2;
+      t = Math.max(0, Math.min(1, t));
+      updateGroupTravelProgress(draggingGroup, t);
+    };
+
+    const handleMouseUp = () => setDraggingGroup(null);
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [draggingGroup, travelingGroups, locations, updateGroupTravelProgress]);
 
   // --- Relationship lines ---
   useEffect(() => {
@@ -282,6 +379,7 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
               zIndex: 10,
             }}
           >
+            {/* Relationship lines */}
             {lines.map((line) => {
               const color =
                 line.type === "Friendly"
@@ -300,7 +398,44 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
                 />
               );
             })}
+            {/* Travel route lines */}
+            {travelingCharacters.map((char) => {
+              const fromLoc = locations.find((l) => l.name === char.location);
+              const toLoc = locations.find((l) => l.name === char.travelTo);
+              if (!fromLoc || !toLoc || fromLoc.x == null || fromLoc.y == null || toLoc.x == null || toLoc.y == null) return null;
+              return (
+                <line
+                  key={`travel-${char.name}`}
+                  x1={`${fromLoc.x}%`}
+                  y1={`${fromLoc.y}%`}
+                  x2={`${toLoc.x}%`}
+                  y2={`${toLoc.y}%`}
+                  stroke={TRAVEL_LINE_COLOR}
+                  strokeWidth={TRAVEL_LINE_WIDTH}
+                  opacity="0.8"
+                />
+              );
+            })}
+            {/* Group travel route lines */}
+            {travelingGroups.map((group) => {
+              const fromLoc = locations.find((l) => l.name === group.location);
+              const toLoc = locations.find((l) => l.name === group.travelTo);
+              if (!fromLoc || !toLoc || fromLoc.x == null || fromLoc.y == null || toLoc.x == null || toLoc.y == null) return null;
+              return (
+                <line
+                  key={`group-travel-${group.name}`}
+                  x1={`${fromLoc.x}%`}
+                  y1={`${fromLoc.y}%`}
+                  x2={`${toLoc.x}%`}
+                  y2={`${toLoc.y}%`}
+                  stroke={TRAVEL_LINE_COLOR}
+                  strokeWidth={TRAVEL_LINE_WIDTH}
+                  opacity="0.8"
+                />
+              );
+            })}
           </svg>
+          {/* Location pins */}
           {locations.map((loc) => (
             <MapPin
               key={loc.name}
@@ -321,6 +456,80 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
               }}
             />
           ))}
+          {/* Traveling character avatars */}
+          {travelingCharacters.map((char) => {
+            const fromLoc = locations.find((l) => l.name === char.location);
+            const toLoc = locations.find((l) => l.name === char.travelTo);
+            if (!fromLoc || !toLoc || fromLoc.x == null || fromLoc.y == null || toLoc.x == null || toLoc.y == null) return null;
+            const t = char.travelProgress ?? 0;
+            const cx = fromLoc.x + (toLoc.x - fromLoc.x) * t;
+            const cy = fromLoc.y + (toLoc.y - fromLoc.y) * t;
+            return (
+              <div
+                key={`traveler-${char.name}`}
+                className="travel-avatar"
+                title={`${char.name} (${char.location} → ${char.travelTo})`}
+                style={{
+                  left: `${cx}%`,
+                  top: `${cy}%`,
+                  cursor: draggingTraveler === char.name ? "grabbing" : "grab",
+                  zIndex: draggingTraveler === char.name ? 45 : 25,
+                }}
+                onMouseDown={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  setDraggingTraveler(char.name);
+                }}
+              >
+                <CharacterAvatar
+                  gender={char.gender || "Male"}
+                  hairColor={char.hairColor || "#FFA012"}
+                  beardColor={char.beardColor || "#FFA012"}
+                />
+                <span className="travel-avatar-name">{char.name}</span>
+              </div>
+            );
+          })}
+          {/* Traveling group avatars */}
+          {travelingGroups.map((group) => {
+            const fromLoc = locations.find((l) => l.name === group.location);
+            const toLoc = locations.find((l) => l.name === group.travelTo);
+            if (!fromLoc || !toLoc || fromLoc.x == null || fromLoc.y == null || toLoc.x == null || toLoc.y == null) return null;
+            const t = group.travelProgress;
+            const cx = fromLoc.x + (toLoc.x - fromLoc.x) * t;
+            const cy = fromLoc.y + (toLoc.y - fromLoc.y) * t;
+            return (
+              <div
+                key={`group-traveler-${group.name}`}
+                className="travel-avatar travel-avatar-group"
+                title={`${group.name} (${group.location} → ${group.travelTo})`}
+                style={{
+                  left: `${cx}%`,
+                  top: `${cy}%`,
+                  cursor: draggingGroup === group.name ? "grabbing" : "grab",
+                  zIndex: draggingGroup === group.name ? 45 : 25,
+                }}
+                onMouseDown={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  setDraggingGroup(group.name);
+                }}
+              >
+                <div className="travel-avatar-group-cluster">
+                  {group.members.map((m) => (
+                    <div key={m.name} className="travel-avatar-group-member">
+                      <CharacterAvatar
+                        gender={m.gender || "Male"}
+                        hairColor={m.hairColor || "#FFA012"}
+                        beardColor={m.beardColor || "#FFA012"}
+                      />
+                    </div>
+                  ))}
+                </div>
+                <span className="travel-avatar-name">{group.name}</span>
+              </div>
+            );
+          })}
         </div>
       )}
       {activePin && (
