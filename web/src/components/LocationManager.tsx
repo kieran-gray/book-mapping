@@ -35,9 +35,7 @@ export default function LocationManager() {
                 className="location-color-swatch__dot"
                 style={{ backgroundColor: location.color }}
               />
-              <span className="character-item__location">
-                {location.color}
-              </span>
+              <span className="character-item__location">{location.color}</span>
             </div>
             <div className="character-item__actions">
               <button onClick={() => setEditingLocation(location)}>Edit</button>
