@@ -66,20 +66,28 @@ export default function BookView() {
   // --- Library management ---
   const handleCreateBook = useCallback((title: string) => {
     const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/-+$/, "");
-    const newBook: BookData = {
-      title,
-      slug: `${slug}-${Date.now()}`,
-      mapImage: null,
-      characters: [],
-      locations: [],
-      relationships: [],
-      characteristics: [],
-    };
+    const generatedSlug = `${slug}-${Date.now()}`;
+
     setLibrary((prev) => {
+      const lastBook = prev.length > 0 ? prev[prev.length - 1] : null;
+
+      const newBook: BookData = {
+        title,
+        slug: generatedSlug,
+        mapImage: null,
+        characters: [],
+        locations: [],
+        relationships: [],
+        characteristics: lastBook ? [...lastBook.characteristics] : [],
+      };
+
       const next = [...prev, newBook];
       saveLibrary(next);
       return next;
     });
+
+    setOpenBookSlug(generatedSlug);
+    setCurrentSpread(0);
   }, []);
 
   const handleUpdateBookDisplay = useCallback(

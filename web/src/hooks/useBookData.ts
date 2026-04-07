@@ -28,6 +28,17 @@ export function useBookData(seedData: BookData) {
     return stored ?? seedData;
   });
 
+  // Handle switching between books
+  useEffect(() => {
+    setBook((current) => {
+      if (current.slug !== seedData.slug) {
+        const stored = loadFromStorage(seedData.slug);
+        return stored ?? seedData;
+      }
+      return current;
+    });
+  }, [seedData, seedData.slug]);
+
   // Persist on every change
   useEffect(() => {
     saveToStorage(book.slug, book);
