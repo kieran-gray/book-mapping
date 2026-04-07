@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import type {
   BookData,
   Character,
+  Characteristic,
   LocationConfig,
   Relationship,
 } from "../types";
@@ -122,6 +123,50 @@ export function useBookData(seedData: BookData) {
     }));
   }, []);
 
+  // --- Characteristics ---
+  const addCharacteristic = useCallback((characteristic: Characteristic) => {
+    setBook((prev) => ({
+      ...prev,
+      characteristics: [...(prev.characteristics || []), characteristic],
+    }));
+  }, []);
+
+  const updateCharacteristic = useCallback(
+    (originalTitle: string, updated: Characteristic) => {
+      setBook((prev) => ({
+        ...prev,
+        characteristics: (prev.characteristics || []).map((ch) =>
+          ch.title === originalTitle ? updated : ch,
+        ),
+        // Update references in characters if title changed
+        characters:
+          originalTitle !== updated.title
+            ? prev.characters.map((c) => ({
+                ...c,
+                characteristics: c.characteristics?.map((t) =>
+                  t === originalTitle ? updated.title : t,
+                ),
+              }))
+            : prev.characters,
+      }));
+    },
+    [],
+  );
+
+  const deleteCharacteristic = useCallback((title: string) => {
+    setBook((prev) => ({
+      ...prev,
+      characteristics: (prev.characteristics || []).filter(
+        (ch) => ch.title !== title,
+      ),
+      // Remove from all characters
+      characters: prev.characters.map((c) => ({
+        ...c,
+        characteristics: c.characteristics?.filter((t) => t !== title),
+      })),
+    }));
+  }, []);
+
   // --- Groups ---
   const moveGroupToLocation = useCallback(
     (groupName: string, locationName: string) => {
@@ -237,6 +282,9 @@ export function useBookData(seedData: BookData) {
     updateLocationPosition,
     addRelationship,
     deleteRelationship,
+    addCharacteristic,
+    updateCharacteristic,
+    deleteCharacteristic,
     moveGroupToLocation,
     setGroupTravel,
     updateGroupTravelProgress,

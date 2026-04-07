@@ -204,6 +204,47 @@ export default function CharacterForm({
           )}
         </div>
 
+        {book.characteristics && book.characteristics.length > 0 && (
+          <div className="edit-modal__field">
+            <label>Characteristics:</label>
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "4px" }}>
+              {book.characteristics.map((ch) => {
+                const isChecked = formData.characteristics?.includes(ch.title) ?? false;
+                return (
+                  <label
+                    key={ch.title}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      fontSize: "14px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isChecked}
+                      onChange={() => {
+                        setFormData((prev) => {
+                          const current = prev.characteristics || [];
+                          const next = isChecked
+                            ? current.filter((t) => t !== ch.title)
+                            : [...current, ch.title];
+                          return { ...prev, characteristics: next };
+                        });
+                      }}
+                    />
+                    <span>
+                      <strong>{ch.title}</strong>
+                      <span style={{ color: "#666", marginLeft: "6px" }}>— {ch.meaning}</span>
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         <div className="edit-modal__actions">
           <button onClick={handleSave}>Save</button>
           <button onClick={onClose}>Cancel</button>

@@ -8,6 +8,7 @@ export interface Character {
   group?: string;
   travelTo?: string;
   travelProgress?: number;
+  characteristics?: string[];
 }
 
 export interface LocationConfig {
@@ -24,6 +25,11 @@ export interface Relationship {
   type: "Friendly" | "Enemies" | "Neutral";
 }
 
+export interface Characteristic {
+  title: string;
+  meaning: string;
+}
+
 export interface BookData {
   title: string;
   slug: string;
@@ -31,4 +37,16 @@ export interface BookData {
   characters: Character[];
   locations: LocationConfig[];
   relationships: Relationship[];
+  characteristics: Characteristic[];
+  displayConfig?: BookDisplayConfig;
+}
+
+export interface BookDisplayConfig {
+  height: number;
+  color: string;
+  shelf: number;
+}
+
+export interface ShelfConfig {
+  shelves: number;
 }
