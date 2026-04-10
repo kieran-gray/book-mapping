@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { Character, LocationConfig } from "../types";
 import { useBook } from "../context/BookContext";
 
-const LOCATION_COLORS = ["#43A047", "#2E7D32", "#689F38", "#D9D9D9", "#292A2B"];
+const LOCATION_COLORS = ["#C2B280", "#D9D9D9", "#292A2B"];
 
 interface LocationFormProps {
   location?: LocationConfig;
@@ -24,6 +24,7 @@ export default function LocationForm({
   const {
     addLocation,
     updateLocation,
+    deleteLocation,
     charactersByLocation,
     allGroups,
     moveGroupToLocation,
@@ -37,7 +38,7 @@ export default function LocationForm({
   const [formData, setFormData] = useState<LocationConfig>(
     location ?? {
       name: "",
-      color: "#43A047",
+      color: "#C2B280",
       x: initialCoords?.x ?? 50,
       y: initialCoords?.y ?? 50,
     },
@@ -200,6 +201,19 @@ export default function LocationForm({
 
             <div className="edit-modal__actions">
               <button onClick={handleSave}>Save</button>
+              {!isAdding && location && (
+                <button
+                  onClick={() => {
+                    if (confirm("Are you sure you want to delete this location?")) {
+                      deleteLocation(location.name);
+                      onClose();
+                    }
+                  }}
+                  style={{ background: "#dc3545", color: "white" }}
+                >
+                  Delete
+                </button>
+              )}
               <button onClick={onClose}>Cancel</button>
             </div>
           </>
@@ -220,7 +234,7 @@ export default function LocationForm({
               {chars.length > 0 ? (
                 chars.map((c: Character) => (
                   <div
-                    key={c.name}
+                    key={c.id}
                     className="character-item"
                     style={{ padding: "6px", marginBottom: "4px" }}
                   >

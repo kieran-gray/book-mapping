@@ -9,7 +9,8 @@
       "specialSkills": "Fighting",
       "gender": "Female",
       "hairColor": "#3d2314",
-      "group": ""
+      "group": "",
+      "id": "fb7cd2df-5353-459e-ad86-d13027e4d882"
     },
     {
       "name": "Lif",
@@ -17,7 +18,8 @@
       "specialSkills": "Child, Brother to Mord",
       "gender": "Male",
       "hairColor": "#e0c08b",
-      "group": ""
+      "group": "",
+      "id": "f895a45b-0619-4cda-8138-59af9e3ace12"
     },
     {
       "name": "Mord",
@@ -25,7 +27,8 @@
       "specialSkills": "Child, Brother to Lif",
       "gender": "Male",
       "hairColor": "#e0c08b",
-      "group": ""
+      "group": "",
+      "id": "668e14b5-95d2-414c-a943-0a9f00af68f8"
     },
     {
       "name": "Varg",
@@ -34,7 +37,8 @@
       "gender": "Male",
       "hairColor": "#b58e65",
       "beardColor": "#b58e65",
-      "group": ""
+      "group": "",
+      "id": "50b514da-b07a-451e-8015-b5db41041c32"
     },
     {
       "name": "Elvar",
@@ -42,7 +46,8 @@
       "specialSkills": "Mercenary",
       "gender": "Female",
       "hairColor": "#e0c08b",
-      "group": ""
+      "group": "",
+      "id": "b455208b-56c0-437d-8700-86d9c602d66e"
     },
     {
       "name": "Grend",
@@ -50,7 +55,8 @@
       "specialSkills": "Mercenary",
       "gender": "Male",
       "hairColor": "#3d2314",
-      "group": ""
+      "group": "",
+      "id": "d39309b5-b997-4afd-81a8-4f806d7e66f7"
     },
     {
       "name": "Drekr",
@@ -58,7 +64,8 @@
       "specialSkills": "UNKNOWN",
       "gender": "Male",
       "hairColor": "#3d2314",
-      "group": ""
+      "group": "",
+      "id": "89df081e-1d38-4b7c-add2-2d86584c354f"
     }
   ],
   "locations": [

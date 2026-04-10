@@ -37,7 +37,7 @@ export default function CharacterManager({
 
       <div className="character-list">
         {characters.map((character) => (
-          <div key={character.name} className="character-item">
+          <div key={character.id} className="character-item">
             <span className="character-item__name">{character.name}</span>
             <span className="character-item__location">
               {character.location}

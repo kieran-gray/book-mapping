@@ -577,7 +577,7 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
               >
                 <div className="travel-avatar-group-cluster">
                   {group.members.map((m) => (
-                    <div key={m.name} className="travel-avatar-group-member">
+                    <div key={m.id} className="travel-avatar-group-member">
                       <CharacterAvatar
                         gender={m.gender || "Male"}
                         hairColor={m.hairColor || "#FFA012"}

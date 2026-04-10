@@ -21,19 +21,24 @@ export default function RelationshipManager() {
       </div>
 
       <div className="character-list">
-        {relationships.map((rel, index) => (
-          <div key={index} className="character-item">
-            <span className="character-item__name">
-              {rel.source} ↔ {rel.target} ({rel.type})
-            </span>
-            <button
-              onClick={() => deleteRelationship(index)}
-              style={{ background: "#dc3545" }}
-            >
-              Delete
-            </button>
-          </div>
-        ))}
+        {relationships.map((rel, index) => {
+          const sourceName = book.characters.find((c) => c.id === rel.source)?.name || rel.source;
+          const targetName = book.characters.find((c) => c.id === rel.target)?.name || rel.target;
+
+          return (
+            <div key={index} className="character-item">
+              <span className="character-item__name">
+                {sourceName} ↔ {targetName} ({rel.type})
+              </span>
+              <button
+                onClick={() => deleteRelationship(index)}
+                style={{ background: "#dc3545", color: "white" }}
+              >
+                Delete
+              </button>
+            </div>
+          );
+        })}
       </div>
 
       {isAdding && <RelationshipForm onClose={() => setIsAdding(false)} />}

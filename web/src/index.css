@@ -5,6 +5,10 @@
   box-sizing: border-box;
 }
 
+button, input, select, textarea {
+  font-family: inherit;
+}
+
 .ibm-plex-sans {
   font-family: "IBM Plex Sans", sans-serif;
   font-optical-sizing: auto;

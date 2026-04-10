@@ -18,11 +18,12 @@ export default function CharacterForm({
   initialLocation,
   onClose,
 }: CharacterFormProps) {
-  const { book, allGroups, addCharacter, updateCharacter } = useBook();
+  const { book, allGroups, addCharacter, updateCharacter, deleteCharacter } = useBook();
   const { locations } = book;
 
   const [formData, setFormData] = useState<Character>(
     character ?? {
+      id: "",
       name: "",
       location: initialLocation ?? "",
       specialSkills: "",
@@ -41,7 +42,7 @@ export default function CharacterForm({
     if (isAdding) {
       addCharacter(formData);
     } else if (character) {
-      updateCharacter(character.name, formData);
+      updateCharacter(character.id, formData);
     }
     onClose();
   };
@@ -57,7 +58,6 @@ export default function CharacterForm({
             type="text"
             value={formData.name}
             onChange={(e) => handleChange("name", e.target.value)}
-            disabled={!isAdding}
           />
         </div>
 
@@ -225,13 +225,18 @@ export default function CharacterForm({
                     style={{
                       display: "flex",
                       alignItems: "center",
-                      gap: "8px",
+                      justifyContent: "flex-start",
+                      gap: "4px",
                       fontSize: "14px",
                       cursor: "pointer",
+                      textAlign: "left",
+                      margin: 0,
+                      fontWeight: "normal",
                     }}
                   >
                     <input
                       type="checkbox"
+                      style={{ margin: 0, width: "auto", padding: 0, cursor: "pointer" }}
                       checked={isChecked}
                       onChange={() => {
                         setFormData((prev) => {
@@ -258,6 +263,19 @@ export default function CharacterForm({
 
         <div className="edit-modal__actions">
           <button onClick={handleSave}>Save</button>
+          {!isAdding && character && (
+            <button
+              onClick={() => {
+                if (confirm("Are you sure you want to delete this character?")) {
+                  deleteCharacter(character.id);
+                  onClose();
+                }
+              }}
+              style={{ background: "#dc3545", color: "white" }}
+            >
+              Delete
+            </button>
+          )}
           <button onClick={onClose}>Cancel</button>
         </div>
       </div>

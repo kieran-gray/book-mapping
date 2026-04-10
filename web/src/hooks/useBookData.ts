@@ -12,10 +12,45 @@ const STORAGE_PREFIX = "book-mapping:";
 function loadFromStorage(slug: string): BookData | null {
   try {
     const raw = localStorage.getItem(`${STORAGE_PREFIX}${slug}`);
-    return raw ? (JSON.parse(raw) as BookData) : null;
+    if (!raw) return null;
+    return migrateBookData(JSON.parse(raw) as BookData);
   } catch {
     return null;
   }
+}
+
+function migrateBookData(data: BookData): BookData {
+  if (!data?.characters) return data;
+  let needsMigration = false;
+  for (const c of data.characters) {
+    if (!c.id) needsMigration = true;
+  }
+  if (!needsMigration) return data;
+
+  const nameToId = new Map<string, string>();
+  const migratedCharacters = data.characters.map((c) => {
+    if (c.id) {
+      nameToId.set(c.name, c.id);
+      return c;
+    }
+    const newId = crypto.randomUUID();
+    nameToId.set(c.name, newId);
+    return { ...c, id: newId };
+  });
+
+  const migratedRelationships = (data.relationships || []).map((r) => {
+    let updatedSource = r.source;
+    let updatedTarget = r.target;
+    if (nameToId.has(r.source)) updatedSource = nameToId.get(r.source)!;
+    if (nameToId.has(r.target)) updatedTarget = nameToId.get(r.target)!;
+    return { ...r, source: updatedSource, target: updatedTarget };
+  });
+
+  return {
+    ...data,
+    characters: migratedCharacters,
+    relationships: migratedRelationships,
+  };
 }
 
 function saveToStorage(slug: string, data: BookData) {
@@ -25,7 +60,7 @@ function saveToStorage(slug: string, data: BookData) {
 export function useBookData(seedData: BookData) {
   const [book, setBook] = useState<BookData>(() => {
     const stored = loadFromStorage(seedData.slug);
-    return stored ?? seedData;
+    return stored ?? migrateBookData(seedData);
   });
 
   // Handle switching between books
@@ -33,7 +68,7 @@ export function useBookData(seedData: BookData) {
     setBook((current) => {
       if (current.slug !== seedData.slug) {
         const stored = loadFromStorage(seedData.slug);
-        return stored ?? seedData;
+        return stored ?? migrateBookData(seedData);
       }
       return current;
     });
@@ -45,24 +80,34 @@ export function useBookData(seedData: BookData) {
   }, [book]);
 
   // --- Characters ---
-  const addCharacter = useCallback((character: Character) => {
+  const addCharacter = useCallback((character: Omit<Character, "id">) => {
     setBook((prev) => ({
       ...prev,
-      characters: [...prev.characters, character],
+      characters: [...prev.characters, { ...character, id: crypto.randomUUID() } as Character],
     }));
   }, []);
 
   const updateCharacter = useCallback(
-    (originalName: string, updated: Character) => {
+    (id: string, updated: Character) => {
       setBook((prev) => ({
         ...prev,
         characters: prev.characters.map((c) =>
-          c.name === originalName ? updated : c,
+          c.id === id ? updated : c,
         ),
       }));
     },
     [],
   );
+
+  const deleteCharacter = useCallback((id: string) => {
+    setBook((prev) => ({
+      ...prev,
+      characters: prev.characters.filter((c) => c.id !== id),
+      relationships: prev.relationships.filter(
+        (r) => r.source !== id && r.target !== id
+      ),
+    }));
+  }, []);
 
   // --- Locations ---
   const addLocation = useCallback((location: LocationConfig) => {
@@ -247,11 +292,11 @@ export function useBookData(seedData: BookData) {
 
   // --- Character Travel ---
   const updateCharacterTravel = useCallback(
-    (name: string, progress: number) => {
+    (id: string, progress: number) => {
       setBook((prev) => ({
         ...prev,
         characters: prev.characters.map((c) =>
-          c.name === name
+          c.id === id
             ? { ...c, travelProgress: Math.max(0, Math.min(1, progress)) }
             : c,
         ),
@@ -309,6 +354,7 @@ export function useBookData(seedData: BookData) {
     travelingGroups,
     addCharacter,
     updateCharacter,
+    deleteCharacter,
     updateCharacterTravel,
     addLocation,
     updateLocation,

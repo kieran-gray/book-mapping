@@ -44,7 +44,7 @@ export default function RelationshipForm({ onClose }: RelationshipFormProps) {
           >
             <option value="">Select...</option>
             {characters.map((c) => (
-              <option key={c.name} value={c.name}>
+              <option key={c.id} value={c.id}>
                 {c.name}
               </option>
             ))}
@@ -59,7 +59,7 @@ export default function RelationshipForm({ onClose }: RelationshipFormProps) {
           >
             <option value="">Select...</option>
             {characters.map((c) => (
-              <option key={c.name} value={c.name}>
+              <option key={c.id} value={c.id}>
                 {c.name}
               </option>
             ))}

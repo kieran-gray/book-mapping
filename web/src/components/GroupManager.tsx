@@ -29,7 +29,7 @@ export default function GroupManager() {
               </div>
               <div className="group-card-members">
                 {members.map((m) => (
-                  <span key={m.name} className="group-member-tag">
+                  <span key={m.id} className="group-member-tag">
                     {m.name}
                   </span>
                 ))}

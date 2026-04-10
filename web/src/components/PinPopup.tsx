@@ -22,7 +22,7 @@ export default function PinPopup({
         <div className="character-list" style={{ marginTop: "12px" }}>
           {chars.length > 0 ? (
             chars.map((c: Character) => (
-              <div key={c.name} className="character-item">
+              <div key={c.id} className="character-item">
                 <span className="character-item__name">{c.name}</span>
               </div>
             ))

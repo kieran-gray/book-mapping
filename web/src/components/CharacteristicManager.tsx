@@ -49,7 +49,7 @@ export default function CharacteristicManager() {
                   Edit
                 </button>
                 <button
-                  style={{ background: "#dc3545" }}
+                  style={{ background: "#dc3545", color: "white" }}
                   onClick={() => deleteCharacteristic(ch.title)}
                 >
                   Delete
@@ -72,6 +72,10 @@ export default function CharacteristicManager() {
             }
             setEditing(null);
           }}
+          onDelete={(title) => {
+            deleteCharacteristic(title);
+            setEditing(null);
+          }}
           onClose={() => setEditing(null)}
         />
       )}
@@ -83,11 +87,13 @@ function CharacteristicFormModal({
   characteristic,
   isAdding,
   onSave,
+  onDelete,
   onClose,
 }: {
   characteristic: Characteristic;
   isAdding: boolean;
   onSave: (original: Characteristic, updated: Characteristic) => void;
+  onDelete: (title: string) => void;
   onClose: () => void;
 }) {
   const [title, setTitle] = useState(characteristic.title);
@@ -111,7 +117,6 @@ function CharacteristicFormModal({
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            disabled={!isAdding}
             placeholder="e.g. Bloodsworn"
           />
         </div>
@@ -128,6 +133,18 @@ function CharacteristicFormModal({
 
         <div className="edit-modal__actions">
           <button onClick={handleSave}>Save</button>
+          {!isAdding && (
+            <button
+              onClick={() => {
+                if (confirm("Are you sure you want to delete this characteristic?")) {
+                  onDelete(characteristic.title);
+                }
+              }}
+              style={{ background: "#dc3545", color: "white" }}
+            >
+              Delete
+            </button>
+          )}
           <button onClick={onClose}>Cancel</button>
         </div>
       </div>

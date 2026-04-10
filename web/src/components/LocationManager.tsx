@@ -42,7 +42,7 @@ export default function LocationManager() {
               <button
                 className="section-header__action--danger"
                 onClick={() => deleteLocation(location.name)}
-                style={{ background: "#dc3545" }}
+                style={{ background: "#dc3545", color: "white" }}
               >
                 Delete
               </button>

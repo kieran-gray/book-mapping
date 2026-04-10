@@ -54,7 +54,7 @@ export default function CharacterSummary() {
             <h3 className="group-section-title">{groupName}</h3>
             <div className="char-card-grid">
               {members.map((c: Character) => (
-                <CharacterCard key={c.name} c={c} />
+                <CharacterCard key={c.id} c={c} />
               ))}
             </div>
           </div>
@@ -66,7 +66,7 @@ export default function CharacterSummary() {
           <h3 className="group-section-title">Ungrouped</h3>
           <div className="char-card-grid">
             {ungrouped.map((c: Character) => (
-              <CharacterCard key={c.name} c={c} />
+              <CharacterCard key={c.id} c={c} />
             ))}
           </div>
         </div>

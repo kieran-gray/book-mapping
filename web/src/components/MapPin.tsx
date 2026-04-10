@@ -73,7 +73,7 @@ export default function MapPin({
           {characters.length > 0 && (
             <div className="map-pin-tooltip-chars">
               {characters.map((c) => (
-                <span key={c.name} className="map-pin-tooltip-char">
+                <span key={c.id} className="map-pin-tooltip-char">
                   {c.name}
                 </span>
               ))}
@@ -98,7 +98,7 @@ export default function MapPin({
       {characters.length > 0 && (
         <div className="map-pin-characters">
           {characters.map((c) => (
-            <div key={c.name} title={c.name} className="map-pin-character">
+            <div key={c.id} title={c.name} className="map-pin-character">
               <CharacterAvatar
                 gender={c.gender || "Male"}
                 hairColor={c.hairColor || "#FFA012"}
