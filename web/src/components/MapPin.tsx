@@ -46,8 +46,16 @@ export default function MapPin({
         }
         onClick(e);
       }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onPointerEnter={(e) => {
+        if (e.pointerType === "mouse") {
+          setHovered(true);
+        }
+      }}
+      onPointerLeave={(e) => {
+        if (e.pointerType === "mouse") {
+          setHovered(false);
+        }
+      }}
     >
       <div
         className="map-pin-icon"
