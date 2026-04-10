@@ -30,7 +30,9 @@ export default function CharacterSummary() {
         {c.characteristics && c.characteristics.length > 0 && (
           <div className="char-card__traits">
             {c.characteristics.map((t) => (
-              <span key={t} className="char-card__trait-tag">{t}</span>
+              <span key={t} className="char-card__trait-tag">
+                {t}
+              </span>
             ))}
           </div>
         )}
@@ -43,7 +45,9 @@ export default function CharacterSummary() {
       <h2>Characters &amp; Groups</h2>
 
       {allGroups.map((groupName: string) => {
-        const members = characters.filter((c: Character) => c.group === groupName);
+        const members = characters.filter(
+          (c: Character) => c.group === groupName,
+        );
         if (members.length === 0) return null;
         return (
           <div key={groupName} className="group-section">

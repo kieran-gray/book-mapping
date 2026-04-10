@@ -2,17 +2,36 @@ import { useState } from "react";
 import type { BookData, BookDisplayConfig, ShelfConfig } from "../types";
 
 const SPINE_COLORS = [
-  "#3c2415", "#2a4a3f", "#4a2a2a", "#2a2a4a",
-  "#4a3a2a", "#2a3a4a", "#5a2a3a", "#3a4a2a",
+  "#3c2415",
+  "#2a4a3f",
+  "#4a2a2a",
+  "#2a2a4a",
+  "#4a3a2a",
+  "#2a3a4a",
+  "#5a2a3a",
+  "#3a4a2a",
 ];
 
 const COLOR_SWATCHES = [
-  "#3c2415", "#2a4a3f", "#4a2a2a", "#2a2a4a",
-  "#4a3a2a", "#2a3a4a", "#5a2a3a", "#3a4a2a",
-  "#6b3a1f", "#1f3a4a", "#4a1f3a", "#2a5a3f",
+  "#3c2415",
+  "#2a4a3f",
+  "#4a2a2a",
+  "#2a2a4a",
+  "#4a3a2a",
+  "#2a3a4a",
+  "#5a2a3a",
+  "#3a4a2a",
+  "#6b3a1f",
+  "#1f3a4a",
+  "#4a1f3a",
+  "#2a5a3f",
 ];
 
-const DEFAULT_DISPLAY: BookDisplayConfig = { height: 180, color: "#3c2415", shelf: 0 };
+const DEFAULT_DISPLAY: BookDisplayConfig = {
+  height: 180,
+  color: "#3c2415",
+  shelf: 0,
+};
 
 interface BookshelfProps {
   books: BookData[];
@@ -40,10 +59,12 @@ export default function Bookshelf({
   const shelves = Array.from({ length: shelfConfig.shelves }, (_, i) => i);
 
   const getBookDisplay = (book: BookData, index: number): BookDisplayConfig => {
-    return book.displayConfig ?? {
-      ...DEFAULT_DISPLAY,
-      color: SPINE_COLORS[index % SPINE_COLORS.length],
-    };
+    return (
+      book.displayConfig ?? {
+        ...DEFAULT_DISPLAY,
+        color: SPINE_COLORS[index % SPINE_COLORS.length],
+      }
+    );
   };
 
   const handleCreateBook = () => {
@@ -153,7 +174,9 @@ export default function Bookshelf({
                             {COLOR_SWATCHES.map((c) => (
                               <button
                                 key={c}
-                                className={`color-dot ${display.color === c ? "active" : ""}`}
+                                className={`color-dot ${
+                                  display.color === c ? "active" : ""
+                                }`}
                                 style={{ backgroundColor: c }}
                                 onClick={() =>
                                   onUpdateBookDisplay(book.slug, {

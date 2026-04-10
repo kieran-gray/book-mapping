@@ -35,7 +35,7 @@ export default function MapPin({
         left: `${location.x}%`,
         top: `${location.y}%`,
         cursor: isDragging ? "grabbing" : "pointer",
-        zIndex: isDragging ? 50 : (showTooltip ? 40 : 20),
+        zIndex: isDragging ? 50 : showTooltip ? 40 : 20,
       }}
       onPointerDown={(e) => {
         dragMoved.current = false;
@@ -98,11 +98,7 @@ export default function MapPin({
       {characters.length > 0 && (
         <div className="map-pin-characters">
           {characters.map((c) => (
-            <div
-              key={c.name}
-              title={c.name}
-              className="map-pin-character"
-            >
+            <div key={c.name} title={c.name} className="map-pin-character">
               <CharacterAvatar
                 gender={c.gender || "Male"}
                 hairColor={c.hairColor || "#FFA012"}

@@ -84,8 +84,10 @@ export function useBookData(seedData: BookData) {
           originalName !== updated.name
             ? prev.characters.map((c) => {
                 let patched = c;
-                if (patched.location === originalName) patched = { ...patched, location: updated.name };
-                if (patched.travelTo === originalName) patched = { ...patched, travelTo: updated.name };
+                if (patched.location === originalName)
+                  patched = { ...patched, location: updated.name };
+                if (patched.travelTo === originalName)
+                  patched = { ...patched, travelTo: updated.name };
                 return patched;
               })
             : prev.characters,
@@ -101,7 +103,12 @@ export function useBookData(seedData: BookData) {
       characters: prev.characters.map((c) => {
         let patched = c;
         if (patched.location === name) patched = { ...patched, location: "" };
-        if (patched.travelTo === name) patched = { ...patched, travelTo: undefined, travelProgress: undefined };
+        if (patched.travelTo === name)
+          patched = {
+            ...patched,
+            travelTo: undefined,
+            travelProgress: undefined,
+          };
         return patched;
       }),
     }));
@@ -185,7 +192,12 @@ export function useBookData(seedData: BookData) {
         ...prev,
         characters: prev.characters.map((c) =>
           c.group === groupName
-            ? { ...c, location: locationName, travelTo: undefined, travelProgress: undefined }
+            ? {
+                ...c,
+                location: locationName,
+                travelTo: undefined,
+                travelProgress: undefined,
+              }
             : c,
         ),
       }));
@@ -194,7 +206,12 @@ export function useBookData(seedData: BookData) {
   );
 
   const setGroupTravel = useCallback(
-    (groupName: string, fromLocation: string, toLocation: string | undefined, progress: number) => {
+    (
+      groupName: string,
+      fromLocation: string,
+      toLocation: string | undefined,
+      progress: number,
+    ) => {
       setBook((prev) => ({
         ...prev,
         characters: prev.characters.map((c) =>
@@ -203,7 +220,9 @@ export function useBookData(seedData: BookData) {
                 ...c,
                 location: fromLocation,
                 travelTo: toLocation || undefined,
-                travelProgress: toLocation ? Math.max(0, Math.min(1, progress)) : undefined,
+                travelProgress: toLocation
+                  ? Math.max(0, Math.min(1, progress))
+                  : undefined,
               }
             : c,
         ),
@@ -232,7 +251,9 @@ export function useBookData(seedData: BookData) {
       setBook((prev) => ({
         ...prev,
         characters: prev.characters.map((c) =>
-          c.name === name ? { ...c, travelProgress: Math.max(0, Math.min(1, progress)) } : c,
+          c.name === name
+            ? { ...c, travelProgress: Math.max(0, Math.min(1, progress)) }
+            : c,
         ),
       }));
     },
@@ -260,7 +281,9 @@ export function useBookData(seedData: BookData) {
   });
 
   // Ungrouped characters currently traveling
-  const travelingCharacters = book.characters.filter((c) => c.travelTo && !c.group);
+  const travelingCharacters = book.characters.filter(
+    (c) => c.travelTo && !c.group,
+  );
 
   // Groups currently traveling
   const travelingGroups = allGroups

@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useBook } from "../context/BookContext";
-import type { LocationConfig } from "../types";
 import MapPin from "./MapPin";
 import CharacterAvatar from "./CharacterAvatar";
 import LocationForm from "./LocationForm";
@@ -11,8 +10,8 @@ interface WorldMapProps {
 
 /* --- EDITABLE TRAVEL LINE SETTINGS --- */
 /* Change these values to customise the travel route lines on the map */
-const TRAVEL_LINE_COLOR = "#0000006c";   // Line colour (any CSS colour, e.g. "#ff0000", "red")
-const TRAVEL_LINE_WIDTH = 1;           // Line width in px (1–5 recommended)
+const TRAVEL_LINE_COLOR = "#0000006c"; // Line colour (any CSS colour, e.g. "#ff0000", "red")
+const TRAVEL_LINE_WIDTH = 1; // Line width in px (1–5 recommended)
 
 interface LineData {
   key: string;
@@ -34,8 +33,12 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
 
   const { mapImage, locations, characters, relationships } = book;
 
-  const [editingLocationName, setEditingLocationName] = useState<string | null>(null);
-  const editingLocation = editingLocationName ? locations.find(l => l.name === editingLocationName) : null;
+  const [editingLocationName, setEditingLocationName] = useState<string | null>(
+    null,
+  );
+  const editingLocation = editingLocationName
+    ? locations.find((l) => l.name === editingLocationName)
+    : null;
   const [draggingPin, setDraggingPin] = useState<string | null>(null);
   const [draggingTraveler, setDraggingTraveler] = useState<string | null>(null);
   const [draggingGroup, setDraggingGroup] = useState<string | null>(null);
@@ -86,7 +89,15 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
 
     const fromLoc = locations.find((l) => l.name === char.location);
     const toLoc = locations.find((l) => l.name === char.travelTo);
-    if (!fromLoc || !toLoc || fromLoc.x == null || fromLoc.y == null || toLoc.x == null || toLoc.y == null) return;
+    if (
+      !fromLoc ||
+      !toLoc ||
+      fromLoc.x == null ||
+      fromLoc.y == null ||
+      toLoc.x == null ||
+      toLoc.y == null
+    )
+      return;
 
     const handlePointerMove = (e: PointerEvent) => {
       if (!mapRef.current) return;
@@ -129,7 +140,15 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
 
     const fromLoc = locations.find((l) => l.name === group.location);
     const toLoc = locations.find((l) => l.name === group.travelTo);
-    if (!fromLoc || !toLoc || fromLoc.x == null || fromLoc.y == null || toLoc.x == null || toLoc.y == null) return;
+    if (
+      !fromLoc ||
+      !toLoc ||
+      fromLoc.x == null ||
+      fromLoc.y == null ||
+      toLoc.x == null ||
+      toLoc.y == null
+    )
+      return;
 
     const handlePointerMove = (e: PointerEvent) => {
       if (!mapRef.current) return;
@@ -337,8 +356,9 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
       window.removeEventListener("resize", updateLines);
       clearInterval(interval);
     };
-  }, [characters, locations, relationships]);
+  }, [characters, locations, relationships, characterOffsets, lines]);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleMapClick = useCallback((_e: React.MouseEvent<HTMLDivElement>) => {
     // Click-to-add-location can be implemented here
   }, []);
@@ -409,7 +429,15 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
             {travelingCharacters.map((char) => {
               const fromLoc = locations.find((l) => l.name === char.location);
               const toLoc = locations.find((l) => l.name === char.travelTo);
-              if (!fromLoc || !toLoc || fromLoc.x == null || fromLoc.y == null || toLoc.x == null || toLoc.y == null) return null;
+              if (
+                !fromLoc ||
+                !toLoc ||
+                fromLoc.x == null ||
+                fromLoc.y == null ||
+                toLoc.x == null ||
+                toLoc.y == null
+              )
+                return null;
               return (
                 <line
                   key={`travel-${char.name}`}
@@ -427,7 +455,15 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
             {travelingGroups.map((group) => {
               const fromLoc = locations.find((l) => l.name === group.location);
               const toLoc = locations.find((l) => l.name === group.travelTo);
-              if (!fromLoc || !toLoc || fromLoc.x == null || fromLoc.y == null || toLoc.x == null || toLoc.y == null) return null;
+              if (
+                !fromLoc ||
+                !toLoc ||
+                fromLoc.x == null ||
+                fromLoc.y == null ||
+                toLoc.x == null ||
+                toLoc.y == null
+              )
+                return null;
               return (
                 <line
                   key={`group-travel-${group.name}`}
@@ -459,14 +495,24 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
               onClick={(e) => {
                 e.stopPropagation();
               }}
-              onEditLocation={(locationToEdit) => setEditingLocationName(locationToEdit.name)}
+              onEditLocation={(locationToEdit) =>
+                setEditingLocationName(locationToEdit.name)
+              }
             />
           ))}
           {/* Traveling character avatars */}
           {travelingCharacters.map((char) => {
             const fromLoc = locations.find((l) => l.name === char.location);
             const toLoc = locations.find((l) => l.name === char.travelTo);
-            if (!fromLoc || !toLoc || fromLoc.x == null || fromLoc.y == null || toLoc.x == null || toLoc.y == null) return null;
+            if (
+              !fromLoc ||
+              !toLoc ||
+              fromLoc.x == null ||
+              fromLoc.y == null ||
+              toLoc.x == null ||
+              toLoc.y == null
+            )
+              return null;
             const t = char.travelProgress ?? 0;
             const cx = fromLoc.x + (toLoc.x - fromLoc.x) * t;
             const cy = fromLoc.y + (toLoc.y - fromLoc.y) * t;
@@ -500,7 +546,15 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
           {travelingGroups.map((group) => {
             const fromLoc = locations.find((l) => l.name === group.location);
             const toLoc = locations.find((l) => l.name === group.travelTo);
-            if (!fromLoc || !toLoc || fromLoc.x == null || fromLoc.y == null || toLoc.x == null || toLoc.y == null) return null;
+            if (
+              !fromLoc ||
+              !toLoc ||
+              fromLoc.x == null ||
+              fromLoc.y == null ||
+              toLoc.x == null ||
+              toLoc.y == null
+            )
+              return null;
             const t = group.travelProgress;
             const cx = fromLoc.x + (toLoc.x - fromLoc.x) * t;
             const cy = fromLoc.y + (toLoc.y - fromLoc.y) * t;

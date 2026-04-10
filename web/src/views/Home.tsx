@@ -23,7 +23,9 @@ function loadLibrary(): BookData[] {
   try {
     const raw = localStorage.getItem(LIBRARY_KEY);
     if (raw) return JSON.parse(raw);
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   // First load: seed with the default book
   const initial = [seedData as BookData];
   localStorage.setItem(LIBRARY_KEY, JSON.stringify(initial));
@@ -38,7 +40,9 @@ function loadShelfConfig(): ShelfConfig {
   try {
     const raw = localStorage.getItem(SHELF_CONFIG_KEY);
     if (raw) return JSON.parse(raw);
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   return { shelves: 1 };
 }
 
@@ -65,7 +69,10 @@ export default function BookView() {
 
   // --- Library management ---
   const handleCreateBook = useCallback((title: string) => {
-    const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/-+$/, "");
+    const slug = title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/-+$/, "");
     const generatedSlug = `${slug}-${Date.now()}`;
 
     setLibrary((prev) => {

@@ -3,8 +3,12 @@ import type { Characteristic } from "../types";
 import { useBook } from "../context/BookContext";
 
 export default function CharacteristicManager() {
-  const { book, addCharacteristic, updateCharacteristic, deleteCharacteristic } =
-    useBook();
+  const {
+    book,
+    addCharacteristic,
+    updateCharacteristic,
+    deleteCharacteristic,
+  } = useBook();
   const characteristics = book.characteristics || [];
 
   const [editing, setEditing] = useState<Characteristic | null>(null);
@@ -97,7 +101,9 @@ function CharacteristicFormModal({
   return (
     <div className="edit-modal">
       <div className="edit-modal__content">
-        <h3>{isAdding ? "Add Characteristic" : `Edit ${characteristic.title}`}</h3>
+        <h3>
+          {isAdding ? "Add Characteristic" : `Edit ${characteristic.title}`}
+        </h3>
 
         <div className="edit-modal__field">
           <label>Title:</label>

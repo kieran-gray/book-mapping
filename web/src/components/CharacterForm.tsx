@@ -85,7 +85,7 @@ export default function CharacterForm({
               setFormData((prev) => ({
                 ...prev,
                 travelTo: val || undefined,
-                travelProgress: val ? (prev.travelProgress ?? 0) : undefined,
+                travelProgress: val ? prev.travelProgress ?? 0 : undefined,
               }));
             }}
           >
@@ -103,7 +103,8 @@ export default function CharacterForm({
         {formData.travelTo && (
           <div className="edit-modal__field">
             <label>
-              Travel Progress: {Math.round((formData.travelProgress ?? 0) * 100)}%
+              Travel Progress:{" "}
+              {Math.round((formData.travelProgress ?? 0) * 100)}%
             </label>
             <input
               type="range"
@@ -207,9 +208,17 @@ export default function CharacterForm({
         {book.characteristics && book.characteristics.length > 0 && (
           <div className="edit-modal__field">
             <label>Characteristics:</label>
-            <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "4px" }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "6px",
+                marginTop: "4px",
+              }}
+            >
               {book.characteristics.map((ch) => {
-                const isChecked = formData.characteristics?.includes(ch.title) ?? false;
+                const isChecked =
+                  formData.characteristics?.includes(ch.title) ?? false;
                 return (
                   <label
                     key={ch.title}
@@ -236,7 +245,9 @@ export default function CharacterForm({
                     />
                     <span>
                       <strong>{ch.title}</strong>
-                      <span style={{ color: "#666", marginLeft: "6px" }}>— {ch.meaning}</span>
+                      <span style={{ color: "#666", marginLeft: "6px" }}>
+                        — {ch.meaning}
+                      </span>
                     </span>
                   </label>
                 );

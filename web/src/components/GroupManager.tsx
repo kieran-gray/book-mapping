@@ -39,7 +39,12 @@ export default function GroupManager() {
                 <select
                   value={groupLocation}
                   onChange={(e) =>
-                    setGroupTravel(groupName, e.target.value, groupTravelTo || undefined, groupProgress)
+                    setGroupTravel(
+                      groupName,
+                      e.target.value,
+                      groupTravelTo || undefined,
+                      groupProgress,
+                    )
                   }
                 >
                   <option value="">Select location...</option>
@@ -74,7 +79,10 @@ export default function GroupManager() {
                 </select>
               </div>
               {groupTravelTo && (
-                <div className="group-card-location" style={{ marginTop: "8px" }}>
+                <div
+                  className="group-card-location"
+                  style={{ marginTop: "8px" }}
+                >
                   <span>Progress: {Math.round(groupProgress * 100)}%</span>
                   <input
                     type="range"
