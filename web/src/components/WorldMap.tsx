@@ -51,7 +51,7 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
   useEffect(() => {
     if (!draggingPin) return;
 
-    const handleMouseMove = (e: MouseEvent) => {
+    const handlePointerMove = (e: PointerEvent) => {
       if (!mapRef.current) return;
       dragHasMoved.current = true;
       const rect = mapRef.current.getBoundingClientRect();
@@ -64,13 +64,15 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
       updateLocationPosition(draggingPin, clamped.x, clamped.y);
     };
 
-    const handleMouseUp = () => setDraggingPin(null);
+    const handlePointerUp = () => setDraggingPin(null);
 
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("mouseup", handleMouseUp);
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", handlePointerUp);
+    window.addEventListener("pointercancel", handlePointerUp);
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerUp);
+      window.removeEventListener("pointercancel", handlePointerUp);
     };
   }, [draggingPin, updateLocationPosition]);
 
@@ -85,7 +87,7 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
     const toLoc = locations.find((l) => l.name === char.travelTo);
     if (!fromLoc || !toLoc || fromLoc.x == null || fromLoc.y == null || toLoc.x == null || toLoc.y == null) return;
 
-    const handleMouseMove = (e: MouseEvent) => {
+    const handlePointerMove = (e: PointerEvent) => {
       if (!mapRef.current) return;
       const rect = mapRef.current.getBoundingClientRect();
       const mx = ((e.clientX - rect.left) / rect.width) * 100;
@@ -105,13 +107,15 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
       updateCharacterTravel(draggingTraveler, t);
     };
 
-    const handleMouseUp = () => setDraggingTraveler(null);
+    const handlePointerUp = () => setDraggingTraveler(null);
 
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("mouseup", handleMouseUp);
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", handlePointerUp);
+    window.addEventListener("pointercancel", handlePointerUp);
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerUp);
+      window.removeEventListener("pointercancel", handlePointerUp);
     };
   }, [draggingTraveler, characters, locations, updateCharacterTravel]);
 
@@ -126,7 +130,7 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
     const toLoc = locations.find((l) => l.name === group.travelTo);
     if (!fromLoc || !toLoc || fromLoc.x == null || fromLoc.y == null || toLoc.x == null || toLoc.y == null) return;
 
-    const handleMouseMove = (e: MouseEvent) => {
+    const handlePointerMove = (e: PointerEvent) => {
       if (!mapRef.current) return;
       const rect = mapRef.current.getBoundingClientRect();
       const mx = ((e.clientX - rect.left) / rect.width) * 100;
@@ -145,13 +149,15 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
       updateGroupTravelProgress(draggingGroup, t);
     };
 
-    const handleMouseUp = () => setDraggingGroup(null);
+    const handlePointerUp = () => setDraggingGroup(null);
 
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("mouseup", handleMouseUp);
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", handlePointerUp);
+    window.addEventListener("pointercancel", handlePointerUp);
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerUp);
+      window.removeEventListener("pointercancel", handlePointerUp);
     };
   }, [draggingGroup, travelingGroups, locations, updateGroupTravelProgress]);
 
@@ -442,7 +448,7 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
               location={loc}
               characters={charactersByLocation[loc.name] ?? []}
               isDragging={draggingPin === loc.name}
-              onMouseDown={(e) => {
+              onPointerDown={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
                 dragHasMoved.current = false;
@@ -475,7 +481,7 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
                   cursor: draggingTraveler === char.name ? "grabbing" : "grab",
                   zIndex: draggingTraveler === char.name ? 45 : 25,
                 }}
-                onMouseDown={(e) => {
+                onPointerDown={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
                   setDraggingTraveler(char.name);
@@ -509,7 +515,7 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
                   cursor: draggingGroup === group.name ? "grabbing" : "grab",
                   zIndex: draggingGroup === group.name ? 45 : 25,
                 }}
-                onMouseDown={(e) => {
+                onPointerDown={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
                   setDraggingGroup(group.name);

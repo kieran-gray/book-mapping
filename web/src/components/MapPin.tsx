@@ -6,7 +6,7 @@ interface MapPinProps {
   location: LocationConfig;
   characters: Character[];
   isDragging: boolean;
-  onMouseDown: (e: React.MouseEvent) => void;
+  onPointerDown: (e: React.PointerEvent) => void;
   onClick: (e: React.MouseEvent) => void;
 }
 
@@ -14,7 +14,7 @@ export default function MapPin({
   location,
   characters,
   isDragging,
-  onMouseDown,
+  onPointerDown,
   onClick,
 }: MapPinProps) {
   const [hovered, setHovered] = useState(false);
@@ -35,9 +35,9 @@ export default function MapPin({
         cursor: isDragging ? "grabbing" : "pointer",
         zIndex: isDragging ? 50 : (showTooltip ? 40 : 20),
       }}
-      onMouseDown={(e) => {
+      onPointerDown={(e) => {
         dragMoved.current = false;
-        onMouseDown(e);
+        onPointerDown(e);
       }}
       onClick={(e) => {
         e.stopPropagation();
