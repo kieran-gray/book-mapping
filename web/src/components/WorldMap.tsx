@@ -2,8 +2,8 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useBook } from "../context/BookContext";
 import type { LocationConfig } from "../types";
 import MapPin from "./MapPin";
-import PinPopup from "./PinPopup";
 import CharacterAvatar from "./CharacterAvatar";
+import LocationForm from "./LocationForm";
 
 interface WorldMapProps {
   onAddCharacterAtLocation: (locationName: string) => void;
@@ -34,7 +34,8 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
 
   const { mapImage, locations, characters, relationships } = book;
 
-  const [activePin, setActivePin] = useState<LocationConfig | null>(null);
+  const [editingLocationName, setEditingLocationName] = useState<string | null>(null);
+  const editingLocation = editingLocationName ? locations.find(l => l.name === editingLocationName) : null;
   const [draggingPin, setDraggingPin] = useState<string | null>(null);
   const [draggingTraveler, setDraggingTraveler] = useState<string | null>(null);
   const [draggingGroup, setDraggingGroup] = useState<string | null>(null);
@@ -449,6 +450,7 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
               characters={charactersByLocation[loc.name] ?? []}
               isDragging={draggingPin === loc.name}
               onPointerDown={(e) => {
+                if (editingLocation?.name !== loc.name) return;
                 e.stopPropagation();
                 e.preventDefault();
                 dragHasMoved.current = false;
@@ -456,10 +458,8 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
               }}
               onClick={(e) => {
                 e.stopPropagation();
-                if (!dragHasMoved.current) {
-                  setActivePin(loc);
-                }
               }}
+              onEditLocation={(locationToEdit) => setEditingLocationName(locationToEdit.name)}
             />
           ))}
           {/* Traveling character avatars */}
@@ -538,13 +538,15 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
           })}
         </div>
       )}
-      {activePin && (
-        <PinPopup
-          pin={activePin}
-          onClose={() => setActivePin(null)}
+      {editingLocation && (
+        <LocationForm
+          location={editingLocation}
+          isAdding={false}
+          isMapOverlay={true}
+          onClose={() => setEditingLocationName(null)}
           onAddCharacterHere={() => {
-            const locName = activePin.name;
-            setActivePin(null);
+            const locName = editingLocation.name;
+            setEditingLocationName(null);
             onAddCharacterAtLocation(locName);
           }}
         />

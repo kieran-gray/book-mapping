@@ -8,6 +8,7 @@ interface MapPinProps {
   isDragging: boolean;
   onPointerDown: (e: React.PointerEvent) => void;
   onClick: (e: React.MouseEvent) => void;
+  onEditLocation?: (location: LocationConfig) => void;
 }
 
 export default function MapPin({
@@ -16,6 +17,7 @@ export default function MapPin({
   isDragging,
   onPointerDown,
   onClick,
+  onEditLocation,
 }: MapPinProps) {
   const [hovered, setHovered] = useState(false);
   const [clicked, setClicked] = useState(false);
@@ -76,6 +78,20 @@ export default function MapPin({
                 </span>
               ))}
             </div>
+          )}
+          {onEditLocation && (
+            <button
+              className="map-pin-tooltip-edit"
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.stopPropagation();
+                setClicked(false);
+                setHovered(false);
+                onEditLocation(location);
+              }}
+            >
+              Edit Location
+            </button>
           )}
         </div>
       )}
