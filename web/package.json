@@ -71,6 +71,6 @@
     "vite-plugin-webfont-dl": "^3.11.1",
     "vite-tsconfig-paths": "^4.3.2",
     "vitest": "^2.1.8",
-    "wrangler": "^4.45.1"
+    "wrangler": "^4.75.1"
   }
 }
