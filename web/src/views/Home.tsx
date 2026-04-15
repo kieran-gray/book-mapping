@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { useBookData } from "../hooks/useBookData";
-import { BookProvider } from "../context/BookContext";
+import { BookProvider } from "../context/BookProvider";
 import BookLayout from "../components/BookLayout";
 import PageIndicator from "../components/PageIndicator";
 import Bookshelf from "../components/Bookshelf";
