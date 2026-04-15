@@ -659,6 +659,7 @@
 /* Colour swatches row */
 .map-sheet__colors {
   display: flex;
+  flex-wrap: wrap;
   gap: 12px;
   align-items: center;
   padding: 4px 0;

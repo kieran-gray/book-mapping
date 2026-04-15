@@ -162,7 +162,44 @@ export default function MapLocationSheet({ location, onClose, onAddCharacterHere
               )}
 
               {field.key === "colour" && (
-                <div className="map-sheet__colors">
+                <>
+                  <input
+                    id={`hidden-map-color-picker-${location.name}`}
+                    type="color"
+                    value={color}
+                    onChange={(e) => setColor(e.target.value)}
+                    style={{
+                      position: "fixed",
+                      top: "20%",
+                      left: "50%",
+                      opacity: 0,
+                      width: "1px",
+                      height: "1px",
+                      border: "none",
+                      padding: 0,
+                      pointerEvents: "none"
+                    }}
+                  />
+                  <div className="map-sheet__colors">
+                  <label
+                    htmlFor={`hidden-map-color-picker-${location.name}`}
+                    className={`map-sheet__color-swatch${!LOCATION_COLORS.map(c=>c.toUpperCase()).includes(color.toUpperCase()) ? " map-sheet__color-swatch--active" : ""}`}
+                    style={{
+                      position: "relative",
+                      overflow: "hidden",
+                      background: !LOCATION_COLORS.map(c=>c.toUpperCase()).includes(color.toUpperCase()) ? color : "#fff",
+                      border: "1px dashed #c2b280",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      cursor: "pointer"
+                    }}
+                    title="Choose custom colour"
+                  >
+                    {!LOCATION_COLORS.map(c => c.toUpperCase()).includes(color.toUpperCase()) ? null : (
+                      <span style={{ fontSize: "16px", color: "#8a7b6b", lineHeight: 1 }}>+</span>
+                    )}
+                  </label>
                   {LOCATION_COLORS.map((c) => (
                     <button
                       key={c}
@@ -173,7 +210,8 @@ export default function MapLocationSheet({ location, onClose, onAddCharacterHere
                     />
                   ))}
                 </div>
-              )}
+              </>
+            )}
             </div>
 
             {/* Save + Delete */}

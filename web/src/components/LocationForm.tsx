@@ -158,6 +158,24 @@ export default function LocationForm({
 
         {activeTab === "details" && (
           <>
+            <input
+              id={`hidden-color-picker-${location?.name || 'new'}`}
+              type="color"
+              value={formData.color}
+              onChange={(e) => handleChange("color", e.target.value)}
+              style={{
+                position: "fixed",
+                top: "20%",
+                left: "20%",
+                opacity: 0,
+                width: "1px",
+                height: "1px",
+                border: "none",
+                padding: 0,
+                pointerEvents: "none"
+              }}
+            />
+
             <div className="edit-modal__field">
               <label>Name:</label>
               <input
@@ -221,25 +239,65 @@ export default function LocationForm({
               )}
             </div>
 
-            <div className="edit-modal__field">
+            <div
+              style={{
+                position: "sticky",
+                bottom: "-24px",
+                background: "white",
+                margin: "20px -24px -24px -24px",
+                padding: "15px 24px 24px 24px",
+                borderTop: "1px solid #eee",
+                zIndex: 10,
+                boxShadow: "0 -4px 10px rgba(0,0,0,0.03)"
+              }}
+            >
+              <div className="edit-modal__field" style={{ marginBottom: "15px" }}>
               <label>Color:</label>
-              <div style={{ display: "flex", gap: "10px", marginTop: "5px" }}>
-                {LOCATION_COLORS.map((color) => (
+              <div style={{ display: "flex", gap: "10px", marginTop: "5px", flexWrap: "wrap" }}>
+                <label
+                  htmlFor={`hidden-color-picker-${location?.name || 'new'}`}
+                  style={{
+                    width: "30px",
+                    height: "30px",
+                    borderRadius: "50%",
+                    cursor: "pointer",
+                    overflow: "hidden",
+                    position: "relative",
+                    flexShrink: 0,
+                    background: !LOCATION_COLORS.map(c=>c.toUpperCase()).includes(formData.color.toUpperCase()) ? formData.color : "#fff",
+                    border: !LOCATION_COLORS.map(c=>c.toUpperCase()).includes(formData.color.toUpperCase()) 
+                        ? "3px solid #007bff" 
+                        : "1px dashed #ccc",
+                    boxShadow: !LOCATION_COLORS.map(c=>c.toUpperCase()).includes(formData.color.toUpperCase())
+                        ? "0 0 5px rgba(0,123,255,0.5)"
+                        : "0 2px 4px rgba(0,0,0,0.1)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }}
+                  title="Choose custom colour"
+                >
+                  {!LOCATION_COLORS.map(c => c.toUpperCase()).includes(formData.color.toUpperCase()) ? null : (
+                    <span style={{ fontSize: "16px", color: "#8a7b6b", lineHeight: 1 }}>+</span>
+                  )}
+                </label>
+                {LOCATION_COLORS.map((colorOption) => (
                   <div
-                    key={color}
-                    onClick={() => handleChange("color", color)}
+                    key={colorOption}
+                    onClick={() => handleChange("color", colorOption)}
                     style={{
                       width: "30px",
                       height: "30px",
                       borderRadius: "50%",
-                      backgroundColor: color,
+                      backgroundColor: colorOption,
                       cursor: "pointer",
+                      flexShrink: 0,
                       border:
-                        formData.color.toUpperCase() === color.toUpperCase()
+                        formData.color.toUpperCase() === colorOption.toUpperCase()
                           ? "3px solid #007bff"
                           : "2px solid transparent",
                       boxShadow:
-                        formData.color.toUpperCase() === color.toUpperCase()
+                        formData.color.toUpperCase() === colorOption.toUpperCase()
                           ? "0 0 5px rgba(0,123,255,0.5)"
                           : "0 2px 4px rgba(0,0,0,0.2)",
                     }}
@@ -248,22 +306,23 @@ export default function LocationForm({
               </div>
             </div>
 
-            <div className="edit-modal__actions">
-              <button onClick={handleSave}>Save</button>
-              {!isAdding && location && (
-                <button
-                  onClick={() => {
-                    if (confirm("Are you sure you want to delete this location?")) {
-                      deleteLocation(location.name);
-                      onClose();
-                    }
-                  }}
-                  style={{ background: "#dc3545", color: "white" }}
-                >
-                  Delete
-                </button>
-              )}
-              <button onClick={onClose}>Cancel</button>
+              <div className="edit-modal__actions" style={{ marginTop: 0 }}>
+                <button onClick={handleSave}>Save</button>
+                {!isAdding && location && (
+                  <button
+                    onClick={() => {
+                      if (confirm("Are you sure you want to delete this location?")) {
+                        deleteLocation(location.name);
+                        onClose();
+                      }
+                    }}
+                    style={{ background: "#dc3545", color: "white" }}
+                  >
+                    Delete
+                  </button>
+                )}
+                <button onClick={onClose}>Cancel</button>
+              </div>
             </div>
           </>
         )}
