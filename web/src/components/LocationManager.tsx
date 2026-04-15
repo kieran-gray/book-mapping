@@ -7,11 +7,15 @@ export default function LocationManager() {
   const { book, deleteLocation } = useBook();
   const { locations } = book;
 
-  const [editingLocation, setEditingLocation] = useState<LocationConfig | null>(null);
+  const [editingLocation, setEditingLocation] = useState<LocationConfig | null>(
+    null,
+  );
   const [isAdding, setIsAdding] = useState(false);
   const [expandedName, setExpandedName] = useState<string | null>(null);
   // Regions start expanded; null key = ungrouped section
-  const [collapsedRegions, setCollapsedRegions] = useState<Set<string>>(new Set());
+  const [collapsedRegions, setCollapsedRegions] = useState<Set<string>>(
+    new Set(),
+  );
 
   const showForm = editingLocation || isAdding;
 
@@ -29,7 +33,11 @@ export default function LocationManager() {
   const regions = Array.from(
     new Set(locations.map((l) => l.region).filter((r): r is string => !!r)),
   );
-  const grouped: { key: string; label: string | null; locs: LocationConfig[] }[] = [
+  const grouped: {
+    key: string;
+    label: string | null;
+    locs: LocationConfig[];
+  }[] = [
     ...regions.map((r) => ({
       key: r,
       label: r,
@@ -135,7 +143,9 @@ export default function LocationManager() {
       </div>
 
       {locations.length === 0 ? (
-        <p className="accordion-empty">No locations yet. Add one to get started.</p>
+        <p className="accordion-empty">
+          No locations yet. Add one to get started.
+        </p>
       ) : (
         <div className="accordion-list">
           {grouped.map(({ key, label, locs }) => {

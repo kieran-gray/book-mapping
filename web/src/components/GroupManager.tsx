@@ -36,7 +36,9 @@ export default function GroupManager() {
           return (
             <div
               key={groupName}
-              className={`accordion-item${isOpen ? " accordion-item--open" : ""}`}
+              className={`accordion-item${
+                isOpen ? " accordion-item--open" : ""
+              }`}
             >
               <button
                 className="accordion-header"
@@ -111,7 +113,9 @@ export default function GroupManager() {
 
                   {groupTravelTo && (
                     <div className="accordion-field">
-                      <label>Progress: {Math.round(groupProgress * 100)}%</label>
+                      <label>
+                        Progress: {Math.round(groupProgress * 100)}%
+                      </label>
                       <input
                         type="range"
                         min="0"

@@ -83,28 +83,26 @@ export function useBookData(seedData: BookData) {
   const addCharacter = useCallback((character: Omit<Character, "id">) => {
     setBook((prev) => ({
       ...prev,
-      characters: [...prev.characters, { ...character, id: crypto.randomUUID() } as Character],
+      characters: [
+        ...prev.characters,
+        { ...character, id: crypto.randomUUID() } as Character,
+      ],
     }));
   }, []);
 
-  const updateCharacter = useCallback(
-    (id: string, updated: Character) => {
-      setBook((prev) => ({
-        ...prev,
-        characters: prev.characters.map((c) =>
-          c.id === id ? updated : c,
-        ),
-      }));
-    },
-    [],
-  );
+  const updateCharacter = useCallback((id: string, updated: Character) => {
+    setBook((prev) => ({
+      ...prev,
+      characters: prev.characters.map((c) => (c.id === id ? updated : c)),
+    }));
+  }, []);
 
   const deleteCharacter = useCallback((id: string) => {
     setBook((prev) => ({
       ...prev,
       characters: prev.characters.filter((c) => c.id !== id),
       relationships: prev.relationships.filter(
-        (r) => r.source !== id && r.target !== id
+        (r) => r.source !== id && r.target !== id,
       ),
     }));
   }, []);
@@ -291,19 +289,16 @@ export function useBookData(seedData: BookData) {
   );
 
   // --- Character Travel ---
-  const updateCharacterTravel = useCallback(
-    (id: string, progress: number) => {
-      setBook((prev) => ({
-        ...prev,
-        characters: prev.characters.map((c) =>
-          c.id === id
-            ? { ...c, travelProgress: Math.max(0, Math.min(1, progress)) }
-            : c,
-        ),
-      }));
-    },
-    [],
-  );
+  const updateCharacterTravel = useCallback((id: string, progress: number) => {
+    setBook((prev) => ({
+      ...prev,
+      characters: prev.characters.map((c) =>
+        c.id === id
+          ? { ...c, travelProgress: Math.max(0, Math.min(1, progress)) }
+          : c,
+      ),
+    }));
+  }, []);
 
   // --- Map Image ---
   const setMapImage = useCallback((image: string | null) => {
@@ -322,7 +317,6 @@ export function useBookData(seedData: BookData) {
       book.locations.map((l) => l.region).filter((r): r is string => !!r),
     ),
   );
-
 
   // Only stationary characters appear at pins
   const charactersByLocation: Record<string, Character[]> = {};

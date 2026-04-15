@@ -21,7 +21,6 @@ export interface LocationConfig {
   y?: number;
 }
 
-
 export interface Relationship {
   source: string;
   target: string;

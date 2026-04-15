@@ -33,16 +33,20 @@ export default function RelationshipManager() {
       <div className="accordion-list">
         {relationships.map((rel, index) => {
           const sourceName =
-            book.characters.find((c) => c.id === rel.source)?.name || rel.source;
+            book.characters.find((c) => c.id === rel.source)?.name ||
+            rel.source;
           const targetName =
-            book.characters.find((c) => c.id === rel.target)?.name || rel.target;
+            book.characters.find((c) => c.id === rel.target)?.name ||
+            rel.target;
           const isOpen = expandedIndex === index;
           const color = REL_COLORS[rel.type] ?? "#6c757d";
 
           return (
             <div
               key={index}
-              className={`accordion-item${isOpen ? " accordion-item--open" : ""}`}
+              className={`accordion-item${
+                isOpen ? " accordion-item--open" : ""
+              }`}
             >
               <button
                 className="accordion-header"

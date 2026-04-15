@@ -44,7 +44,9 @@ export default function CharacteristicManager() {
             return (
               <div
                 key={ch.title}
-                className={`accordion-item${isOpen ? " accordion-item--open" : ""}`}
+                className={`accordion-item${
+                  isOpen ? " accordion-item--open" : ""
+                }`}
               >
                 <button
                   className="accordion-header"
@@ -53,7 +55,9 @@ export default function CharacteristicManager() {
                 >
                   <span className="accordion-name">{ch.title}</span>
                   <span className="accordion-location">{ch.meaning}</span>
-                  <span className="accordion-chevron">{isOpen ? "▲" : "▼"}</span>
+                  <span className="accordion-chevron">
+                    {isOpen ? "▲" : "▼"}
+                  </span>
                 </button>
 
                 {isOpen && (
@@ -167,7 +171,11 @@ function CharacteristicFormModal({
           {!isAdding && (
             <button
               onClick={() => {
-                if (confirm("Are you sure you want to delete this characteristic?")) {
+                if (
+                  confirm(
+                    "Are you sure you want to delete this characteristic?",
+                  )
+                ) {
                   onDelete(characteristic.title);
                 }
               }}

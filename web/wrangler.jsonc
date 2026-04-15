@@ -1,10 +1,11 @@
 {
-  "$schema": "../../../node_modules/wrangler/config-schema.json",
+  "$schema": "node_modules/wrangler/config-schema.json",
   "name": "book-mapping-web",
   "main": "worker/index.ts",
   "compatibility_date": "2025-11-25",
   "assets": {
-    "not_found_handling": "single-page-application"
+    "not_found_handling": "single-page-application",
+    "directory": "./dist"
   },
   "build": {
     "command": "npm run build"

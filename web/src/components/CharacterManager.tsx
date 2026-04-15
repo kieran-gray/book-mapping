@@ -16,7 +16,9 @@ export default function CharacterManager({
   const { book } = useBook();
   const { characters } = book;
 
-  const [editingCharacter, setEditingCharacter] = useState<Character | null>(null);
+  const [editingCharacter, setEditingCharacter] = useState<Character | null>(
+    null,
+  );
   const [isAdding, setIsAdding] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
@@ -44,7 +46,9 @@ export default function CharacterManager({
           return (
             <div
               key={character.id}
-              className={`accordion-item${isOpen ? " accordion-item--open" : ""}`}
+              className={`accordion-item${
+                isOpen ? " accordion-item--open" : ""
+              }`}
             >
               <button
                 className="accordion-header"
@@ -52,7 +56,16 @@ export default function CharacterManager({
                 aria-expanded={isOpen}
               >
                 <span className="accordion-avatar">
-                  <span style={{ display: "block", width: 22, height: 28, overflow: "hidden", transform: "scale(0.275)", transformOrigin: "top left" }}>
+                  <span
+                    style={{
+                      display: "block",
+                      width: 22,
+                      height: 28,
+                      overflow: "hidden",
+                      transform: "scale(0.275)",
+                      transformOrigin: "top left",
+                    }}
+                  >
                     <CharacterAvatar
                       gender={character.gender ?? "Male"}
                       hairColor={character.hairColor ?? "#FFA012"}
@@ -79,15 +92,17 @@ export default function CharacterManager({
                   )}
                   {character.travelTo && (
                     <p className="accordion-detail">
-                      <strong>Traveling to:</strong> {character.travelTo}{" "}
-                      ({Math.round((character.travelProgress ?? 0) * 100)}%)
+                      <strong>Traveling to:</strong> {character.travelTo} (
+                      {Math.round((character.travelProgress ?? 0) * 100)}%)
                     </p>
                   )}
-                  {character.characteristics && character.characteristics.length > 0 && (
-                    <p className="accordion-detail">
-                      <strong>Traits:</strong> {character.characteristics.join(", ")}
-                    </p>
-                  )}
+                  {character.characteristics &&
+                    character.characteristics.length > 0 && (
+                      <p className="accordion-detail">
+                        <strong>Traits:</strong>{" "}
+                        {character.characteristics.join(", ")}
+                      </p>
+                    )}
                   <button
                     className="accordion-edit-btn"
                     onClick={() => setEditingCharacter(character)}

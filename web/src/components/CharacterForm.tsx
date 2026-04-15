@@ -18,7 +18,8 @@ export default function CharacterForm({
   initialLocation,
   onClose,
 }: CharacterFormProps) {
-  const { book, allGroups, addCharacter, updateCharacter, deleteCharacter } = useBook();
+  const { book, allGroups, addCharacter, updateCharacter, deleteCharacter } =
+    useBook();
   const { locations } = book;
 
   const [formData, setFormData] = useState<Character>(
@@ -236,7 +237,12 @@ export default function CharacterForm({
                   >
                     <input
                       type="checkbox"
-                      style={{ margin: 0, width: "auto", padding: 0, cursor: "pointer" }}
+                      style={{
+                        margin: 0,
+                        width: "auto",
+                        padding: 0,
+                        cursor: "pointer",
+                      }}
                       checked={isChecked}
                       onChange={() => {
                         setFormData((prev) => {
@@ -266,7 +272,9 @@ export default function CharacterForm({
           {!isAdding && character && (
             <button
               onClick={() => {
-                if (confirm("Are you sure you want to delete this character?")) {
+                if (
+                  confirm("Are you sure you want to delete this character?")
+                ) {
                   deleteCharacter(character.id);
                   onClose();
                 }
