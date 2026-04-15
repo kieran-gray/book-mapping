@@ -27,6 +27,7 @@ export default function LocationForm({
     deleteLocation,
     charactersByLocation,
     allGroups,
+    allRegions,
     moveGroupToLocation,
   } = useBook();
   const [activeTab, setActiveTab] = useState<"details" | "characters">(
@@ -44,22 +45,34 @@ export default function LocationForm({
     },
   );
 
+  // Separate state for typing a new region name (same pattern as new group in CharacterForm)
+  const [showNewRegion, setShowNewRegion] = useState(false);
+  const [newRegionName, setNewRegionName] = useState("");
+
   const handleChange = (field: keyof LocationConfig, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  /** Resolve which region to save */
+  const resolvedRegion = (): string | undefined => {
+    if (showNewRegion) return newRegionName.trim() || undefined;
+    return formData.region || undefined;
+  };
+
   const handleSave = () => {
+    const dataToSave = { ...formData, region: resolvedRegion() };
     if (isAdding) {
-      addLocation(formData);
+      addLocation(dataToSave);
     } else if (location) {
       updateLocation(location.name, {
-        ...formData,
+        ...dataToSave,
         x: location.x,
         y: location.y,
       });
     }
     onClose();
   };
+
 
   return (
     <div
@@ -170,6 +183,42 @@ export default function LocationForm({
                   resize: "vertical",
                 }}
               />
+            </div>
+
+            <div className="edit-modal__field">
+              <label>Region:</label>
+              <select
+                value={showNewRegion ? "__new__" : formData.region || ""}
+                onChange={(e) => {
+                  if (e.target.value === "__new__") {
+                    setShowNewRegion(true);
+                    setNewRegionName("");
+                  } else {
+                    setShowNewRegion(false);
+                    setNewRegionName("");
+                    handleChange("region", e.target.value);
+                  }
+                }}
+              >
+                <option value="">None</option>
+                {allRegions.map((r) => (
+                  <option key={r} value={r}>
+                    {r}
+                  </option>
+                ))}
+                <option value="__new__">+ Add new region…</option>
+              </select>
+
+              {showNewRegion && (
+                <input
+                  type="text"
+                  className="new-group-input"
+                  placeholder="Type region name…"
+                  value={newRegionName}
+                  autoFocus
+                  onChange={(e) => setNewRegionName(e.target.value)}
+                />
+              )}
             </div>
 
             <div className="edit-modal__field">

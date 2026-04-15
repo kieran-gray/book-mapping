@@ -13,6 +13,10 @@ export default function CharacteristicManager() {
 
   const [editing, setEditing] = useState<Characteristic | null>(null);
   const [isAdding, setIsAdding] = useState(false);
+  const [expandedTitle, setExpandedTitle] = useState<string | null>(null);
+
+  const toggle = (title: string) =>
+    setExpandedTitle((prev) => (prev === title ? null : title));
 
   return (
     <div className="character-management">
@@ -30,33 +34,60 @@ export default function CharacteristicManager() {
       </div>
 
       {characteristics.length === 0 ? (
-        <p style={{ color: "#8a7b6b", fontStyle: "italic" }}>
+        <p className="accordion-empty">
           No characteristics defined yet. Add one to get started.
         </p>
       ) : (
-        <div className="character-list">
-          {characteristics.map((ch) => (
-            <div key={ch.title} className="character-item">
-              <span className="character-item__name">{ch.title}</span>
-              <span className="character-item__location">{ch.meaning}</span>
-              <div className="character-item__actions">
+        <div className="accordion-list">
+          {characteristics.map((ch) => {
+            const isOpen = expandedTitle === ch.title;
+            return (
+              <div
+                key={ch.title}
+                className={`accordion-item${isOpen ? " accordion-item--open" : ""}`}
+              >
                 <button
-                  onClick={() => {
-                    setEditing({ ...ch });
-                    setIsAdding(false);
-                  }}
+                  className="accordion-header"
+                  onClick={() => toggle(ch.title)}
+                  aria-expanded={isOpen}
                 >
-                  Edit
+                  <span className="accordion-name">{ch.title}</span>
+                  <span className="accordion-location">{ch.meaning}</span>
+                  <span className="accordion-chevron">{isOpen ? "▲" : "▼"}</span>
                 </button>
-                <button
-                  style={{ background: "#dc3545", color: "white" }}
-                  onClick={() => deleteCharacteristic(ch.title)}
-                >
-                  Delete
-                </button>
+
+                {isOpen && (
+                  <div className="accordion-body">
+                    <p className="accordion-detail">
+                      <strong>Meaning:</strong> {ch.meaning || <em>None</em>}
+                    </p>
+                    <div style={{ display: "flex", gap: 8 }}>
+                      <button
+                        className="accordion-edit-btn"
+                        onClick={() => {
+                          setEditing({ ...ch });
+                          setIsAdding(false);
+                        }}
+                      >
+                        ✏️ Edit
+                      </button>
+                      <button
+                        className="accordion-edit-btn accordion-edit-btn--danger"
+                        onClick={() => {
+                          if (confirm(`Delete "${ch.title}"?`)) {
+                            deleteCharacteristic(ch.title);
+                            setExpandedTitle(null);
+                          }
+                        }}
+                      >
+                        🗑 Delete
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 

@@ -317,6 +317,13 @@ export function useBookData(seedData: BookData) {
     ),
   );
 
+  const allRegions = Array.from(
+    new Set(
+      book.locations.map((l) => l.region).filter((r): r is string => !!r),
+    ),
+  );
+
+
   // Only stationary characters appear at pins
   const charactersByLocation: Record<string, Character[]> = {};
   book.locations.forEach((loc) => {
@@ -349,6 +356,7 @@ export function useBookData(seedData: BookData) {
   return {
     book,
     allGroups,
+    allRegions,
     charactersByLocation,
     travelingCharacters,
     travelingGroups,

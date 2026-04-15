@@ -34,15 +34,27 @@ export default function CharacterForm({
     },
   );
 
+  // Whether to show the new-group text input
+  const [showNewGroup, setShowNewGroup] = useState(false);
+  // The typed new group name — lives in its own state, never lost on blur/scroll
+  const [newGroupName, setNewGroupName] = useState("");
+
   const handleChange = (field: keyof Character, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  /** Resolve whichever group value should be saved */
+  const resolvedGroup = (): string => {
+    if (showNewGroup) return newGroupName.trim();
+    return formData.group || "";
+  };
+
   const handleSave = () => {
+    const saved = { ...formData, group: resolvedGroup() };
     if (isAdding) {
-      addCharacter(formData);
+      addCharacter(saved);
     } else if (character) {
-      updateCharacter(character.id, formData);
+      updateCharacter(character.id, saved);
     }
     onClose();
   };
@@ -132,48 +144,36 @@ export default function CharacterForm({
 
         <div className="edit-modal__field">
           <label>Group:</label>
-          {formData.group === "__new__" ? (
-            <div style={{ display: "flex", gap: "6px" }}>
-              <input
-                type="text"
-                placeholder="New group name..."
-                autoFocus
-                onKeyDown={(e) => {
-                  if (
-                    e.key === "Enter" &&
-                    (e.target as HTMLInputElement).value.trim()
-                  ) {
-                    handleChange(
-                      "group",
-                      (e.target as HTMLInputElement).value.trim(),
-                    );
-                  }
-                  if (e.key === "Escape") {
-                    handleChange("group", "");
-                  }
-                }}
-                onBlur={(e) => {
-                  if (e.target.value.trim()) {
-                    handleChange("group", e.target.value.trim());
-                  } else {
-                    handleChange("group", "");
-                  }
-                }}
-              />
-            </div>
-          ) : (
-            <select
-              value={formData.group || ""}
-              onChange={(e) => handleChange("group", e.target.value)}
-            >
-              <option value="">None</option>
-              {allGroups.map((g) => (
-                <option key={g} value={g}>
-                  {g}
-                </option>
-              ))}
-              <option value="__new__">+ Add new group...</option>
-            </select>
+          <select
+            value={showNewGroup ? "__new__" : formData.group || ""}
+            onChange={(e) => {
+              if (e.target.value === "__new__") {
+                setShowNewGroup(true);
+              } else {
+                setShowNewGroup(false);
+                setNewGroupName("");
+                handleChange("group", e.target.value);
+              }
+            }}
+          >
+            <option value="">None</option>
+            {allGroups.map((g) => (
+              <option key={g} value={g}>
+                {g}
+              </option>
+            ))}
+            <option value="__new__">+ Add new group…</option>
+          </select>
+
+          {showNewGroup && (
+            <input
+              type="text"
+              className="new-group-input"
+              placeholder="Type new group name…"
+              value={newGroupName}
+              autoFocus
+              onChange={(e) => setNewGroupName(e.target.value)}
+            />
           )}
         </div>
 

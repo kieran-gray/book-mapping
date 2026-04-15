@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useBook } from "../context/BookContext";
 import MapPin from "./MapPin";
 import CharacterAvatar from "./CharacterAvatar";
-import LocationForm from "./LocationForm";
+import MapLocationSheet from "./MapLocationSheet";
 
 interface WorldMapProps {
   onAddCharacterAtLocation: (locationName: string) => void;
@@ -593,10 +593,8 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
         </div>
       )}
       {editingLocation && (
-        <LocationForm
+        <MapLocationSheet
           location={editingLocation}
-          isAdding={false}
-          isMapOverlay={true}
           onClose={() => setEditingLocationName(null)}
           onAddCharacterHere={() => {
             const locName = editingLocation.name;

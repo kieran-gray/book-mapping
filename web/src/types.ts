@@ -16,9 +16,11 @@ export interface LocationConfig {
   name: string;
   color: string;
   description?: string;
+  region?: string;
   x?: number;
   y?: number;
 }
+
 
 export interface Relationship {
   source: string;
