@@ -55,3 +55,13 @@ export interface BookDisplayConfig {
 export interface ShelfConfig {
   shelves: number;
 }
+
+export interface MapRegion {
+  id: string;
+  name: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  color: string;
+}

@@ -206,15 +206,30 @@ export default function CharacterForm({
           )}
         </div>
 
-        <div className="edit-modal__field" style={{ flexDirection: "row", alignItems: "center", gap: "8px", marginTop: "10px" }}>
+        <div
+          className="edit-modal__field"
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            gap: "8px",
+            marginTop: "10px",
+          }}
+        >
           <input
             type="checkbox"
             id="isDeadCheckbox"
             checked={formData.isDead || false}
-            onChange={(e) => setFormData(prev => ({ ...prev, isDead: e.target.checked }))}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, isDead: e.target.checked }))
+            }
             style={{ width: "auto", margin: 0, cursor: "pointer" }}
           />
-          <label htmlFor="isDeadCheckbox" style={{ margin: 0, cursor: "pointer" }}>Character has died 💀</label>
+          <label
+            htmlFor="isDeadCheckbox"
+            style={{ margin: 0, cursor: "pointer" }}
+          >
+            Character has died 💀
+          </label>
         </div>
 
         {book.characteristics && book.characteristics.length > 0 && (

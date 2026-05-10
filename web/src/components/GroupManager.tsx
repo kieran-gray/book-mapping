@@ -60,7 +60,8 @@ export default function GroupManager() {
                   <div className="accordion-members">
                     {members.map((m) => (
                       <span key={m.id} className="group-member-tag">
-                        {m.name}{m.isDead && " 💀"}
+                        {m.name}
+                        {m.isDead && " 💀"}
                       </span>
                     ))}
                   </div>

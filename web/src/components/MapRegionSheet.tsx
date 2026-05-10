@@ -16,9 +16,9 @@ interface Props {
 
 type DetailField = "name" | "dimensions" | "colour";
 const DETAIL_FIELDS: { key: DetailField; label: string }[] = [
-  { key: "name",       label: "Name" },
+  { key: "name", label: "Name" },
   { key: "dimensions", label: "Dimensions" },
-  { key: "colour",     label: "Colour" },
+  { key: "colour", label: "Colour" },
 ];
 
 export default function MapRegionSheet({ region, onClose }: Props) {
@@ -56,7 +56,13 @@ export default function MapRegionSheet({ region, onClose }: Props) {
       <div className="map-sheet__header">
         <div className="map-sheet__drag-handle" />
         <span className="map-sheet__title">Edit Region</span>
-        <button className="map-sheet__close" onClick={onClose} aria-label="Close">✕</button>
+        <button
+          className="map-sheet__close"
+          onClick={onClose}
+          aria-label="Close"
+        >
+          ✕
+        </button>
       </div>
 
       {/* Outer tab bar */}
@@ -72,7 +78,9 @@ export default function MapRegionSheet({ region, onClose }: Props) {
           {DETAIL_FIELDS.map((f, i) => (
             <button
               key={f.key}
-              className={`map-sheet__field-pill${fieldIdx === i ? " map-sheet__field-pill--active" : ""}`}
+              className={`map-sheet__field-pill${
+                fieldIdx === i ? " map-sheet__field-pill--active" : ""
+              }`}
               onClick={() => setFieldIdx(i)}
             >
               {f.label}
@@ -95,7 +103,17 @@ export default function MapRegionSheet({ region, onClose }: Props) {
           {field.key === "dimensions" && (
             <div style={{ display: "flex", gap: "10px" }}>
               <div style={{ flex: 1 }}>
-                <label style={{ display: "block", marginBottom: 4, fontWeight: "bold", fontSize: "0.85em", color: "#666" }}>Width</label>
+                <label
+                  style={{
+                    display: "block",
+                    marginBottom: 4,
+                    fontWeight: "bold",
+                    fontSize: "0.85em",
+                    color: "#666",
+                  }}
+                >
+                  Width
+                </label>
                 <input
                   type="number"
                   value={width}
@@ -103,7 +121,17 @@ export default function MapRegionSheet({ region, onClose }: Props) {
                 />
               </div>
               <div style={{ flex: 1 }}>
-                <label style={{ display: "block", marginBottom: 4, fontWeight: "bold", fontSize: "0.85em", color: "#666" }}>Height</label>
+                <label
+                  style={{
+                    display: "block",
+                    marginBottom: 4,
+                    fontWeight: "bold",
+                    fontSize: "0.85em",
+                    color: "#666",
+                  }}
+                >
+                  Height
+                </label>
                 <input
                   type="number"
                   value={height}
@@ -118,7 +146,9 @@ export default function MapRegionSheet({ region, onClose }: Props) {
               {REGION_COLORS.map((c) => (
                 <button
                   key={c}
-                  className={`map-sheet__color-swatch${color === c ? " map-sheet__color-swatch--active" : ""}`}
+                  className={`map-sheet__color-swatch${
+                    color === c ? " map-sheet__color-swatch--active" : ""
+                  }`}
                   style={{ background: c }}
                   onClick={() => setColor(c)}
                   aria-label={c}
@@ -129,8 +159,18 @@ export default function MapRegionSheet({ region, onClose }: Props) {
         </div>
 
         <div className="map-sheet__actions">
-          <button className="map-sheet__btn map-sheet__btn--save" onClick={handleSave}>Save</button>
-          <button className="map-sheet__btn map-sheet__btn--danger" onClick={handleDelete}>Delete</button>
+          <button
+            className="map-sheet__btn map-sheet__btn--save"
+            onClick={handleSave}
+          >
+            Save
+          </button>
+          <button
+            className="map-sheet__btn map-sheet__btn--danger"
+            onClick={handleDelete}
+          >
+            Delete
+          </button>
         </div>
       </div>
     </div>

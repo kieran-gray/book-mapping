@@ -74,7 +74,8 @@ export default function CharacterManager({
                   </span>
                 </span>
                 <span className="accordion-name">
-                  {character.name}{character.isDead && " 💀"}
+                  {character.name}
+                  {character.isDead && " 💀"}
                 </span>
                 {character.group && (
                   <span className="accordion-badge">{character.group}</span>

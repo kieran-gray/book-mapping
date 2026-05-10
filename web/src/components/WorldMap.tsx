@@ -32,7 +32,6 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
     setMapImage,
     setMapType,
     addMapRegion,
-    updateMapRegion,
     updateMapRegionPosition,
   } = useBook();
 
@@ -267,8 +266,12 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
       };
 
       relationships.forEach((rel) => {
-        const sChar = characters.find((c) => c.id === rel.source || c.name === rel.source);
-        const tChar = characters.find((c) => c.id === rel.target || c.name === rel.target);
+        const sChar = characters.find(
+          (c) => c.id === rel.source || c.name === rel.source,
+        );
+        const tChar = characters.find(
+          (c) => c.id === rel.target || c.name === rel.target,
+        );
         if (!sChar || !tChar) return;
         const sLocName = sChar.location;
         const tLocName = tChar.location;
@@ -426,12 +429,30 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
           <p>Choose how you want to build your map</p>
           <div className="map-uploader-actions">
             <div>
-              <input type="file" accept="image/*" onChange={handleImageUpload} id="map-upload-input" style={{ display: 'none' }} />
-              <button className="book-nav-button" onClick={() => document.getElementById('map-upload-input')?.click()}>Upload Image</button>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                id="map-upload-input"
+                style={{ display: "none" }}
+              />
+              <button
+                className="book-nav-button"
+                onClick={() =>
+                  document.getElementById("map-upload-input")?.click()
+                }
+              >
+                Upload Image
+              </button>
             </div>
             <span className="divider">OR</span>
             <div>
-              <button className="book-nav-button" onClick={() => setMapType("canvas")}>Use Blank Canvas</button>
+              <button
+                className="book-nav-button"
+                onClick={() => setMapType("canvas")}
+              >
+                Use Blank Canvas
+              </button>
             </div>
           </div>
         </div>
@@ -439,7 +460,11 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
         <div
           className="map-container"
           ref={containerRef}
-          style={book.mapType === "canvas" ? { aspectRatio: "4/3", display: "block" } : undefined}
+          style={
+            book.mapType === "canvas"
+              ? { aspectRatio: "4/3", display: "block" }
+              : undefined
+          }
           onClick={handleMapClick}
         >
           {book.mapType === "canvas" && (
@@ -473,34 +498,35 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
           )}
 
           {/* Map Regions */}
-          {book.mapType === "canvas" && book.mapRegions?.map((region) => (
-            <div
-              key={region.id}
-              className="map-region"
-              style={{
-                left: `${region.x}%`,
-                top: `${region.y}%`,
-                width: `${region.width}px`,
-                height: `${region.height}px`,
-                backgroundColor: region.color,
-                zIndex: draggingRegionId === region.id ? 15 : 5,
-              }}
-              onPointerDown={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                dragHasMoved.current = false;
-                setDraggingRegionId(region.id);
-              }}
-              onClick={(e) => {
-                e.stopPropagation();
-                if (!dragHasMoved.current) {
-                  setEditingRegionId(region.id);
-                }
-              }}
-            >
-              <span className="map-region-label">{region.name}</span>
-            </div>
-          ))}
+          {book.mapType === "canvas" &&
+            book.mapRegions?.map((region) => (
+              <div
+                key={region.id}
+                className="map-region"
+                style={{
+                  left: `${region.x}%`,
+                  top: `${region.y}%`,
+                  width: `${region.width}px`,
+                  height: `${region.height}px`,
+                  backgroundColor: region.color,
+                  zIndex: draggingRegionId === region.id ? 15 : 5,
+                }}
+                onPointerDown={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  dragHasMoved.current = false;
+                  setDraggingRegionId(region.id);
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (!dragHasMoved.current) {
+                    setEditingRegionId(region.id);
+                  }
+                }}
+              >
+                <span className="map-region-label">{region.name}</span>
+              </div>
+            ))}
 
           <svg
             width="100%"
@@ -645,7 +671,10 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
                   hairColor={char.hairColor || "#FFA012"}
                   beardColor={char.beardColor || "#FFA012"}
                 />
-                <span className="travel-avatar-name">{char.name}{char.isDead && " 💀"}</span>
+                <span className="travel-avatar-name">
+                  {char.name}
+                  {char.isDead && " 💀"}
+                </span>
               </div>
             );
           })}
@@ -717,24 +746,5 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
         />
       )}
     </div>
-  );
-}
-onClose = {() => setEditingLocationName(null)}
-onAddCharacterHere = {() => {
-  const locName = editingLocation.name;
-  setEditingLocationName(null);
-  onAddCharacterAtLocation(locName);
-}}
-        />
-      )}
-{
-  editingRegion && (
-    <MapRegionSheet
-      region={editingRegion}
-      onClose={() => setEditingRegionId(null)}
-    />
-  )
-}
-    </div >
   );
 }

@@ -313,23 +313,33 @@ export function useBookData(seedData: BookData) {
   const addMapRegion = useCallback((region: Omit<MapRegion, "id">) => {
     setBook((prev) => ({
       ...prev,
-      mapRegions: [...(prev.mapRegions || []), { ...region, id: crypto.randomUUID() }],
+      mapRegions: [
+        ...(prev.mapRegions || []),
+        { ...region, id: crypto.randomUUID() },
+      ],
     }));
   }, []);
 
   const updateMapRegion = useCallback((id: string, updated: MapRegion) => {
     setBook((prev) => ({
       ...prev,
-      mapRegions: (prev.mapRegions || []).map((r) => (r.id === id ? updated : r)),
+      mapRegions: (prev.mapRegions || []).map((r) =>
+        r.id === id ? updated : r,
+      ),
     }));
   }, []);
 
-  const updateMapRegionPosition = useCallback((id: string, x: number, y: number) => {
-    setBook((prev) => ({
-      ...prev,
-      mapRegions: (prev.mapRegions || []).map((r) => (r.id === id ? { ...r, x, y } : r)),
-    }));
-  }, []);
+  const updateMapRegionPosition = useCallback(
+    (id: string, x: number, y: number) => {
+      setBook((prev) => ({
+        ...prev,
+        mapRegions: (prev.mapRegions || []).map((r) =>
+          r.id === id ? { ...r, x, y } : r,
+        ),
+      }));
+    },
+    [],
+  );
 
   const deleteMapRegion = useCallback((id: string) => {
     setBook((prev) => ({
