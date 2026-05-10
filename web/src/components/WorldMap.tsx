@@ -3,6 +3,7 @@ import { useBook } from "../context/BookContext";
 import MapPin from "./MapPin";
 import CharacterAvatar from "./CharacterAvatar";
 import MapLocationSheet from "./MapLocationSheet";
+import MapRegionSheet from "./MapRegionSheet";
 
 interface WorldMapProps {
   onAddCharacterAtLocation: (locationName: string) => void;
@@ -29,6 +30,10 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
     updateCharacterTravel,
     updateGroupTravelProgress,
     setMapImage,
+    setMapType,
+    addMapRegion,
+    updateMapRegion,
+    updateMapRegionPosition,
   } = useBook();
 
   const { mapImage, locations, characters, relationships } = book;
@@ -47,6 +52,12 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
     Record<string, { dx: number; dy: number }>
   >({});
 
+  const [draggingRegionId, setDraggingRegionId] = useState<string | null>(null);
+  const [editingRegionId, setEditingRegionId] = useState<string | null>(null);
+  const editingRegion = editingRegionId
+    ? book.mapRegions?.find((r) => r.id === editingRegionId)
+    : null;
+
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<HTMLImageElement>(null);
   const dragHasMoved = useRef(false);
@@ -56,9 +67,9 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
     if (!draggingPin) return;
 
     const handlePointerMove = (e: PointerEvent) => {
-      if (!mapRef.current) return;
+      if (!containerRef.current) return;
       dragHasMoved.current = true;
-      const rect = mapRef.current.getBoundingClientRect();
+      const rect = containerRef.current.getBoundingClientRect();
       const x = ((e.clientX - rect.left) / rect.width) * 100;
       const y = ((e.clientY - rect.top) / rect.height) * 100;
       const clamped = {
@@ -80,6 +91,35 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
     };
   }, [draggingPin, updateLocationPosition]);
 
+  // --- Region Drag handling ---
+  useEffect(() => {
+    if (!draggingRegionId) return;
+
+    const handlePointerMove = (e: PointerEvent) => {
+      if (!containerRef.current) return;
+      dragHasMoved.current = true;
+      const rect = containerRef.current.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      const clamped = {
+        x: Math.max(0, Math.min(100, x)),
+        y: Math.max(0, Math.min(100, y)),
+      };
+      updateMapRegionPosition(draggingRegionId, clamped.x, clamped.y);
+    };
+
+    const handlePointerUp = () => setDraggingRegionId(null);
+
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", handlePointerUp);
+    window.addEventListener("pointercancel", handlePointerUp);
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerUp);
+      window.removeEventListener("pointercancel", handlePointerUp);
+    };
+  }, [draggingRegionId, updateMapRegionPosition]);
+
   // --- Traveler Drag handling (constrain to line) ---
   useEffect(() => {
     if (!draggingTraveler) return;
@@ -100,8 +140,8 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
       return;
 
     const handlePointerMove = (e: PointerEvent) => {
-      if (!mapRef.current) return;
-      const rect = mapRef.current.getBoundingClientRect();
+      if (!containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
       const mx = ((e.clientX - rect.left) / rect.width) * 100;
       const my = ((e.clientY - rect.top) / rect.height) * 100;
 
@@ -151,8 +191,8 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
       return;
 
     const handlePointerMove = (e: PointerEvent) => {
-      if (!mapRef.current) return;
-      const rect = mapRef.current.getBoundingClientRect();
+      if (!containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
       const mx = ((e.clientX - rect.left) / rect.width) * 100;
       const my = ((e.clientY - rect.top) / rect.height) * 100;
 
@@ -227,8 +267,8 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
       };
 
       relationships.forEach((rel) => {
-        const sChar = characters.find((c) => c.name === rel.source);
-        const tChar = characters.find((c) => c.name === rel.target);
+        const sChar = characters.find((c) => c.id === rel.source || c.name === rel.source);
+        const tChar = characters.find((c) => c.id === rel.target || c.name === rel.target);
         if (!sChar || !tChar) return;
         const sLocName = sChar.location;
         const tLocName = tChar.location;
@@ -368,40 +408,107 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
       const file = e.target.files?.[0];
       if (file) {
         const reader = new FileReader();
-        reader.onload = (event) => setMapImage(event.target?.result as string);
+        reader.onload = (event) => {
+          setMapImage(event.target?.result as string);
+          setMapType("image");
+        };
         reader.readAsDataURL(file);
       }
     },
-    [setMapImage],
+    [setMapImage, setMapType],
   );
 
   return (
     <div className="locations-container">
       <h2>World Map</h2>
-      {!mapImage ? (
+      {!mapImage && book.mapType !== "canvas" ? (
         <div className="map-uploader">
-          <p>Upload a map image to start placing locations</p>
-          <input type="file" accept="image/*" onChange={handleImageUpload} />
+          <p>Choose how you want to build your map</p>
+          <div className="map-uploader-actions">
+            <div>
+              <input type="file" accept="image/*" onChange={handleImageUpload} id="map-upload-input" style={{ display: 'none' }} />
+              <button className="book-nav-button" onClick={() => document.getElementById('map-upload-input')?.click()}>Upload Image</button>
+            </div>
+            <span className="divider">OR</span>
+            <div>
+              <button className="book-nav-button" onClick={() => setMapType("canvas")}>Use Blank Canvas</button>
+            </div>
+          </div>
         </div>
       ) : (
         <div
           className="map-container"
           ref={containerRef}
+          style={book.mapType === "canvas" ? { aspectRatio: "4/3", display: "block" } : undefined}
           onClick={handleMapClick}
         >
-          <img
-            src={mapImage}
-            alt="World Map"
-            className="map-image"
-            ref={mapRef}
-          />
+          {book.mapType === "canvas" && (
+            <button
+              className="add-region-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                addMapRegion({
+                  name: `New Region ${(book.mapRegions?.length || 0) + 1}`,
+                  color: "rgba(194, 178, 128, 0.4)",
+                  x: 50,
+                  y: 50,
+                  width: 200,
+                  height: 200,
+                });
+              }}
+            >
+              + Add Region
+            </button>
+          )}
+
+          {book.mapType === "canvas" ? (
+            <div className="blank-canvas" />
+          ) : (
+            <img
+              src={mapImage!}
+              alt="World Map"
+              className="map-image"
+              ref={mapRef}
+            />
+          )}
+
+          {/* Map Regions */}
+          {book.mapType === "canvas" && book.mapRegions?.map((region) => (
+            <div
+              key={region.id}
+              className="map-region"
+              style={{
+                left: `${region.x}%`,
+                top: `${region.y}%`,
+                width: `${region.width}px`,
+                height: `${region.height}px`,
+                backgroundColor: region.color,
+                zIndex: draggingRegionId === region.id ? 15 : 5,
+              }}
+              onPointerDown={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                dragHasMoved.current = false;
+                setDraggingRegionId(region.id);
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (!dragHasMoved.current) {
+                  setEditingRegionId(region.id);
+                }
+              }}
+            >
+              <span className="map-region-label">{region.name}</span>
+            </div>
+          ))}
+
           <svg
+            width="100%"
+            height="100%"
             style={{
               position: "absolute",
               top: 0,
               left: 0,
-              width: "100%",
-              height: "100%",
               pointerEvents: "none",
               zIndex: 10,
             }}
@@ -538,7 +645,7 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
                   hairColor={char.hairColor || "#FFA012"}
                   beardColor={char.beardColor || "#FFA012"}
                 />
-                <span className="travel-avatar-name">{char.name}</span>
+                <span className="travel-avatar-name">{char.name}{char.isDead && " 💀"}</span>
               </div>
             );
           })}
@@ -603,6 +710,31 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
           }}
         />
       )}
+      {editingRegion && (
+        <MapRegionSheet
+          region={editingRegion}
+          onClose={() => setEditingRegionId(null)}
+        />
+      )}
     </div>
+  );
+}
+onClose = {() => setEditingLocationName(null)}
+onAddCharacterHere = {() => {
+  const locName = editingLocation.name;
+  setEditingLocationName(null);
+  onAddCharacterAtLocation(locName);
+}}
+        />
+      )}
+{
+  editingRegion && (
+    <MapRegionSheet
+      region={editingRegion}
+      onClose={() => setEditingRegionId(null)}
+    />
+  )
+}
+    </div >
   );
 }

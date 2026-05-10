@@ -17,7 +17,9 @@ export default function CharacterSummary() {
           beardColor={c.beardColor || "#FFA012"}
         />
       </div>
-      <div className="char-card__name">{c.name}</div>
+      <div className="char-card__name">
+        {c.name} {c.isDead && "💀"}
+      </div>
       <div className="char-card__info">
         <span className="char-card__location">
           {c.travelTo

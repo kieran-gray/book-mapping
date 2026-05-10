@@ -10,6 +10,7 @@ export interface Character {
   travelTo?: string;
   travelProgress?: number;
   characteristics?: string[];
+  isDead?: boolean;
 }
 
 export interface LocationConfig {
@@ -35,7 +36,9 @@ export interface Characteristic {
 export interface BookData {
   title: string;
   slug: string;
+  mapType?: "image" | "canvas";
   mapImage: string | null;
+  mapRegions?: MapRegion[];
   characters: Character[];
   locations: LocationConfig[];
   relationships: Relationship[];

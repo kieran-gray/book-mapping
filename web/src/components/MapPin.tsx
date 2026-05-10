@@ -76,8 +76,8 @@ export default function MapPin({
           {/* Single shared label — sibling of characters div, not inside it */}
           <span className="map-pin-names-label">
             {characters.length <= 2
-              ? characters.map((c) => c.name).join(", ")
-              : `${characters[0].name} +${characters.length - 1}`}
+              ? characters.map((c) => `${c.name}${c.isDead ? " 💀" : ""}`).join(", ")
+              : `${characters[0].name}${characters[0].isDead ? " 💀" : ""} +${characters.length - 1}`}
           </span>
         </>
       )}

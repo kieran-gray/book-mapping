@@ -4,6 +4,7 @@ import type {
   Character,
   Characteristic,
   LocationConfig,
+  MapRegion,
   Relationship,
 } from "../types";
 
@@ -300,9 +301,41 @@ export function useBookData(seedData: BookData) {
     }));
   }, []);
 
-  // --- Map Image ---
+  // --- Map Image & Regions ---
+  const setMapType = useCallback((type: "image" | "canvas") => {
+    setBook((prev) => ({ ...prev, mapType: type }));
+  }, []);
+
   const setMapImage = useCallback((image: string | null) => {
     setBook((prev) => ({ ...prev, mapImage: image }));
+  }, []);
+
+  const addMapRegion = useCallback((region: Omit<MapRegion, "id">) => {
+    setBook((prev) => ({
+      ...prev,
+      mapRegions: [...(prev.mapRegions || []), { ...region, id: crypto.randomUUID() }],
+    }));
+  }, []);
+
+  const updateMapRegion = useCallback((id: string, updated: MapRegion) => {
+    setBook((prev) => ({
+      ...prev,
+      mapRegions: (prev.mapRegions || []).map((r) => (r.id === id ? updated : r)),
+    }));
+  }, []);
+
+  const updateMapRegionPosition = useCallback((id: string, x: number, y: number) => {
+    setBook((prev) => ({
+      ...prev,
+      mapRegions: (prev.mapRegions || []).map((r) => (r.id === id ? { ...r, x, y } : r)),
+    }));
+  }, []);
+
+  const deleteMapRegion = useCallback((id: string) => {
+    setBook((prev) => ({
+      ...prev,
+      mapRegions: (prev.mapRegions || []).filter((r) => r.id !== id),
+    }));
   }, []);
 
   // --- Derived data ---
@@ -370,7 +403,12 @@ export function useBookData(seedData: BookData) {
     moveGroupToLocation,
     setGroupTravel,
     updateGroupTravelProgress,
+    setMapType,
     setMapImage,
+    addMapRegion,
+    updateMapRegion,
+    updateMapRegionPosition,
+    deleteMapRegion,
   };
 }
 

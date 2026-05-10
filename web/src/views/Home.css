@@ -816,7 +816,7 @@
   --character-width: 18px;
   --character-height: 24px;
   --character-overlap: -4px; /* Use a negative px amount to make characters overlap */
-  --character-top-offset: 20px; /* Distance below the location name (e.g. 100% or 20px) */
+  --character-top-offset: 41px; /* Distance below the location name (e.g. 100% or 41px) */
 }
 
 .map-pin:hover {
@@ -958,9 +958,92 @@
   margin: 0 auto;
 }
 
+.map-uploader-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.map-uploader-actions > div {
+  flex: 1;
+  max-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.map-uploader-actions .divider {
+  color: #999;
+  font-weight: bold;
+  font-size: 14px;
+}
+
 .map-uploader p {
   margin-bottom: 12px;
   color: #666;
+}
+
+/* Blank Canvas Styles */
+.blank-canvas {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #f4eecd; /* Parchment color */
+  background-image: 
+    linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+  background-size: 50px 50px;
+  z-index: 0;
+}
+
+.map-region {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border: 2px dashed rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  z-index: 5;
+  user-select: none;
+}
+
+.map-region:active {
+  cursor: grabbing;
+}
+
+.map-region-label {
+  font-size: 16px;
+  font-weight: bold;
+  color: rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-align: center;
+  padding: 4px;
+}
+
+.add-region-btn {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  z-index: 50;
+  background: #4a3b2c;
+  color: #fdfbf7;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.add-region-btn:hover {
+  background: #3a2c1e;
 }
 
 .pin-modal-content {
