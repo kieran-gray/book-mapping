@@ -793,6 +793,47 @@
   overflow: hidden;
   background: #f0f0f0;
   -webkit-overflow-scrolling: touch;
+  touch-action: none;
+}
+
+/* --- Map Zoom Controls --- */
+.map-zoom-controls {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 150;
+}
+
+.map-zoom-controls button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(253, 251, 247, 0.95);
+  border: 1.5px solid #4a3b2c;
+  color: #4a3b2c;
+  font-size: 16px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.map-zoom-controls button:hover {
+  background: #4a3b2c;
+  color: #fdfbf7;
+  transform: translateY(-1px);
+}
+
+.map-zoom-controls button:active {
+  transform: translateY(1px);
 }
 
 .map-image {
@@ -1221,6 +1262,7 @@
 .book-nav-container {
   display: flex;
   justify-content: center;
+  gap: 12px;
   padding: 12px 0 4px;
 }
 
@@ -1557,6 +1599,10 @@
    DESKTOP BREAKPOINT (768px+) — Side-by-side book layout
    ========================================================= */
 @media (min-width: 768px) {
+  .mobile-only {
+    display: none !important;
+  }
+
   .home {
     padding: 30px;
   }
