@@ -1,3 +1,57 @@
+/* =========================================================
+   Design tokens — a sunlit afternoon in a cozy vintage library:
+   golden window-light, warm oak shelves, ivy at the glass, a soft
+   burgundy chair. Read these aloud — they should sound like this room.
+   ========================================================= */
+:root {
+  /* Ink — warm brown text on paper, four levels of hierarchy */
+  --ink: #3c2f20;
+  --ink-soft: #6b5740;
+  --ink-faint: #97836a;
+  --ink-ghost: #b8a589;
+
+  /* Paper — warm sunlit cream surfaces (page, room wall, shadowed fold) */
+  --parchment: #faf3e4;
+  --parchment-aged: #f1e4ca;
+  --parchment-shadow: #e6d5b4;
+
+  /* Sun — golden window-light that fills the room */
+  --sun: #f6dca2;
+  --sun-soft: #fbecca;
+  --sun-deep: #e3b864;
+
+  /* Gilt — gold leaf on spines: the accent for emphasis, glints, focus */
+  --gilt: #c79a3e;
+  --gilt-bright: #e8cd80;
+  --gilt-deep: #9a7327;
+
+  /* Cream — light text on wood and dark spines */
+  --cream: #f7efdd;
+  --cream-dim: rgba(247, 239, 221, 0.65);
+
+  /* Thread — soft warm borders, three weights */
+  --thread: #e2d1ad;
+  --thread-strong: #cbb488;
+  --thread-faint: rgba(203, 180, 136, 0.5);
+
+  /* Oak — warm lit walnut/oak: the shelf timber and frames */
+  --wood: #97653a;
+  --wood-light: #bb8c57;
+  --wood-dark: #6c4427;
+
+  /* Foliage — soft sage from the ivy at the window */
+  --foliage: #7d9657;
+  --foliage-deep: #5f7943;
+
+  /* Hearth — dusty burgundy of the armchairs; also our destructive */
+  --blood: #9e4b46;
+  --blood-bright: #b85a52;
+  --blood-deep: #7c3a36;
+
+  /* Type */
+  --font-sans: "IBM Plex Sans", system-ui, sans-serif;
+}
+
 /* --- Global Reset & Base --- */
 *,
 *::before,

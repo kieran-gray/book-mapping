@@ -37,10 +37,13 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
   } = useBook();
 
   // Which tab is active: "image" or "canvas"
-  const activeTab: "image" | "canvas" = book.mapType === "canvas" ? "canvas" : "image";
+  const activeTab: "image" | "canvas" =
+    book.mapType === "canvas" ? "canvas" : "image";
 
   // null = no dialog; "image" or "canvas" = confirming reset of that tab
-  const [resetConfirm, setResetConfirm] = useState<"image" | "canvas" | null>(null);
+  const [resetConfirm, setResetConfirm] = useState<"image" | "canvas" | null>(
+    null,
+  );
 
   const { mapImage, locations, characters, relationships } = book;
 
@@ -622,10 +625,20 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
       <div className="map-tab-switcher">
         <button
           id="map-tab-image"
-          className={`map-tab ${activeTab === "image" ? "map-tab--active" : ""}`}
+          className={`map-tab ${
+            activeTab === "image" ? "map-tab--active" : ""
+          }`}
           onClick={() => setMapType("image")}
         >
-          <svg className="map-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            className="map-tab-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
             <circle cx="8.5" cy="8.5" r="1.5" />
             <polyline points="21 15 16 10 5 21" />
@@ -634,10 +647,20 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
         </button>
         <button
           id="map-tab-canvas"
-          className={`map-tab ${activeTab === "canvas" ? "map-tab--active" : ""}`}
+          className={`map-tab ${
+            activeTab === "canvas" ? "map-tab--active" : ""
+          }`}
           onClick={() => setMapType("canvas")}
         >
-          <svg className="map-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            className="map-tab-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <path d="M20.24 3.76a6 6 0 0 0-8.49 0L3 12.24V21h8.76l8.48-8.48a6 6 0 0 0 0-8.49z" />
             <line x1="3" y1="21" x2="12" y2="12" />
             <line x1="18.5" y1="9.5" x2="16.5" y2="7.5" />
@@ -646,15 +669,25 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
           Canvas
         </button>
         {/* Reset button — only shown when the active tab has content */}
-        {(activeTab === "image" && !!mapImage) || (activeTab === "canvas") ? (
+        {(activeTab === "image" && !!mapImage) || activeTab === "canvas" ? (
           <button
             className="map-tab-reset"
             id="map-tab-reset-btn"
             onClick={() => setResetConfirm(activeTab)}
             title={`Reset ${activeTab === "image" ? "map image" : "canvas"}`}
-            aria-label={`Reset ${activeTab === "image" ? "map image" : "canvas"}`}
+            aria-label={`Reset ${
+              activeTab === "image" ? "map image" : "canvas"
+            }`}
           >
-            <svg className="map-tab-reset-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              className="map-tab-reset-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               {/* Circular arrow path */}
               <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
               {/* Arrow tip lines */}
@@ -1026,10 +1059,7 @@ export default function WorldMap({ onAddCharacterAtLocation }: WorldMapProps) {
           className="map-reset-overlay"
           onClick={() => setResetConfirm(null)}
         >
-          <div
-            className="map-reset-modal"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="map-reset-modal" onClick={(e) => e.stopPropagation()}>
             <h3 className="map-reset-modal__title">
               Reset {resetConfirm === "image" ? "Map Image" : "Canvas"}?
             </h3>

@@ -57,6 +57,18 @@ const PAGES = [
   { label: "Relations", index: 2 },
 ];
 
+// Fallback so the library page still renders when the shelf is empty
+// (e.g. every book deleted) — useBookData reads seedData.slug eagerly.
+const EMPTY_BOOK: BookData = {
+  title: "",
+  slug: "__empty__",
+  mapImage: null,
+  characters: [],
+  locations: [],
+  relationships: [],
+  characteristics: [],
+};
+
 export default function BookView() {
   const [library, setLibrary] = useState<BookData[]>(loadLibrary);
   const [shelfConfig, setShelfConfig] = useState<ShelfConfig>(loadShelfConfig);
@@ -65,7 +77,7 @@ export default function BookView() {
   const [addAtLocation, setAddAtLocation] = useState<string | null>(null);
 
   const activeBook = library.find((b) => b.slug === openBookSlug);
-  const bookActions = useBookData(activeBook ?? library[0]);
+  const bookActions = useBookData(activeBook ?? library[0] ?? EMPTY_BOOK);
 
   // --- Library management ---
   const handleCreateBook = useCallback((title: string) => {
@@ -141,7 +153,7 @@ export default function BookView() {
   // --- Bookshelf view ---
   if (!openBookSlug) {
     return (
-      <div className="home book-theme">
+      <div className="home book-theme book-theme--shelf">
         <Bookshelf
           books={library}
           shelfConfig={shelfConfig}
@@ -202,13 +214,33 @@ export default function BookView() {
             onNavigate={setCurrentSpread}
             pages={PAGES}
           />
-          <button className="book-footer-close-btn" onClick={handleCloseBook} title="Close Book" aria-label="Close Book">
+          <button
+            className="book-footer-close-btn"
+            onClick={handleCloseBook}
+            title="Close Book"
+            aria-label="Close Book"
+          >
             <svg className="close-book-icon" viewBox="0 0 24 24">
-              <path d="M12 21.5l-8.5-4V3.5l8.5 3 8.5-3v14l-8.5 4z" fill="#782922" stroke="#481814" strokeWidth="0.8" />
-              <path d="M12 20.3L4.2 16.6v-12L12 7.7l7.8-3.1v12L12 20.3z" fill="#d4af37" />
+              <path
+                d="M12 21.5l-8.5-4V3.5l8.5 3 8.5-3v14l-8.5 4z"
+                fill="#782922"
+                stroke="#481814"
+                strokeWidth="0.8"
+              />
+              <path
+                d="M12 20.3L4.2 16.6v-12L12 7.7l7.8-3.1v12L12 20.3z"
+                fill="#d4af37"
+              />
               <path d="M12 19L5 15.3v-11L12 7.5V19z" fill="#fcf6eb" />
               <path d="M12 19l7-3.7v-11L12 7.5V19z" fill="#f3ebd9" />
-              <line x1="12" y1="7.5" x2="12" y2="19" stroke="#b28c31" strokeWidth="1" />
+              <line
+                x1="12"
+                y1="7.5"
+                x2="12"
+                y2="19"
+                stroke="#b28c31"
+                strokeWidth="1"
+              />
               <path d="M3.5 3.5l1.5.5v1L3.5 3.5z" fill="#d4af37" />
               <path d="M20.5 3.5l-1.5.5v1L20.5 3.5z" fill="#d4af37" />
             </svg>
