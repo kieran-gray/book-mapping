@@ -180,13 +180,6 @@ export default function BookView() {
     2: (
       <>
         <LocationManager />
-        {currentSpread === maxSpread && (
-          <div className="close-book-container">
-            <button className="close-book-button" onClick={handleCloseBook}>
-              📕 Close Book
-            </button>
-          </div>
-        )}
       </>
     ),
   };
@@ -203,11 +196,25 @@ export default function BookView() {
           leftPage={leftPages[currentSpread]}
           rightPage={rightPages[currentSpread]}
         />
-        <PageIndicator
-          currentSpread={currentSpread}
-          onNavigate={setCurrentSpread}
-          pages={PAGES}
-        />
+        <div className="book-footer-actions">
+          <PageIndicator
+            currentSpread={currentSpread}
+            onNavigate={setCurrentSpread}
+            pages={PAGES}
+          />
+          <button className="book-footer-close-btn" onClick={handleCloseBook} title="Close Book" aria-label="Close Book">
+            <svg className="close-book-icon" viewBox="0 0 24 24">
+              <path d="M12 21.5l-8.5-4V3.5l8.5 3 8.5-3v14l-8.5 4z" fill="#782922" stroke="#481814" strokeWidth="0.8" />
+              <path d="M12 20.3L4.2 16.6v-12L12 7.7l7.8-3.1v12L12 20.3z" fill="#d4af37" />
+              <path d="M12 19L5 15.3v-11L12 7.5V19z" fill="#fcf6eb" />
+              <path d="M12 19l7-3.7v-11L12 7.5V19z" fill="#f3ebd9" />
+              <line x1="12" y1="7.5" x2="12" y2="19" stroke="#b28c31" strokeWidth="1" />
+              <path d="M3.5 3.5l1.5.5v1L3.5 3.5z" fill="#d4af37" />
+              <path d="M20.5 3.5l-1.5.5v1L20.5 3.5z" fill="#d4af37" />
+            </svg>
+            <span>Close</span>
+          </button>
+        </div>
       </div>
     </BookProvider>
   );

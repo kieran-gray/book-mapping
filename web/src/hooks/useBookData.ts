@@ -348,6 +348,10 @@ export function useBookData(seedData: BookData) {
     }));
   }, []);
 
+  const clearMapRegions = useCallback(() => {
+    setBook((prev) => ({ ...prev, mapRegions: [] }));
+  }, []);
+
   // --- Derived data ---
   const allGroups = Array.from(
     new Set(
@@ -419,6 +423,7 @@ export function useBookData(seedData: BookData) {
     updateMapRegion,
     updateMapRegionPosition,
     deleteMapRegion,
+    clearMapRegions,
   };
 }
 
