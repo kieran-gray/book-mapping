@@ -12,7 +12,12 @@ import LocationManager from "../components/LocationManager";
 import RelationshipManager from "../components/RelationshipManager";
 import CharacteristicManager from "../components/CharacteristicManager";
 import seedData from "../data/shadow-of-the-gods.json";
-import type { BookData, BookDisplayConfig, ShelfConfig } from "../types";
+import type {
+  BookData,
+  BookDisplayConfig,
+  ShelfConfig,
+  ShelfObjectItem,
+} from "../types";
 import "./Home.css";
 
 // --- localStorage helpers ---
@@ -135,6 +140,14 @@ export default function BookView() {
     saveShelfConfig(config);
   }, []);
 
+  const handleUpdateShelfObjects = useCallback((objects: ShelfObjectItem[]) => {
+    setShelfConfig((prev) => {
+      const next = { ...prev, objects };
+      saveShelfConfig(next);
+      return next;
+    });
+  }, []);
+
   const handleOpenBook = (slug: string) => {
     setOpenBookSlug(slug);
     setCurrentSpread(0);
@@ -161,6 +174,7 @@ export default function BookView() {
           onCreateBook={handleCreateBook}
           onUpdateBookDisplay={handleUpdateBookDisplay}
           onUpdateShelfConfig={handleUpdateShelfConfig}
+          onUpdateShelfObjects={handleUpdateShelfObjects}
           onDeleteBook={handleDeleteBook}
         />
       </div>

@@ -2671,6 +2671,295 @@
   }
 }
 
+/* new shelf objects */
+.shelf-object__svg--candle {
+  width: 38px;
+}
+
+.shelf-object__svg--clock {
+  width: 70px;
+}
+
+.shelf-object__svg--teacup {
+  width: 70px;
+}
+
+/* --- living trinkets: gentle, looping micro-motion --- */
+.candle-flame {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: candle-flame-flicker 2.1s ease-in-out infinite;
+}
+
+.candle-glow {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: candle-glow-pulse 2.1s ease-in-out infinite;
+}
+
+@keyframes candle-flame-flicker {
+  0%,
+  100% {
+    transform: scale(1, 1);
+  }
+  20% {
+    transform: scale(0.96, 1.07) translateX(0.3px);
+  }
+  45% {
+    transform: scale(1.05, 0.95) translateX(-0.3px);
+  }
+  70% {
+    transform: scale(0.98, 1.03);
+  }
+}
+
+@keyframes candle-glow-pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  35% {
+    opacity: 0.72;
+    transform: scale(1.09);
+  }
+  65% {
+    opacity: 0.5;
+    transform: scale(0.97);
+  }
+}
+
+.steam {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  opacity: 0;
+  animation: steam-rise 3.4s ease-in-out infinite;
+}
+
+.steam--2 {
+  animation-duration: 3.8s;
+  animation-delay: 1.5s;
+}
+
+@keyframes steam-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(2px) scaleY(0.9);
+  }
+  35% {
+    opacity: 0.5;
+  }
+  60% {
+    opacity: 0.32;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-4px) scaleY(1.12);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .candle-flame,
+  .candle-glow,
+  .steam {
+    animation: none;
+  }
+
+  .steam {
+    opacity: 0.45;
+  }
+}
+
+/* a single book laid flat, title reading horizontally */
+.bookshelf-book--flat {
+  border-radius: 3px;
+}
+
+.bookshelf-book__title--flat {
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
+  font-size: 8px;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  max-height: none;
+  max-width: calc(100% - 8px);
+  white-space: normal;
+  text-align: center;
+}
+
+/* ============================================================
+   EDIT MODE — tidy, draggable tiles for managing the shelf
+   ============================================================ */
+.bookshelf-books--edit {
+  align-items: flex-start;
+  justify-content: center;
+  gap: 14px;
+  padding: 12px;
+  min-height: 0;
+}
+
+.bookshelf-books--edit::after {
+  display: none;
+}
+
+.edit-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  width: 108px;
+  padding: 8px 6px 10px;
+  background: linear-gradient(180deg, var(--parchment), var(--parchment-aged));
+  border: 1px solid var(--thread-strong);
+  border-radius: 8px;
+  box-shadow: 0 2px 7px rgba(76, 46, 22, 0.16);
+  cursor: grab;
+}
+
+.edit-tile:active {
+  cursor: grabbing;
+}
+
+.edit-tile.is-dragging {
+  opacity: 0.45;
+}
+
+.edit-tile__grip {
+  display: flex;
+  color: var(--ink-ghost);
+}
+
+.edit-tile__grip svg {
+  width: 14px;
+  height: 14px;
+}
+
+.edit-tile__spine {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 92px;
+  overflow: hidden;
+  border-radius: 2px 5px 5px 2px;
+  background-image: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.25),
+    rgba(255, 255, 255, 0.12) 26%,
+    rgba(0, 0, 0, 0.12) 82%,
+    rgba(0, 0, 0, 0.28)
+  );
+  box-shadow:
+    0 1px 3px rgba(76, 46, 22, 0.25),
+    inset 0 0 0 1px rgba(201, 162, 39, 0.2);
+}
+
+.edit-tile__obj {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+  height: 92px;
+}
+
+/* Show the trinket at its true shelf size: the per-kind width rules already
+   apply, so we only clamp height so the tall fern can't escape its tile.
+   Do NOT reintroduce `width: auto` here — these SVGs carry no intrinsic
+   width/height, so width:auto + max-height alone renders inconsistently
+   (full-bleed in Chrome, collapsed to nothing in Firefox/Safari). */
+.edit-tile__obj .shelf-object__svg {
+  max-height: 92px;
+  filter: drop-shadow(0 3px 3px rgba(54, 30, 12, 0.2));
+}
+
+/* the controls card sits flush inside the tile (tile is the card) */
+.edit-tile .book-edit-controls {
+  background: none;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+  width: 100%;
+  gap: 7px;
+}
+
+/* pose / shelf selects */
+.book-edit-field label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink-soft);
+  font-family: var(--font-sans);
+  font-size: 10px;
+}
+
+.book-edit-field select {
+  flex: 1;
+  min-width: 0;
+  background: #fffdf8;
+  border: 1px solid var(--thread-strong);
+  color: var(--ink);
+  border-radius: 4px;
+  padding: 3px 6px;
+  font-size: 11px;
+  font-family: var(--font-sans);
+  cursor: pointer;
+}
+
+/* per-shelf object tray */
+.shelf-tray {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 12px;
+  background: rgba(250, 243, 228, 0.6);
+  border-top: 1px dashed var(--thread-strong);
+}
+
+.shelf-tray__label {
+  margin-right: 2px;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-faint);
+}
+
+.shelf-tray__btn {
+  display: inline-flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  padding: 5px;
+  background: var(--parchment);
+  border: 1px solid var(--thread-strong);
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+
+.shelf-tray__btn:hover {
+  border-color: var(--gilt);
+  box-shadow: 0 2px 6px rgba(76, 46, 22, 0.2);
+  transform: translateY(-1px);
+}
+
+.shelf-tray__btn svg {
+  width: auto;
+  height: 34px;
+  filter: none;
+}
+
 .bookshelf-book:focus-visible {
   outline: 2px solid var(--gilt-bright);
   outline-offset: 3px;

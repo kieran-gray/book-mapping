@@ -1,4 +1,5 @@
-import type { ObjectKind } from "../lib/shelfLayout";
+import { useEffect, useState } from "react";
+import type { ShelfObjectKind } from "../types";
 
 // Decorative objects that sit between books to give the shelf character.
 // Plants use the foliage tokens; pots are terracotta. Purely atmospheric.
@@ -96,8 +97,162 @@ function BookStack() {
   );
 }
 
-export default function ShelfObject({ kind }: { kind: ObjectKind }) {
-  if (kind === "fern") return <Fern />;
-  if (kind === "succulent") return <Succulent />;
-  return <BookStack />;
+function Candle() {
+  return (
+    <svg
+      className="shelf-object__svg shelf-object__svg--candle"
+      viewBox="0 0 34 72"
+      aria-hidden="true"
+    >
+      <ellipse
+        className="candle-glow"
+        cx="17"
+        cy="15"
+        rx="9"
+        ry="13"
+        fill="rgba(246,213,150,0.45)"
+      />
+      <g className="candle-flame">
+        <path
+          d="M17 6 C 21 12 21 18 17 22 C 13 18 13 12 17 6 Z"
+          fill="#f0a93a"
+        />
+        <path
+          d="M17 10 C 19 14 19 18 17 21 C 15 18 15 14 17 10 Z"
+          fill="#fff3c4"
+        />
+      </g>
+      <rect x="10" y="22" width="14" height="38" rx="3" fill="#efe6d0" />
+      <rect x="10" y="22" width="5" height="38" rx="3" fill="#f7f0df" />
+      <path d="M7 59 H27 L24 67 H10 Z" fill="#b08a3a" />
+      <ellipse cx="17" cy="59" rx="10" ry="3" fill="#caa24e" />
+    </svg>
+  );
+}
+
+// The little carriage clock keeps real time — its hands track the wall clock and
+// the slim hand sweeps the seconds, so the shelf always feels a touch alive.
+function Clock() {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const cx = 25;
+  const cy = 24;
+  // a hand pointing `turns` of the way around the dial (0 = 12 o'clock), length in user units
+  const hand = (turns: number, length: number) => {
+    const a = turns * 2 * Math.PI;
+    return {
+      x: (cx + length * Math.sin(a)).toFixed(2),
+      y: (cy - length * Math.cos(a)).toFixed(2),
+    };
+  };
+  const secTurn = now.getSeconds() / 60;
+  const minTurn = (now.getMinutes() + secTurn) / 60;
+  const hourTurn = ((now.getHours() % 12) + minTurn) / 12;
+  const h = hand(hourTurn, 7.5);
+  const m = hand(minTurn, 11);
+  const s = hand(secTurn, 12);
+
+  return (
+    <svg
+      className="shelf-object__svg shelf-object__svg--clock"
+      viewBox="0 0 50 56"
+      aria-hidden="true"
+    >
+      <rect x="11" y="43" width="6" height="7" rx="1.5" fill="#6c4427" />
+      <rect x="33" y="43" width="6" height="7" rx="1.5" fill="#6c4427" />
+      <circle cx="25" cy="24" r="20" fill="#8a5a32" />
+      <circle cx="25" cy="24" r="15" fill="#f4ecd9" />
+      <circle
+        cx="25"
+        cy="24"
+        r="15"
+        fill="none"
+        stroke="#caa24e"
+        strokeWidth="1.5"
+      />
+      <line
+        x1={cx}
+        y1={cy}
+        x2={h.x}
+        y2={h.y}
+        stroke="#3c2f20"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <line
+        x1={cx}
+        y1={cy}
+        x2={m.x}
+        y2={m.y}
+        stroke="#3c2f20"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      />
+      <line
+        x1={cx}
+        y1={cy}
+        x2={s.x}
+        y2={s.y}
+        stroke="#9e4b46"
+        strokeWidth="0.8"
+        strokeLinecap="round"
+      />
+      <circle cx="25" cy="24" r="1.6" fill="#3c2f20" />
+    </svg>
+  );
+}
+
+function Teacup() {
+  return (
+    <svg
+      className="shelf-object__svg shelf-object__svg--teacup"
+      viewBox="0 0 54 40"
+      aria-hidden="true"
+    >
+      <path
+        className="steam steam--1"
+        d="M22 5 C 19 9 25 11 22 15"
+        stroke="rgba(140,140,140,0.45)"
+        strokeWidth="1.6"
+        fill="none"
+        strokeLinecap="round"
+      />
+      <path
+        className="steam steam--2"
+        d="M31 4 C 28 9 34 11 31 15"
+        stroke="rgba(140,140,140,0.45)"
+        strokeWidth="1.6"
+        fill="none"
+        strokeLinecap="round"
+      />
+      <path
+        d="M40 21 C 47 20 47 29 39 29"
+        stroke="#e7d7b8"
+        strokeWidth="3"
+        fill="none"
+      />
+      <path d="M14 18 H40 L36 32 H18 Z" fill="#f4ecd9" />
+      <ellipse cx="27" cy="18" rx="13" ry="3" fill="#9e4b46" />
+      <ellipse cx="27" cy="34" rx="20" ry="4" fill="#efe6d0" />
+      <ellipse cx="27" cy="33" rx="20" ry="3.5" fill="#f7f0df" />
+    </svg>
+  );
+}
+
+const OBJECTS: Record<ShelfObjectKind, () => React.JSX.Element> = {
+  fern: Fern,
+  succulent: Succulent,
+  stack: BookStack,
+  candle: Candle,
+  clock: Clock,
+  teacup: Teacup,
+};
+
+export default function ShelfObject({ kind }: { kind: ShelfObjectKind }) {
+  const Component = OBJECTS[kind];
+  return <Component />;
 }

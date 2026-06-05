@@ -46,14 +46,34 @@ export interface BookData {
   displayConfig?: BookDisplayConfig;
 }
 
+export type BookPose = "auto" | "upright" | "lean" | "flat" | "backward";
+
 export interface BookDisplayConfig {
   height: number;
   color: string;
   shelf: number;
+  pose?: BookPose;
+  order?: number;
+}
+
+export type ShelfObjectKind =
+  | "fern"
+  | "succulent"
+  | "stack"
+  | "candle"
+  | "clock"
+  | "teacup";
+
+export interface ShelfObjectItem {
+  id: string;
+  kind: ShelfObjectKind;
+  shelf: number;
+  order: number;
 }
 
 export interface ShelfConfig {
   shelves: number;
+  objects?: ShelfObjectItem[];
 }
 
 export interface MapRegion {

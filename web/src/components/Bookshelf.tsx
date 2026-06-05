@@ -1,4 +1,4 @@
-import { useState, type CSSProperties } from "react";
+import { useState, type CSSProperties, type DragEvent } from "react";
 import {
   Pencil,
   Check,
@@ -7,10 +7,36 @@ import {
   ChevronDown,
   Trash2,
   BookPlus,
+  GripVertical,
+  X,
 } from "lucide-react";
-import type { BookData, BookDisplayConfig, ShelfConfig } from "../types";
+import type {
+  BookData,
+  BookDisplayConfig,
+  BookPose,
+  ShelfConfig,
+  ShelfObjectItem,
+  ShelfObjectKind,
+} from "../types";
 import { composeShelf, type Slot } from "../lib/shelfLayout";
 import ShelfObject from "./ShelfObjects";
+
+const OBJECT_KINDS: ShelfObjectKind[] = [
+  "fern",
+  "succulent",
+  "stack",
+  "candle",
+  "clock",
+  "teacup",
+];
+
+const POSE_OPTIONS: { value: BookPose; label: string }[] = [
+  { value: "auto", label: "Auto" },
+  { value: "upright", label: "Upright" },
+  { value: "lean", label: "Lean" },
+  { value: "flat", label: "Flat" },
+  { value: "backward", label: "Backward" },
+];
 
 const SPINE_COLORS = [
   "#3c2415",
@@ -153,6 +179,7 @@ interface BookshelfProps {
   onCreateBook: (title: string) => void;
   onUpdateBookDisplay: (slug: string, config: BookDisplayConfig) => void;
   onUpdateShelfConfig: (config: ShelfConfig) => void;
+  onUpdateShelfObjects: (objects: ShelfObjectItem[]) => void;
   onDeleteBook: (slug: string) => void;
 }
 
@@ -163,11 +190,15 @@ export default function Bookshelf({
   onCreateBook,
   onUpdateBookDisplay,
   onUpdateShelfConfig,
+  onUpdateShelfObjects,
   onDeleteBook,
 }: BookshelfProps) {
   const [editMode, setEditMode] = useState(false);
   const [showNewBookModal, setShowNewBookModal] = useState(false);
   const [newBookTitle, setNewBookTitle] = useState("");
+  const [dragKey, setDragKey] = useState<string | null>(null);
+
+  const allObjects = shelfConfig.objects ?? [];
 
   const shelves = Array.from({ length: shelfConfig.shelves }, (_, i) => i);
 
@@ -185,6 +216,257 @@ export default function Bookshelf({
     onCreateBook(newBookTitle.trim());
     setNewBookTitle("");
     setShowNewBookModal(false);
+  };
+
+  // --- Edit-mode item model (books + placed objects, ordered within a shelf) ---
+  type EditItem =
+    | { type: "book"; book: BookData; originalIndex: number; order: number }
+    | { type: "object"; obj: ShelfObjectItem; order: number };
+
+  const keyOf = (item: EditItem) =>
+    item.type === "book" ? `book:${item.book.slug}` : `object:${item.obj.id}`;
+
+  const booksOnShelf = (shelfIndex: number) =>
+    books
+      .map((book, originalIndex) => ({ book, originalIndex }))
+      .filter(
+        ({ book, originalIndex }) =>
+          getBookDisplay(book, originalIndex).shelf === shelfIndex,
+      );
+
+  const editItemsFor = (shelfIndex: number): EditItem[] => {
+    const bookItems: EditItem[] = booksOnShelf(shelfIndex).map(
+      ({ book, originalIndex }) => ({
+        type: "book",
+        book,
+        originalIndex,
+        order: getBookDisplay(book, originalIndex).order ?? originalIndex,
+      }),
+    );
+    const objItems: EditItem[] = allObjects
+      .filter((o) => o.shelf === shelfIndex)
+      .map((obj) => ({ type: "object", obj, order: obj.order }));
+    return [...bookItems, ...objItems].sort((a, b) => a.order - b.order);
+  };
+
+  const writeBookOrders = (items: EditItem[]) => {
+    items.forEach((item, idx) => {
+      if (item.type === "book") {
+        const d = getBookDisplay(item.book, item.originalIndex);
+        if (d.order !== idx)
+          onUpdateBookDisplay(item.book.slug, { ...d, order: idx });
+      }
+    });
+  };
+
+  const objectsReordered = (shelfIndex: number, items: EditItem[]) =>
+    allObjects.map((o) => {
+      if (o.shelf !== shelfIndex) return o;
+      const pos = items.findIndex(
+        (it) => it.type === "object" && it.obj.id === o.id,
+      );
+      return pos >= 0 ? { ...o, order: pos } : o;
+    });
+
+  const handleReorder = (shelfIndex: number, targetKey: string) => {
+    if (!dragKey || dragKey === targetKey) return;
+    const items = editItemsFor(shelfIndex);
+    const from = items.findIndex((it) => keyOf(it) === dragKey);
+    const to = items.findIndex((it) => keyOf(it) === targetKey);
+    if (from < 0 || to < 0) return;
+    const next = [...items];
+    const [moved] = next.splice(from, 1);
+    next.splice(to, 0, moved);
+    writeBookOrders(next);
+    onUpdateShelfObjects(objectsReordered(shelfIndex, next));
+    setDragKey(null);
+  };
+
+  const handleAddObject = (shelfIndex: number, kind: ShelfObjectKind) => {
+    const items = editItemsFor(shelfIndex);
+    writeBookOrders(items);
+    const newObj: ShelfObjectItem = {
+      id: crypto.randomUUID(),
+      kind,
+      shelf: shelfIndex,
+      order: items.length,
+    };
+    onUpdateShelfObjects([...objectsReordered(shelfIndex, items), newObj]);
+  };
+
+  const handleRemoveObject = (id: string) =>
+    onUpdateShelfObjects(allObjects.filter((o) => o.id !== id));
+
+  const handleMoveObject = (id: string, shelf: number) =>
+    onUpdateShelfObjects(
+      allObjects.map((o) => (o.id === id ? { ...o, shelf, order: 9999 } : o)),
+    );
+
+  const dragHandlers = (shelfIndex: number, key: string) => ({
+    draggable: true,
+    onDragStart: () => setDragKey(key),
+    onDragOver: (e: DragEvent) => e.preventDefault(),
+    onDrop: () => handleReorder(shelfIndex, key),
+    onDragEnd: () => setDragKey(null),
+  });
+
+  // Edit-mode rendering of one item: a book tile (with controls) or an object tile
+  const renderEditItem = (item: EditItem, shelfIndex: number) => {
+    const key = keyOf(item);
+    const dragging = dragKey === key ? "is-dragging" : "";
+
+    if (item.type === "object") {
+      return (
+        <div
+          className={`edit-tile edit-tile--object ${dragging}`}
+          key={key}
+          {...dragHandlers(shelfIndex, key)}
+        >
+          <span className="edit-tile__grip">
+            <GripVertical />
+          </span>
+          <div className="edit-tile__obj">
+            <ShelfObject kind={item.obj.kind} />
+          </div>
+          <div className="book-edit-field">
+            <select
+              aria-label="Move object to shelf"
+              value={item.obj.shelf}
+              onChange={(e) =>
+                handleMoveObject(item.obj.id, Number(e.target.value))
+              }
+            >
+              {shelves.map((s) => (
+                <option key={s} value={s}>
+                  Shelf {s + 1}
+                </option>
+              ))}
+            </select>
+          </div>
+          <button
+            className="book-delete-btn"
+            aria-label="Remove object"
+            onClick={() => handleRemoveObject(item.obj.id)}
+          >
+            <X />
+            Remove
+          </button>
+        </div>
+      );
+    }
+
+    const display = getBookDisplay(item.book, item.originalIndex);
+    return (
+      <div
+        className={`edit-tile ${dragging}`}
+        key={key}
+        {...dragHandlers(shelfIndex, key)}
+      >
+        <span className="edit-tile__grip">
+          <GripVertical />
+        </span>
+        <div
+          className="edit-tile__spine"
+          style={{ backgroundColor: display.color }}
+        >
+          <span className="bookshelf-book__title">{item.book.title}</span>
+        </div>
+        <div className="book-edit-controls">
+          <div className="book-edit-height">
+            <button
+              aria-label="Taller"
+              onClick={() =>
+                onUpdateBookDisplay(item.book.slug, {
+                  ...display,
+                  height: Math.min(280, display.height + 20),
+                })
+              }
+            >
+              <ChevronUp />
+            </button>
+            <span>{display.height}px</span>
+            <button
+              aria-label="Shorter"
+              onClick={() =>
+                onUpdateBookDisplay(item.book.slug, {
+                  ...display,
+                  height: Math.max(100, display.height - 20),
+                })
+              }
+            >
+              <ChevronDown />
+            </button>
+          </div>
+
+          <div className="book-edit-colors">
+            {COLOR_SWATCHES.map((c) => (
+              <button
+                key={c}
+                aria-label={`Binding colour ${c}`}
+                className={`color-dot ${display.color === c ? "active" : ""}`}
+                style={{ backgroundColor: c }}
+                onClick={() =>
+                  onUpdateBookDisplay(item.book.slug, { ...display, color: c })
+                }
+              />
+            ))}
+          </div>
+
+          <div className="book-edit-field">
+            <label>
+              Pose
+              <select
+                value={display.pose ?? "auto"}
+                onChange={(e) =>
+                  onUpdateBookDisplay(item.book.slug, {
+                    ...display,
+                    pose: e.target.value as BookPose,
+                  })
+                }
+              >
+                {POSE_OPTIONS.map((p) => (
+                  <option key={p.value} value={p.value}>
+                    {p.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+
+          <div className="book-edit-field">
+            <label>
+              Shelf
+              <select
+                value={display.shelf}
+                onChange={(e) =>
+                  onUpdateBookDisplay(item.book.slug, {
+                    ...display,
+                    shelf: Number(e.target.value),
+                  })
+                }
+              >
+                {shelves.map((s) => (
+                  <option key={s} value={s}>
+                    {s + 1}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+
+          <button
+            className="book-delete-btn"
+            onClick={() => {
+              if (confirm(`Delete "${item.book.title}"?`))
+                onDeleteBook(item.book.slug);
+            }}
+          >
+            <Trash2 />
+            Remove
+          </button>
+        </div>
+      </div>
+    );
   };
 
   // View-mode rendering of one composed slot: a posed book, a blank, or an object
@@ -213,6 +495,7 @@ export default function Bookshelf({
       );
     }
     const isBackward = slot.pose === "backward";
+    const isFlat = slot.pose === "flat";
     return (
       <div className="bookshelf-book-wrapper" key={slot.key}>
         <button
@@ -231,7 +514,13 @@ export default function Bookshelf({
           {isBackward ? (
             <span className="bookshelf-book__pages" />
           ) : (
-            <span className="bookshelf-book__title">{slot.book.title}</span>
+            <span
+              className={`bookshelf-book__title ${
+                isFlat ? "bookshelf-book__title--flat" : ""
+              }`}
+            >
+              {slot.book.title}
+            </span>
           )}
         </button>
       </div>
@@ -284,7 +573,10 @@ export default function Bookshelf({
               max={4}
               value={shelfConfig.shelves}
               onChange={(e) =>
-                onUpdateShelfConfig({ shelves: Number(e.target.value) })
+                onUpdateShelfConfig({
+                  ...shelfConfig,
+                  shelves: Number(e.target.value),
+                })
               }
             />
             <span>{shelfConfig.shelves}</span>
@@ -299,149 +591,63 @@ export default function Bookshelf({
         <div className="bookcase__body">
           <div className="bookshelf-shelves">
             {shelves.map((shelfIndex) => {
-              const shelfBooks = books
-                .map((book, i) => ({ book, originalIndex: i }))
-                .filter(({ book, originalIndex }) => {
-                  const display = getBookDisplay(book, originalIndex);
-                  return display.shelf === shelfIndex;
-                });
+              const shelfObjects = allObjects
+                .filter((o) => o.shelf === shelfIndex)
+                .map((o) => ({ id: o.id, kind: o.kind, order: o.order }));
+              const editItems = editMode ? editItemsFor(shelfIndex) : [];
 
               return (
                 <div key={shelfIndex} className="bookshelf">
-                  <div className="bookshelf-books">
+                  <div
+                    className={`bookshelf-books ${
+                      editMode ? "bookshelf-books--edit" : ""
+                    }`}
+                  >
                     {editMode ? (
-                      <>
-                        {shelfBooks.map(({ book, originalIndex }) => {
-                          const display = getBookDisplay(book, originalIndex);
-                          return (
-                            <div
-                              key={book.slug}
-                              className="bookshelf-book-wrapper"
-                            >
-                              <button
-                                className="bookshelf-book"
-                                style={{
-                                  backgroundColor: display.color,
-                                  height: `${display.height}px`,
-                                }}
-                                onClick={() =>
-                                  !editMode && onOpenBook(book.slug)
-                                }
-                                title={
-                                  editMode ? book.title : `Open ${book.title}`
-                                }
-                              >
-                                <span className="bookshelf-book__title">
-                                  {book.title}
-                                </span>
-                              </button>
-
-                              {editMode && (
-                                <div className="book-edit-controls">
-                                  <div className="book-edit-height">
-                                    <button
-                                      aria-label="Taller"
-                                      onClick={() =>
-                                        onUpdateBookDisplay(book.slug, {
-                                          ...display,
-                                          height: Math.min(
-                                            280,
-                                            display.height + 20,
-                                          ),
-                                        })
-                                      }
-                                    >
-                                      <ChevronUp />
-                                    </button>
-                                    <span>{display.height}px</span>
-                                    <button
-                                      aria-label="Shorter"
-                                      onClick={() =>
-                                        onUpdateBookDisplay(book.slug, {
-                                          ...display,
-                                          height: Math.max(
-                                            100,
-                                            display.height - 20,
-                                          ),
-                                        })
-                                      }
-                                    >
-                                      <ChevronDown />
-                                    </button>
-                                  </div>
-
-                                  <div className="book-edit-colors">
-                                    {COLOR_SWATCHES.map((c) => (
-                                      <button
-                                        key={c}
-                                        aria-label={`Binding colour ${c}`}
-                                        className={`color-dot ${
-                                          display.color === c ? "active" : ""
-                                        }`}
-                                        style={{ backgroundColor: c }}
-                                        onClick={() =>
-                                          onUpdateBookDisplay(book.slug, {
-                                            ...display,
-                                            color: c,
-                                          })
-                                        }
-                                      />
-                                    ))}
-                                  </div>
-
-                                  <div className="book-edit-shelf">
-                                    <label>
-                                      Shelf
-                                      <select
-                                        value={display.shelf}
-                                        onChange={(e) =>
-                                          onUpdateBookDisplay(book.slug, {
-                                            ...display,
-                                            shelf: Number(e.target.value),
-                                          })
-                                        }
-                                      >
-                                        {shelves.map((s) => (
-                                          <option key={s} value={s}>
-                                            {s + 1}
-                                          </option>
-                                        ))}
-                                      </select>
-                                    </label>
-                                  </div>
-
-                                  <button
-                                    className="book-delete-btn"
-                                    onClick={() => {
-                                      if (confirm(`Delete "${book.title}"?`))
-                                        onDeleteBook(book.slug);
-                                    }}
-                                  >
-                                    <Trash2 />
-                                    Remove
-                                  </button>
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
-
-                        {shelfBooks.length === 0 && (
-                          <div className="shelf-empty">
-                            This shelf awaits its first volume
-                          </div>
-                        )}
-                      </>
+                      editItems.length === 0 ? (
+                        <div className="shelf-empty">
+                          This shelf awaits its first volume
+                        </div>
+                      ) : (
+                        editItems.map((item) =>
+                          renderEditItem(item, shelfIndex),
+                        )
+                      )
                     ) : (
                       composeShelf(
-                        shelfBooks.map(({ book, originalIndex }) => {
-                          const d = getBookDisplay(book, originalIndex);
-                          return { book, color: d.color, baseHeight: d.height };
-                        }),
+                        booksOnShelf(shelfIndex).map(
+                          ({ book, originalIndex }) => {
+                            const d = getBookDisplay(book, originalIndex);
+                            return {
+                              book,
+                              color: d.color,
+                              baseHeight: d.height,
+                              pose: d.pose,
+                              order: d.order,
+                            };
+                          },
+                        ),
+                        shelfObjects,
                         shelfIndex,
                       ).map(renderSlot)
                     )}
                   </div>
+                  {editMode && (
+                    <div className="shelf-tray">
+                      <span className="shelf-tray__label">Add</span>
+                      {OBJECT_KINDS.map((kind) => (
+                        <button
+                          key={kind}
+                          className="shelf-tray__btn"
+                          title={`Add ${kind}`}
+                          aria-label={`Add ${kind}`}
+                          onClick={() => handleAddObject(shelfIndex, kind)}
+                        >
+                          <ShelfObject kind={kind} />
+                        </button>
+                      ))}
+                    </div>
+                  )}
                   <div className="bookshelf-plank" />
                 </div>
               );
